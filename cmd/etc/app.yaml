@@ -1,0 +1,60 @@
+namespace: default
+appName: adminx
+version: 0.0.1
+development: true
+# use open telemetry
+#otel:
+#  traceExporter: otlp
+#  otlp:
+#    endpoint: "127.0.0.1:4317"
+#    client:
+#      dialOption:
+#        - timeout: 5s
+authz:
+  watchOptions:
+    options:
+      addr: "127.0.0.1:6379"
+      channel: "/casbin"
+  model: "etc/rabc_model.conf"
+
+web:
+  server:
+    addr: 127.0.0.1:8080
+  engine:
+    routerGroups:
+      - default:
+          middlewares:
+            - rest-authz:
+      - graphql:
+          basePath: "/graphql"
+          middlewares:
+#            - otel:
+            - accessLog:
+                exclude:
+                  - IntrospectionQuery
+            - recovery:
+            - graphql:
+                group: "/graphql"
+                withAction: true
+            - jwt:
+                signingMethod: "HS256"
+                signingKey: "secret"
+                exclude:
+                  - "/graphql"
+
+store:
+  portal:
+    driverName: mysql
+    dsn: "root:@tcp(localhost:3306)/portal?parseTime=true&loc=Local"
+snowflake:
+  # 机器id
+  node: 1
+  # 时间戳起始时间
+  epoch: 1609459200000
+  # 机器id位数
+  nodeBits: 1
+  # 序列号位数
+  stepBits: 8
+entcache:
+  level: 2
+  ttl: 5m
