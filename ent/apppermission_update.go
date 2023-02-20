@@ -95,6 +95,26 @@ func (apu *AppPermissionUpdate) ClearName() *AppPermissionUpdate {
 	return apu
 }
 
+// SetKind sets the "kind" field.
+func (apu *AppPermissionUpdate) SetKind(a apppermission.Kind) *AppPermissionUpdate {
+	apu.mutation.SetKind(a)
+	return apu
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (apu *AppPermissionUpdate) SetNillableKind(a *apppermission.Kind) *AppPermissionUpdate {
+	if a != nil {
+		apu.SetKind(*a)
+	}
+	return apu
+}
+
+// ClearKind clears the value of the "kind" field.
+func (apu *AppPermissionUpdate) ClearKind() *AppPermissionUpdate {
+	apu.mutation.ClearKind()
+	return apu
+}
+
 // SetComments sets the "comments" field.
 func (apu *AppPermissionUpdate) SetComments(s string) *AppPermissionUpdate {
 	apu.mutation.SetComments(s)
@@ -216,6 +236,11 @@ func (apu *AppPermissionUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AppPermission.name": %w`, err)}
 		}
 	}
+	if v, ok := apu.mutation.Kind(); ok {
+		if err := apppermission.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "AppPermission.kind": %w`, err)}
+		}
+	}
 	if _, ok := apu.mutation.AppID(); apu.mutation.AppCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "AppPermission.app"`)
 	}
@@ -254,6 +279,12 @@ func (apu *AppPermissionUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if apu.mutation.NameCleared() {
 		_spec.ClearField(apppermission.FieldName, field.TypeString)
+	}
+	if value, ok := apu.mutation.Kind(); ok {
+		_spec.SetField(apppermission.FieldKind, field.TypeEnum, value)
+	}
+	if apu.mutation.KindCleared() {
+		_spec.ClearField(apppermission.FieldKind, field.TypeEnum)
 	}
 	if value, ok := apu.mutation.Comments(); ok {
 		_spec.SetField(apppermission.FieldComments, field.TypeString, value)
@@ -435,6 +466,26 @@ func (apuo *AppPermissionUpdateOne) ClearName() *AppPermissionUpdateOne {
 	return apuo
 }
 
+// SetKind sets the "kind" field.
+func (apuo *AppPermissionUpdateOne) SetKind(a apppermission.Kind) *AppPermissionUpdateOne {
+	apuo.mutation.SetKind(a)
+	return apuo
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (apuo *AppPermissionUpdateOne) SetNillableKind(a *apppermission.Kind) *AppPermissionUpdateOne {
+	if a != nil {
+		apuo.SetKind(*a)
+	}
+	return apuo
+}
+
+// ClearKind clears the value of the "kind" field.
+func (apuo *AppPermissionUpdateOne) ClearKind() *AppPermissionUpdateOne {
+	apuo.mutation.ClearKind()
+	return apuo
+}
+
 // SetComments sets the "comments" field.
 func (apuo *AppPermissionUpdateOne) SetComments(s string) *AppPermissionUpdateOne {
 	apuo.mutation.SetComments(s)
@@ -569,6 +620,11 @@ func (apuo *AppPermissionUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AppPermission.name": %w`, err)}
 		}
 	}
+	if v, ok := apuo.mutation.Kind(); ok {
+		if err := apppermission.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "AppPermission.kind": %w`, err)}
+		}
+	}
 	if _, ok := apuo.mutation.AppID(); apuo.mutation.AppCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "AppPermission.app"`)
 	}
@@ -624,6 +680,12 @@ func (apuo *AppPermissionUpdateOne) sqlSave(ctx context.Context) (_node *AppPerm
 	}
 	if apuo.mutation.NameCleared() {
 		_spec.ClearField(apppermission.FieldName, field.TypeString)
+	}
+	if value, ok := apuo.mutation.Kind(); ok {
+		_spec.SetField(apppermission.FieldKind, field.TypeEnum, value)
+	}
+	if apuo.mutation.KindCleared() {
+		_spec.ClearField(apppermission.FieldKind, field.TypeEnum)
 	}
 	if value, ok := apuo.mutation.Comments(); ok {
 		_spec.SetField(apppermission.FieldComments, field.TypeString, value)

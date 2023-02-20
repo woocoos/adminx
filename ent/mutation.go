@@ -59,6 +59,7 @@ type AppMutation struct {
 	addupdated_by             *int
 	updated_at                *time.Time
 	name                      *string
+	code                      *string
 	kind                      *app.Kind
 	redirect_uri              *string
 	app_key                   *string
@@ -429,22 +430,45 @@ func (m *AppMutation) OldName(ctx context.Context) (v string, err error) {
 	return oldValue.Name, nil
 }
 
-// ClearName clears the value of the "name" field.
-func (m *AppMutation) ClearName() {
-	m.name = nil
-	m.clearedFields[app.FieldName] = struct{}{}
-}
-
-// NameCleared returns if the "name" field was cleared in this mutation.
-func (m *AppMutation) NameCleared() bool {
-	_, ok := m.clearedFields[app.FieldName]
-	return ok
-}
-
 // ResetName resets all changes to the "name" field.
 func (m *AppMutation) ResetName() {
 	m.name = nil
-	delete(m.clearedFields, app.FieldName)
+}
+
+// SetCode sets the "code" field.
+func (m *AppMutation) SetCode(s string) {
+	m.code = &s
+}
+
+// Code returns the value of the "code" field in the mutation.
+func (m *AppMutation) Code() (r string, exists bool) {
+	v := m.code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCode returns the old "code" field's value of the App entity.
+// If the App object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppMutation) OldCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCode: %w", err)
+	}
+	return oldValue.Code, nil
+}
+
+// ResetCode resets all changes to the "code" field.
+func (m *AppMutation) ResetCode() {
+	m.code = nil
 }
 
 // SetKind sets the "kind" field.
@@ -1108,7 +1132,7 @@ func (m *AppMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AppMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_by != nil {
 		fields = append(fields, app.FieldCreatedBy)
 	}
@@ -1123,6 +1147,9 @@ func (m *AppMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, app.FieldName)
+	}
+	if m.code != nil {
+		fields = append(fields, app.FieldCode)
 	}
 	if m.kind != nil {
 		fields = append(fields, app.FieldKind)
@@ -1172,6 +1199,8 @@ func (m *AppMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case app.FieldName:
 		return m.Name()
+	case app.FieldCode:
+		return m.Code()
 	case app.FieldKind:
 		return m.Kind()
 	case app.FieldRedirectURI:
@@ -1211,6 +1240,8 @@ func (m *AppMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldUpdatedAt(ctx)
 	case app.FieldName:
 		return m.OldName(ctx)
+	case app.FieldCode:
+		return m.OldCode(ctx)
 	case app.FieldKind:
 		return m.OldKind(ctx)
 	case app.FieldRedirectURI:
@@ -1274,6 +1305,13 @@ func (m *AppMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case app.FieldCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCode(v)
 		return nil
 	case app.FieldKind:
 		v, ok := value.(app.Kind)
@@ -1432,9 +1470,6 @@ func (m *AppMutation) ClearedFields() []string {
 	if m.FieldCleared(app.FieldUpdatedAt) {
 		fields = append(fields, app.FieldUpdatedAt)
 	}
-	if m.FieldCleared(app.FieldName) {
-		fields = append(fields, app.FieldName)
-	}
 	if m.FieldCleared(app.FieldRedirectURI) {
 		fields = append(fields, app.FieldRedirectURI)
 	}
@@ -1481,9 +1516,6 @@ func (m *AppMutation) ClearField(name string) error {
 		return nil
 	case app.FieldUpdatedAt:
 		m.ClearUpdatedAt()
-		return nil
-	case app.FieldName:
-		m.ClearName()
 		return nil
 	case app.FieldRedirectURI:
 		m.ClearRedirectURI()
@@ -1534,6 +1566,9 @@ func (m *AppMutation) ResetField(name string) error {
 		return nil
 	case app.FieldName:
 		m.ResetName()
+		return nil
+	case app.FieldCode:
+		m.ResetCode()
 		return nil
 	case app.FieldKind:
 		m.ResetKind()
@@ -2916,6 +2951,7 @@ type AppPermissionMutation struct {
 	addupdated_by *int
 	updated_at    *time.Time
 	name          *string
+	kind          *apppermission.Kind
 	comments      *string
 	clearedFields map[string]struct{}
 	app           *int
@@ -3328,6 +3364,55 @@ func (m *AppPermissionMutation) ResetName() {
 	delete(m.clearedFields, apppermission.FieldName)
 }
 
+// SetKind sets the "kind" field.
+func (m *AppPermissionMutation) SetKind(a apppermission.Kind) {
+	m.kind = &a
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *AppPermissionMutation) Kind() (r apppermission.Kind, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the AppPermission entity.
+// If the AppPermission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppPermissionMutation) OldKind(ctx context.Context) (v apppermission.Kind, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ClearKind clears the value of the "kind" field.
+func (m *AppPermissionMutation) ClearKind() {
+	m.kind = nil
+	m.clearedFields[apppermission.FieldKind] = struct{}{}
+}
+
+// KindCleared returns if the "kind" field was cleared in this mutation.
+func (m *AppPermissionMutation) KindCleared() bool {
+	_, ok := m.clearedFields[apppermission.FieldKind]
+	return ok
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *AppPermissionMutation) ResetKind() {
+	m.kind = nil
+	delete(m.clearedFields, apppermission.FieldKind)
+}
+
 // SetComments sets the "comments" field.
 func (m *AppPermissionMutation) SetComments(s string) {
 	m.comments = &s
@@ -3491,7 +3576,7 @@ func (m *AppPermissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AppPermissionMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_by != nil {
 		fields = append(fields, apppermission.FieldCreatedBy)
 	}
@@ -3509,6 +3594,9 @@ func (m *AppPermissionMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, apppermission.FieldName)
+	}
+	if m.kind != nil {
+		fields = append(fields, apppermission.FieldKind)
 	}
 	if m.comments != nil {
 		fields = append(fields, apppermission.FieldComments)
@@ -3533,6 +3621,8 @@ func (m *AppPermissionMutation) Field(name string) (ent.Value, bool) {
 		return m.AppID()
 	case apppermission.FieldName:
 		return m.Name()
+	case apppermission.FieldKind:
+		return m.Kind()
 	case apppermission.FieldComments:
 		return m.Comments()
 	}
@@ -3556,6 +3646,8 @@ func (m *AppPermissionMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldAppID(ctx)
 	case apppermission.FieldName:
 		return m.OldName(ctx)
+	case apppermission.FieldKind:
+		return m.OldKind(ctx)
 	case apppermission.FieldComments:
 		return m.OldComments(ctx)
 	}
@@ -3608,6 +3700,13 @@ func (m *AppPermissionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case apppermission.FieldKind:
+		v, ok := value.(apppermission.Kind)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
 		return nil
 	case apppermission.FieldComments:
 		v, ok := value.(string)
@@ -3682,6 +3781,9 @@ func (m *AppPermissionMutation) ClearedFields() []string {
 	if m.FieldCleared(apppermission.FieldName) {
 		fields = append(fields, apppermission.FieldName)
 	}
+	if m.FieldCleared(apppermission.FieldKind) {
+		fields = append(fields, apppermission.FieldKind)
+	}
 	if m.FieldCleared(apppermission.FieldComments) {
 		fields = append(fields, apppermission.FieldComments)
 	}
@@ -3707,6 +3809,9 @@ func (m *AppPermissionMutation) ClearField(name string) error {
 		return nil
 	case apppermission.FieldName:
 		m.ClearName()
+		return nil
+	case apppermission.FieldKind:
+		m.ClearKind()
 		return nil
 	case apppermission.FieldComments:
 		m.ClearComments()
@@ -3736,6 +3841,9 @@ func (m *AppPermissionMutation) ResetField(name string) error {
 		return nil
 	case apppermission.FieldName:
 		m.ResetName()
+		return nil
+	case apppermission.FieldKind:
+		m.ResetKind()
 		return nil
 	case apppermission.FieldComments:
 		m.ResetComments()

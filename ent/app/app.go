@@ -26,6 +26,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldCode holds the string denoting the code field in the database.
+	FieldCode = "code"
 	// FieldKind holds the string denoting the kind field in the database.
 	FieldKind = "kind"
 	// FieldRedirectURI holds the string denoting the redirect_uri field in the database.
@@ -76,6 +78,7 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldUpdatedAt,
 	FieldName,
+	FieldCode,
 	FieldKind,
 	FieldRedirectURI,
 	FieldAppKey,
@@ -113,6 +116,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	CodeValidator func(string) error
 	// RedirectURIValidator is a validator for the "redirect_uri" field. It is called by the builders before save.
 	RedirectURIValidator func(string) error
 	// AppSecretValidator is a validator for the "app_secret" field. It is called by the builders before save.

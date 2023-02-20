@@ -14,7 +14,8 @@ import (
 // CreateAppInput represents a mutation input for creating apps.
 type CreateAppInput struct {
 	ID                   *int
-	Name                 *string
+	Name                 string
+	Code                 string
 	Kind                 app.Kind
 	RedirectURI          *string
 	AppKey               *string
@@ -31,9 +32,8 @@ type CreateAppInput struct {
 
 // Mutate applies the CreateAppInput on the AppMutation builder.
 func (i *CreateAppInput) Mutate(m *AppMutation) {
-	if v := i.Name; v != nil {
-		m.SetName(*v)
-	}
+	m.SetName(i.Name)
+	m.SetCode(i.Code)
 	m.SetKind(i.Kind)
 	if v := i.RedirectURI; v != nil {
 		m.SetRedirectURI(*v)
@@ -79,8 +79,8 @@ func (c *AppCreate) SetInput(i CreateAppInput) *AppCreate {
 // UpdateAppInput represents a mutation input for updating apps.
 type UpdateAppInput struct {
 	ID                        *int
-	ClearName                 bool
 	Name                      *string
+	Code                      *string
 	Kind                      *app.Kind
 	ClearRedirectURI          bool
 	RedirectURI               *string
@@ -110,11 +110,11 @@ type UpdateAppInput struct {
 
 // Mutate applies the UpdateAppInput on the AppMutation builder.
 func (i *UpdateAppInput) Mutate(m *AppMutation) {
-	if i.ClearName {
-		m.ClearName()
-	}
 	if v := i.Name; v != nil {
 		m.SetName(*v)
+	}
+	if v := i.Code; v != nil {
+		m.SetCode(*v)
 	}
 	if v := i.Kind; v != nil {
 		m.SetKind(*v)

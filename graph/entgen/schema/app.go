@@ -36,7 +36,8 @@ func (App) Mixin() []ent.Mixin {
 // Fields of the App.
 func (App) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").MaxLen(45).Optional().Unique().Comment("应用名称"),
+		field.String("name").MaxLen(45).Unique().Comment("名称"),
+		field.String("code").MaxLen(45).Unique().Comment("代码"),
 		field.Enum("kind").NamedValues(
 			"web", "web",
 			"native", "native",

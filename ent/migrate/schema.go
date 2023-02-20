@@ -16,7 +16,8 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_by", Type: field.TypeInt, Nullable: true, SchemaType: map[string]string{"mysql": "bigint"}},
 		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
-		{Name: "name", Type: field.TypeString, Unique: true, Nullable: true, Size: 45},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 45},
+		{Name: "code", Type: field.TypeString, Unique: true, Size: 45},
 		{Name: "kind", Type: field.TypeEnum, Enums: []string{"web", "native", "server"}},
 		{Name: "redirect_uri", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "app_key", Type: field.TypeString, Nullable: true},
@@ -77,6 +78,7 @@ var (
 		{Name: "updated_by", Type: field.TypeInt, Nullable: true, SchemaType: map[string]string{"mysql": "bigint"}},
 		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString, Nullable: true},
+		{Name: "kind", Type: field.TypeEnum, Nullable: true, Enums: []string{"read", "write", "list"}},
 		{Name: "comments", Type: field.TypeString, Nullable: true},
 		{Name: "app_id", Type: field.TypeInt, SchemaType: map[string]string{"mysql": "bigint"}},
 	}
@@ -88,7 +90,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "app_permission_app_permissions",
-				Columns:    []*schema.Column{AppPermissionColumns[7]},
+				Columns:    []*schema.Column{AppPermissionColumns[8]},
 				RefColumns: []*schema.Column{AppColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

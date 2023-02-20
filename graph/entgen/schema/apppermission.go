@@ -40,6 +40,7 @@ func (AppPermission) Fields() []ent.Field {
 		field.Int("app_id").Comment("所属应用"),
 		field.String("name").Optional().Comment("名称").
 			Match(regexp.MustCompile("[a-z/]+$")),
+		field.Enum("kind").Values("read", "write", "list").Optional().Comment("读,写,列表"),
 		field.String("comments").Optional().Comment("备注").
 			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 	}

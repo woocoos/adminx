@@ -46,16 +46,20 @@ func init() {
 	appDescName := appFields[0].Descriptor()
 	// app.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	app.NameValidator = appDescName.Validators[0].(func(string) error)
+	// appDescCode is the schema descriptor for code field.
+	appDescCode := appFields[1].Descriptor()
+	// app.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	app.CodeValidator = appDescCode.Validators[0].(func(string) error)
 	// appDescRedirectURI is the schema descriptor for redirect_uri field.
-	appDescRedirectURI := appFields[2].Descriptor()
+	appDescRedirectURI := appFields[3].Descriptor()
 	// app.RedirectURIValidator is a validator for the "redirect_uri" field. It is called by the builders before save.
 	app.RedirectURIValidator = appDescRedirectURI.Validators[0].(func(string) error)
 	// appDescAppSecret is the schema descriptor for app_secret field.
-	appDescAppSecret := appFields[4].Descriptor()
+	appDescAppSecret := appFields[5].Descriptor()
 	// app.AppSecretValidator is a validator for the "app_secret" field. It is called by the builders before save.
 	app.AppSecretValidator = appDescAppSecret.Validators[0].(func(string) error)
 	// appDescScopes is the schema descriptor for scopes field.
-	appDescScopes := appFields[5].Descriptor()
+	appDescScopes := appFields[6].Descriptor()
 	// app.ScopesValidator is a validator for the "scopes" field. It is called by the builders before save.
 	app.ScopesValidator = appDescScopes.Validators[0].(func(string) error)
 	// appDescID is the schema descriptor for id field.

@@ -24,8 +24,10 @@ type App struct {
 	UpdatedBy int `json:"updated_by,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// 应用名称
+	// 名称
 	Name string `json:"name,omitempty"`
+	// 代码
+	Code string `json:"code,omitempty"`
 	// 应用类型
 	Kind app.Kind `json:"kind,omitempty"`
 	// 回调地址
@@ -92,7 +94,7 @@ func (*App) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case app.FieldID, app.FieldCreatedBy, app.FieldUpdatedBy, app.FieldTokenValidity, app.FieldRefreshTokenValidity:
 			values[i] = new(sql.NullInt64)
-		case app.FieldName, app.FieldKind, app.FieldRedirectURI, app.FieldAppKey, app.FieldAppSecret, app.FieldScopes, app.FieldLogo, app.FieldComments, app.FieldStatus:
+		case app.FieldName, app.FieldCode, app.FieldKind, app.FieldRedirectURI, app.FieldAppKey, app.FieldAppSecret, app.FieldScopes, app.FieldLogo, app.FieldComments, app.FieldStatus:
 			values[i] = new(sql.NullString)
 		case app.FieldCreatedAt, app.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -146,6 +148,12 @@ func (a *App) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				a.Name = value.String
+			}
+		case app.FieldCode:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field code", values[i])
+			} else if value.Valid {
+				a.Code = value.String
 			}
 		case app.FieldKind:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -259,6 +267,9 @@ func (a *App) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(a.Name)
+	builder.WriteString(", ")
+	builder.WriteString("code=")
+	builder.WriteString(a.Code)
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(fmt.Sprintf("%v", a.Kind))

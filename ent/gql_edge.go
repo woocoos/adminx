@@ -9,10 +9,11 @@ import (
 )
 
 func (a *App) Menus(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppMenuOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppMenuOrder, where *AppMenuWhereInput,
 ) (*AppMenuConnection, error) {
 	opts := []AppMenuPaginateOption{
 		WithAppMenuOrder(orderBy),
+		WithAppMenuFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[0][alias]
@@ -29,10 +30,11 @@ func (a *App) Menus(
 }
 
 func (a *App) Permissions(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppPermissionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppPermissionOrder, where *AppPermissionWhereInput,
 ) (*AppPermissionConnection, error) {
 	opts := []AppPermissionPaginateOption{
 		WithAppPermissionOrder(orderBy),
+		WithAppPermissionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[1][alias]

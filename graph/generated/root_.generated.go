@@ -43,15 +43,16 @@ type ComplexityRoot struct {
 	App struct {
 		AppKey               func(childComplexity int) int
 		AppSecret            func(childComplexity int) int
+		Code                 func(childComplexity int) int
 		Comments             func(childComplexity int) int
 		CreatedAt            func(childComplexity int) int
 		CreatedBy            func(childComplexity int) int
 		ID                   func(childComplexity int) int
 		Kind                 func(childComplexity int) int
 		Logo                 func(childComplexity int) int
-		Menus                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppMenuOrder) int
+		Menus                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppMenuOrder, where *ent.AppMenuWhereInput) int
 		Name                 func(childComplexity int) int
-		Permissions          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppPermissionOrder) int
+		Permissions          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppPermissionOrder, where *ent.AppPermissionWhereInput) int
 		RedirectURI          func(childComplexity int) int
 		RefreshTokenValidity func(childComplexity int) int
 		Scopes               func(childComplexity int) int
@@ -107,6 +108,7 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
 		ID        func(childComplexity int) int
+		Kind      func(childComplexity int) int
 		Menus     func(childComplexity int) int
 		Name      func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
@@ -310,6 +312,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.App.AppSecret(childComplexity), true
 
+	case "App.code":
+		if e.complexity.App.Code == nil {
+			break
+		}
+
+		return e.complexity.App.Code(childComplexity), true
+
 	case "App.comments":
 		if e.complexity.App.Comments == nil {
 			break
@@ -362,7 +371,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.App.Menus(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AppMenuOrder)), true
+		return e.complexity.App.Menus(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AppMenuOrder), args["where"].(*ent.AppMenuWhereInput)), true
 
 	case "App.name":
 		if e.complexity.App.Name == nil {
@@ -381,7 +390,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.App.Permissions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AppPermissionOrder)), true
+		return e.complexity.App.Permissions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AppPermissionOrder), args["where"].(*ent.AppPermissionWhereInput)), true
 
 	case "App.redirectURI":
 		if e.complexity.App.RedirectURI == nil {
@@ -641,6 +650,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AppPermission.ID(childComplexity), true
+
+	case "AppPermission.kind":
+		if e.complexity.AppPermission.Kind == nil {
+			break
+		}
+
+		return e.complexity.AppPermission.Kind(childComplexity), true
 
 	case "AppPermission.menus":
 		if e.complexity.AppPermission.Menus == nil {
@@ -1714,8 +1730,10 @@ type App implements Node {
   createdAt: Time!
   updatedBy: Int
   updatedAt: Time
-  """应用名称"""
-  name: String
+  """名称"""
+  name: String!
+  """代码"""
+  code: String!
   """应用类型"""
   kind: AppKind!
   """回调地址"""
@@ -1978,6 +1996,8 @@ type AppPermission implements Node {
   appID: ID!
   """名称"""
   name: String
+  """读,写,列表"""
+  kind: AppPermissionKind
   """备注"""
   comments: String
   app: App!
@@ -1998,6 +2018,12 @@ type AppPermissionEdge {
   node: AppPermission
   """A cursor for use in pagination."""
   cursor: Cursor!
+}
+"""AppPermissionKind is enum for the field kind"""
+enum AppPermissionKind @goModel(model: "github.com/woocoos/adminx/ent/apppermission.Kind") {
+  read
+  write
+  list
 }
 """Ordering options for AppPermission connections"""
 input AppPermissionOrder {
@@ -2088,6 +2114,13 @@ input AppPermissionWhereInput {
   nameNotNil: Boolean
   nameEqualFold: String
   nameContainsFold: String
+  """kind field predicates"""
+  kind: AppPermissionKind
+  kindNEQ: AppPermissionKind
+  kindIn: [AppPermissionKind!]
+  kindNotIn: [AppPermissionKind!]
+  kindIsNil: Boolean
+  kindNotNil: Boolean
   """app edge predicates"""
   hasApp: Boolean
   hasAppWith: [AppWhereInput!]
@@ -2169,10 +2202,22 @@ input AppWhereInput {
   nameContains: String
   nameHasPrefix: String
   nameHasSuffix: String
-  nameIsNil: Boolean
-  nameNotNil: Boolean
   nameEqualFold: String
   nameContainsFold: String
+  """code field predicates"""
+  code: String
+  codeNEQ: String
+  codeIn: [String!]
+  codeNotIn: [String!]
+  codeGT: String
+  codeGTE: String
+  codeLT: String
+  codeLTE: String
+  codeContains: String
+  codeHasPrefix: String
+  codeHasSuffix: String
+  codeEqualFold: String
+  codeContainsFold: String
   """kind field predicates"""
   kind: AppKind
   kindNEQ: AppKind
@@ -2315,8 +2360,10 @@ CreateAppInput is used for create App object.
 Input was generated by ent.
 """
 input CreateAppInput {
-  """应用名称"""
-  name: String
+  """名称"""
+  name: String!
+  """代码"""
+  code: String!
   """应用类型"""
   kind: AppKind!
   """回调地址"""
@@ -2874,9 +2921,10 @@ UpdateAppInput is used for update App object.
 Input was generated by ent.
 """
 input UpdateAppInput {
-  """应用名称"""
+  """名称"""
   name: String
-  clearName: Boolean
+  """代码"""
+  code: String
   """应用类型"""
   kind: AppKind
   """回调地址"""

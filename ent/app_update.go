@@ -75,17 +75,9 @@ func (au *AppUpdate) SetName(s string) *AppUpdate {
 	return au
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (au *AppUpdate) SetNillableName(s *string) *AppUpdate {
-	if s != nil {
-		au.SetName(*s)
-	}
-	return au
-}
-
-// ClearName clears the value of the "name" field.
-func (au *AppUpdate) ClearName() *AppUpdate {
-	au.mutation.ClearName()
+// SetCode sets the "code" field.
+func (au *AppUpdate) SetCode(s string) *AppUpdate {
+	au.mutation.SetCode(s)
 	return au
 }
 
@@ -415,6 +407,11 @@ func (au *AppUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "App.name": %w`, err)}
 		}
 	}
+	if v, ok := au.mutation.Code(); ok {
+		if err := app.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "App.code": %w`, err)}
+		}
+	}
 	if v, ok := au.mutation.Kind(); ok {
 		if err := app.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "App.kind": %w`, err)}
@@ -473,8 +470,8 @@ func (au *AppUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.Name(); ok {
 		_spec.SetField(app.FieldName, field.TypeString, value)
 	}
-	if au.mutation.NameCleared() {
-		_spec.ClearField(app.FieldName, field.TypeString)
+	if value, ok := au.mutation.Code(); ok {
+		_spec.SetField(app.FieldCode, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Kind(); ok {
 		_spec.SetField(app.FieldKind, field.TypeEnum, value)
@@ -712,17 +709,9 @@ func (auo *AppUpdateOne) SetName(s string) *AppUpdateOne {
 	return auo
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (auo *AppUpdateOne) SetNillableName(s *string) *AppUpdateOne {
-	if s != nil {
-		auo.SetName(*s)
-	}
-	return auo
-}
-
-// ClearName clears the value of the "name" field.
-func (auo *AppUpdateOne) ClearName() *AppUpdateOne {
-	auo.mutation.ClearName()
+// SetCode sets the "code" field.
+func (auo *AppUpdateOne) SetCode(s string) *AppUpdateOne {
+	auo.mutation.SetCode(s)
 	return auo
 }
 
@@ -1065,6 +1054,11 @@ func (auo *AppUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "App.name": %w`, err)}
 		}
 	}
+	if v, ok := auo.mutation.Code(); ok {
+		if err := app.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "App.code": %w`, err)}
+		}
+	}
 	if v, ok := auo.mutation.Kind(); ok {
 		if err := app.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "App.kind": %w`, err)}
@@ -1140,8 +1134,8 @@ func (auo *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 	if value, ok := auo.mutation.Name(); ok {
 		_spec.SetField(app.FieldName, field.TypeString, value)
 	}
-	if auo.mutation.NameCleared() {
-		_spec.ClearField(app.FieldName, field.TypeString)
+	if value, ok := auo.mutation.Code(); ok {
+		_spec.SetField(app.FieldCode, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Kind(); ok {
 		_spec.SetField(app.FieldKind, field.TypeEnum, value)

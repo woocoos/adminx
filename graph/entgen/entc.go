@@ -47,6 +47,7 @@ func entgqlTemplate() []*gen.Template {
 		entgql.PaginationTemplate,
 		entgql.TransactionTemplate,
 		entgql.EdgeTemplate,
+		entgql.WhereTemplate,
 		mutationInput(),
 	}
 }

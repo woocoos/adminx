@@ -76,11 +76,9 @@ func (ac *AppCreate) SetName(s string) *AppCreate {
 	return ac
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (ac *AppCreate) SetNillableName(s *string) *AppCreate {
-	if s != nil {
-		ac.SetName(*s)
-	}
+// SetCode sets the "code" field.
+func (ac *AppCreate) SetCode(s string) *AppCreate {
+	ac.mutation.SetCode(s)
 	return ac
 }
 
@@ -329,9 +327,20 @@ func (ac *AppCreate) check() error {
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "App.created_at"`)}
 	}
+	if _, ok := ac.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "App.name"`)}
+	}
 	if v, ok := ac.mutation.Name(); ok {
 		if err := app.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "App.name": %w`, err)}
+		}
+	}
+	if _, ok := ac.mutation.Code(); !ok {
+		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "App.code"`)}
+	}
+	if v, ok := ac.mutation.Code(); ok {
+		if err := app.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "App.code": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.Kind(); !ok {
@@ -413,6 +422,10 @@ func (ac *AppCreate) createSpec() (*App, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Name(); ok {
 		_spec.SetField(app.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := ac.mutation.Code(); ok {
+		_spec.SetField(app.FieldCode, field.TypeString, value)
+		_node.Code = value
 	}
 	if value, ok := ac.mutation.Kind(); ok {
 		_spec.SetField(app.FieldKind, field.TypeEnum, value)

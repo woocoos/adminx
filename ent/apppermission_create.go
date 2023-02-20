@@ -90,6 +90,20 @@ func (apc *AppPermissionCreate) SetNillableName(s *string) *AppPermissionCreate 
 	return apc
 }
 
+// SetKind sets the "kind" field.
+func (apc *AppPermissionCreate) SetKind(a apppermission.Kind) *AppPermissionCreate {
+	apc.mutation.SetKind(a)
+	return apc
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (apc *AppPermissionCreate) SetNillableKind(a *apppermission.Kind) *AppPermissionCreate {
+	if a != nil {
+		apc.SetKind(*a)
+	}
+	return apc
+}
+
 // SetComments sets the "comments" field.
 func (apc *AppPermissionCreate) SetComments(s string) *AppPermissionCreate {
 	apc.mutation.SetComments(s)
@@ -215,6 +229,11 @@ func (apc *AppPermissionCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AppPermission.name": %w`, err)}
 		}
 	}
+	if v, ok := apc.mutation.Kind(); ok {
+		if err := apppermission.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "AppPermission.kind": %w`, err)}
+		}
+	}
 	if _, ok := apc.mutation.AppID(); !ok {
 		return &ValidationError{Name: "app", err: errors.New(`ent: missing required edge "AppPermission.app"`)}
 	}
@@ -269,6 +288,10 @@ func (apc *AppPermissionCreate) createSpec() (*AppPermission, *sqlgraph.CreateSp
 	if value, ok := apc.mutation.Name(); ok {
 		_spec.SetField(apppermission.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := apc.mutation.Kind(); ok {
+		_spec.SetField(apppermission.FieldKind, field.TypeEnum, value)
+		_node.Kind = value
 	}
 	if value, ok := apc.mutation.Comments(); ok {
 		_spec.SetField(apppermission.FieldComments, field.TypeString, value)

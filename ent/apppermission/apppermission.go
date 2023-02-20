@@ -3,6 +3,9 @@
 package apppermission
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 
 	"entgo.io/ent"
@@ -25,6 +28,8 @@ const (
 	FieldAppID = "app_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldKind holds the string denoting the kind field in the database.
+	FieldKind = "kind"
 	// FieldComments holds the string denoting the comments field in the database.
 	FieldComments = "comments"
 	// EdgeApp holds the string denoting the app edge name in mutations.
@@ -58,6 +63,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldAppID,
 	FieldName,
+	FieldKind,
 	FieldComments,
 }
 
@@ -89,3 +95,45 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() int
 )
+
+// Kind defines the type for the "kind" enum field.
+type Kind string
+
+// Kind values.
+const (
+	KindRead  Kind = "read"
+	KindWrite Kind = "write"
+	KindList  Kind = "list"
+)
+
+func (k Kind) String() string {
+	return string(k)
+}
+
+// KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
+func KindValidator(k Kind) error {
+	switch k {
+	case KindRead, KindWrite, KindList:
+		return nil
+	default:
+		return fmt.Errorf("apppermission: invalid enum value for kind field: %q", k)
+	}
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (e Kind) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(e.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (e *Kind) UnmarshalGQL(val interface{}) error {
+	str, ok := val.(string)
+	if !ok {
+		return fmt.Errorf("enum %T must be a string", val)
+	}
+	*e = Kind(str)
+	if err := KindValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Kind", str)
+	}
+	return nil
+}

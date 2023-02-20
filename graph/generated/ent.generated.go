@@ -17,6 +17,7 @@ import (
 	"github.com/woocoos/adminx/ent"
 	"github.com/woocoos/adminx/ent/app"
 	"github.com/woocoos/adminx/ent/appmenu"
+	"github.com/woocoos/adminx/ent/apppermission"
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
@@ -94,6 +95,15 @@ func (ec *executionContext) field_App_menus_args(ctx context.Context, rawArgs ma
 		}
 	}
 	args["orderBy"] = arg4
+	var arg5 *ent.AppMenuWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOAppMenuWhereInput2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚐAppMenuWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
 	return args, nil
 }
 
@@ -145,6 +155,15 @@ func (ec *executionContext) field_App_permissions_args(ctx context.Context, rawA
 		}
 	}
 	args["orderBy"] = arg4
+	var arg5 *ent.AppPermissionWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOAppPermissionWhereInput2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚐAppPermissionWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
 	return args, nil
 }
 
@@ -640,14 +659,61 @@ func (ec *executionContext) _App_name(ctx context.Context, field graphql.Collect
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_App_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "App",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _App_code(ctx context.Context, field graphql.CollectedField, obj *ent.App) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_App_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_App_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "App",
 		Field:      field,
@@ -1087,7 +1153,7 @@ func (ec *executionContext) _App_menus(ctx context.Context, field graphql.Collec
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Menus(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AppMenuOrder))
+		return obj.Menus(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AppMenuOrder), fc.Args["where"].(*ent.AppMenuWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1150,7 +1216,7 @@ func (ec *executionContext) _App_permissions(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Permissions(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AppPermissionOrder))
+		return obj.Permissions(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AppPermissionOrder), fc.Args["where"].(*ent.AppPermissionWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1392,6 +1458,8 @@ func (ec *executionContext) fieldContext_AppEdge_node(ctx context.Context, field
 				return ec.fieldContext_App_updatedAt(ctx, field)
 			case "name":
 				return ec.fieldContext_App_name(ctx, field)
+			case "code":
+				return ec.fieldContext_App_code(ctx, field)
 			case "kind":
 				return ec.fieldContext_App_kind(ctx, field)
 			case "redirectURI":
@@ -2028,6 +2096,8 @@ func (ec *executionContext) fieldContext_AppMenu_app(ctx context.Context, field 
 				return ec.fieldContext_App_updatedAt(ctx, field)
 			case "name":
 				return ec.fieldContext_App_name(ctx, field)
+			case "code":
+				return ec.fieldContext_App_code(ctx, field)
 			case "kind":
 				return ec.fieldContext_App_kind(ctx, field)
 			case "redirectURI":
@@ -2109,6 +2179,8 @@ func (ec *executionContext) fieldContext_AppMenu_permission(ctx context.Context,
 				return ec.fieldContext_AppPermission_appID(ctx, field)
 			case "name":
 				return ec.fieldContext_AppPermission_name(ctx, field)
+			case "kind":
+				return ec.fieldContext_AppPermission_kind(ctx, field)
 			case "comments":
 				return ec.fieldContext_AppPermission_comments(ctx, field)
 			case "app":
@@ -2681,6 +2753,47 @@ func (ec *executionContext) fieldContext_AppPermission_name(ctx context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _AppPermission_kind(ctx context.Context, field graphql.CollectedField, obj *ent.AppPermission) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AppPermission_kind(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Kind, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(apppermission.Kind)
+	fc.Result = res
+	return ec.marshalOAppPermissionKind2githubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AppPermission_kind(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AppPermission",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AppPermissionKind does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _AppPermission_comments(ctx context.Context, field graphql.CollectedField, obj *ent.AppPermission) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_AppPermission_comments(ctx, field)
 	if err != nil {
@@ -2773,6 +2886,8 @@ func (ec *executionContext) fieldContext_AppPermission_app(ctx context.Context, 
 				return ec.fieldContext_App_updatedAt(ctx, field)
 			case "name":
 				return ec.fieldContext_App_name(ctx, field)
+			case "code":
+				return ec.fieldContext_App_code(ctx, field)
 			case "kind":
 				return ec.fieldContext_App_kind(ctx, field)
 			case "redirectURI":
@@ -3070,6 +3185,8 @@ func (ec *executionContext) fieldContext_AppPermissionEdge_node(ctx context.Cont
 				return ec.fieldContext_AppPermission_appID(ctx, field)
 			case "name":
 				return ec.fieldContext_AppPermission_name(ctx, field)
+			case "kind":
+				return ec.fieldContext_AppPermission_kind(ctx, field)
 			case "comments":
 				return ec.fieldContext_AppPermission_comments(ctx, field)
 			case "app":
@@ -9148,7 +9265,7 @@ func (ec *executionContext) unmarshalInputAppPermissionWhereInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdBy", "createdByNEQ", "createdByIn", "createdByNotIn", "createdByGT", "createdByGTE", "createdByLT", "createdByLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedBy", "updatedByNEQ", "updatedByIn", "updatedByNotIn", "updatedByGT", "updatedByGTE", "updatedByLT", "updatedByLTE", "updatedByIsNil", "updatedByNotNil", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "updatedAtIsNil", "updatedAtNotNil", "appID", "appIDNEQ", "appIDIn", "appIDNotIn", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameIsNil", "nameNotNil", "nameEqualFold", "nameContainsFold", "hasApp", "hasAppWith", "hasMenus", "hasMenusWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdBy", "createdByNEQ", "createdByIn", "createdByNotIn", "createdByGT", "createdByGTE", "createdByLT", "createdByLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedBy", "updatedByNEQ", "updatedByIn", "updatedByNotIn", "updatedByGT", "updatedByGTE", "updatedByLT", "updatedByLTE", "updatedByIsNil", "updatedByNotNil", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "updatedAtIsNil", "updatedAtNotNil", "appID", "appIDNEQ", "appIDIn", "appIDNotIn", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameIsNil", "nameNotNil", "nameEqualFold", "nameContainsFold", "kind", "kindNEQ", "kindIn", "kindNotIn", "kindIsNil", "kindNotNil", "hasApp", "hasAppWith", "hasMenus", "hasMenusWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9683,6 +9800,54 @@ func (ec *executionContext) unmarshalInputAppPermissionWhereInput(ctx context.Co
 			if err != nil {
 				return it, err
 			}
+		case "kind":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kind"))
+			it.Kind, err = ec.unmarshalOAppPermissionKind2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "kindNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kindNEQ"))
+			it.KindNEQ, err = ec.unmarshalOAppPermissionKind2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "kindIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kindIn"))
+			it.KindIn, err = ec.unmarshalOAppPermissionKind2ᚕgithubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKindᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "kindNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kindNotIn"))
+			it.KindNotIn, err = ec.unmarshalOAppPermissionKind2ᚕgithubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKindᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "kindIsNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kindIsNil"))
+			it.KindIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "kindNotNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kindNotNil"))
+			it.KindNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "hasApp":
 			var err error
 
@@ -9728,7 +9893,7 @@ func (ec *executionContext) unmarshalInputAppWhereInput(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdBy", "createdByNEQ", "createdByIn", "createdByNotIn", "createdByGT", "createdByGTE", "createdByLT", "createdByLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedBy", "updatedByNEQ", "updatedByIn", "updatedByNotIn", "updatedByGT", "updatedByGTE", "updatedByLT", "updatedByLTE", "updatedByIsNil", "updatedByNotNil", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "updatedAtIsNil", "updatedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameIsNil", "nameNotNil", "nameEqualFold", "nameContainsFold", "kind", "kindNEQ", "kindIn", "kindNotIn", "redirectURI", "redirectURINEQ", "redirectURIIn", "redirectURINotIn", "redirectURIGT", "redirectURIGTE", "redirectURILT", "redirectURILTE", "redirectURIContains", "redirectURIHasPrefix", "redirectURIHasSuffix", "redirectURIIsNil", "redirectURINotNil", "redirectURIEqualFold", "redirectURIContainsFold", "appKey", "appKeyNEQ", "appKeyIn", "appKeyNotIn", "appKeyGT", "appKeyGTE", "appKeyLT", "appKeyLTE", "appKeyContains", "appKeyHasPrefix", "appKeyHasSuffix", "appKeyIsNil", "appKeyNotNil", "appKeyEqualFold", "appKeyContainsFold", "appSecret", "appSecretNEQ", "appSecretIn", "appSecretNotIn", "appSecretGT", "appSecretGTE", "appSecretLT", "appSecretLTE", "appSecretContains", "appSecretHasPrefix", "appSecretHasSuffix", "appSecretIsNil", "appSecretNotNil", "appSecretEqualFold", "appSecretContainsFold", "scopes", "scopesNEQ", "scopesIn", "scopesNotIn", "scopesGT", "scopesGTE", "scopesLT", "scopesLTE", "scopesContains", "scopesHasPrefix", "scopesHasSuffix", "scopesIsNil", "scopesNotNil", "scopesEqualFold", "scopesContainsFold", "tokenValidity", "tokenValidityNEQ", "tokenValidityIn", "tokenValidityNotIn", "tokenValidityGT", "tokenValidityGTE", "tokenValidityLT", "tokenValidityLTE", "tokenValidityIsNil", "tokenValidityNotNil", "refreshTokenValidity", "refreshTokenValidityNEQ", "refreshTokenValidityIn", "refreshTokenValidityNotIn", "refreshTokenValidityGT", "refreshTokenValidityGTE", "refreshTokenValidityLT", "refreshTokenValidityLTE", "refreshTokenValidityIsNil", "refreshTokenValidityNotNil", "logo", "logoNEQ", "logoIn", "logoNotIn", "logoGT", "logoGTE", "logoLT", "logoLTE", "logoContains", "logoHasPrefix", "logoHasSuffix", "logoIsNil", "logoNotNil", "logoEqualFold", "logoContainsFold", "comments", "commentsNEQ", "commentsIn", "commentsNotIn", "commentsGT", "commentsGTE", "commentsLT", "commentsLTE", "commentsContains", "commentsHasPrefix", "commentsHasSuffix", "commentsIsNil", "commentsNotNil", "commentsEqualFold", "commentsContainsFold", "status", "statusNEQ", "statusIn", "statusNotIn", "statusIsNil", "statusNotNil", "hasMenus", "hasMenusWith", "hasPermissions", "hasPermissionsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdBy", "createdByNEQ", "createdByIn", "createdByNotIn", "createdByGT", "createdByGTE", "createdByLT", "createdByLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedBy", "updatedByNEQ", "updatedByIn", "updatedByNotIn", "updatedByGT", "updatedByGTE", "updatedByLT", "updatedByLTE", "updatedByIsNil", "updatedByNotNil", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "updatedAtIsNil", "updatedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "kind", "kindNEQ", "kindIn", "kindNotIn", "redirectURI", "redirectURINEQ", "redirectURIIn", "redirectURINotIn", "redirectURIGT", "redirectURIGTE", "redirectURILT", "redirectURILTE", "redirectURIContains", "redirectURIHasPrefix", "redirectURIHasSuffix", "redirectURIIsNil", "redirectURINotNil", "redirectURIEqualFold", "redirectURIContainsFold", "appKey", "appKeyNEQ", "appKeyIn", "appKeyNotIn", "appKeyGT", "appKeyGTE", "appKeyLT", "appKeyLTE", "appKeyContains", "appKeyHasPrefix", "appKeyHasSuffix", "appKeyIsNil", "appKeyNotNil", "appKeyEqualFold", "appKeyContainsFold", "appSecret", "appSecretNEQ", "appSecretIn", "appSecretNotIn", "appSecretGT", "appSecretGTE", "appSecretLT", "appSecretLTE", "appSecretContains", "appSecretHasPrefix", "appSecretHasSuffix", "appSecretIsNil", "appSecretNotNil", "appSecretEqualFold", "appSecretContainsFold", "scopes", "scopesNEQ", "scopesIn", "scopesNotIn", "scopesGT", "scopesGTE", "scopesLT", "scopesLTE", "scopesContains", "scopesHasPrefix", "scopesHasSuffix", "scopesIsNil", "scopesNotNil", "scopesEqualFold", "scopesContainsFold", "tokenValidity", "tokenValidityNEQ", "tokenValidityIn", "tokenValidityNotIn", "tokenValidityGT", "tokenValidityGTE", "tokenValidityLT", "tokenValidityLTE", "tokenValidityIsNil", "tokenValidityNotNil", "refreshTokenValidity", "refreshTokenValidityNEQ", "refreshTokenValidityIn", "refreshTokenValidityNotIn", "refreshTokenValidityGT", "refreshTokenValidityGTE", "refreshTokenValidityLT", "refreshTokenValidityLTE", "refreshTokenValidityIsNil", "refreshTokenValidityNotNil", "logo", "logoNEQ", "logoIn", "logoNotIn", "logoGT", "logoGTE", "logoLT", "logoLTE", "logoContains", "logoHasPrefix", "logoHasSuffix", "logoIsNil", "logoNotNil", "logoEqualFold", "logoContainsFold", "comments", "commentsNEQ", "commentsIn", "commentsNotIn", "commentsGT", "commentsGTE", "commentsLT", "commentsLTE", "commentsContains", "commentsHasPrefix", "commentsHasSuffix", "commentsIsNil", "commentsNotNil", "commentsEqualFold", "commentsContainsFold", "status", "statusNEQ", "statusIn", "statusNotIn", "statusIsNil", "statusNotNil", "hasMenus", "hasMenusWith", "hasPermissions", "hasPermissionsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10199,22 +10364,6 @@ func (ec *executionContext) unmarshalInputAppWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-		case "nameIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIsNil"))
-			it.NameIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotNil"))
-			it.NameNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "nameEqualFold":
 			var err error
 
@@ -10228,6 +10377,110 @@ func (ec *executionContext) unmarshalInputAppWhereInput(ctx context.Context, obj
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
 			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "code":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+			it.Code, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeNEQ"))
+			it.CodeNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeIn"))
+			it.CodeIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeNotIn"))
+			it.CodeNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeGT"))
+			it.CodeGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeGTE"))
+			it.CodeGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeLT"))
+			it.CodeLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeLTE"))
+			it.CodeLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeContains"))
+			it.CodeContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeHasPrefix"))
+			it.CodeHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeHasSuffix"))
+			it.CodeHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeEqualFold"))
+			it.CodeEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "codeContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeContainsFold"))
+			it.CodeContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11236,7 +11489,7 @@ func (ec *executionContext) unmarshalInputCreateAppInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "kind", "redirectURI", "appKey", "appSecret", "scopes", "tokenValidity", "refreshTokenValidity", "logo", "comments", "status", "menuIDs", "permissionIDs"}
+	fieldsInOrder := [...]string{"name", "code", "kind", "redirectURI", "appKey", "appSecret", "scopes", "tokenValidity", "refreshTokenValidity", "logo", "comments", "status", "menuIDs", "permissionIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -11247,7 +11500,15 @@ func (ec *executionContext) unmarshalInputCreateAppInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "code":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+			it.Code, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13698,7 +13959,7 @@ func (ec *executionContext) unmarshalInputUpdateAppInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "clearName", "kind", "redirectURI", "clearRedirectURI", "appKey", "clearAppKey", "appSecret", "clearAppSecret", "scopes", "clearScopes", "tokenValidity", "clearTokenValidity", "refreshTokenValidity", "clearRefreshTokenValidity", "logo", "clearLogo", "comments", "clearComments", "status", "clearStatus", "addMenuIDs", "removeMenuIDs", "clearMenus", "addPermissionIDs", "removePermissionIDs", "clearPermissions"}
+	fieldsInOrder := [...]string{"name", "code", "kind", "redirectURI", "clearRedirectURI", "appKey", "clearAppKey", "appSecret", "clearAppSecret", "scopes", "clearScopes", "tokenValidity", "clearTokenValidity", "refreshTokenValidity", "clearRefreshTokenValidity", "logo", "clearLogo", "comments", "clearComments", "status", "clearStatus", "addMenuIDs", "removeMenuIDs", "clearMenus", "addPermissionIDs", "removePermissionIDs", "clearPermissions"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -13713,11 +13974,11 @@ func (ec *executionContext) unmarshalInputUpdateAppInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
-		case "clearName":
+		case "code":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearName"))
-			it.ClearName, err = ec.unmarshalOBoolean2bool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+			it.Code, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -18920,6 +19181,16 @@ func (ec *executionContext) _App(ctx context.Context, sel ast.SelectionSet, obj 
 
 			out.Values[i] = ec._App_name(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "code":
+
+			out.Values[i] = ec._App_code(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "kind":
 
 			out.Values[i] = ec._App_kind(ctx, field, obj)
@@ -19329,6 +19600,10 @@ func (ec *executionContext) _AppPermission(ctx context.Context, sel ast.Selectio
 		case "name":
 
 			out.Values[i] = ec._AppPermission_name(ctx, field, obj)
+
+		case "kind":
+
+			out.Values[i] = ec._AppPermission_kind(ctx, field, obj)
 
 		case "comments":
 
@@ -20605,6 +20880,16 @@ func (ec *executionContext) marshalNAppPermissionConnection2ᚖgithubᚗcomᚋwo
 	return ec._AppPermissionConnection(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNAppPermissionKind2githubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx context.Context, v interface{}) (apppermission.Kind, error) {
+	var res apppermission.Kind
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAppPermissionKind2githubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx context.Context, sel ast.SelectionSet, v apppermission.Kind) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNAppPermissionOrderField2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚐAppPermissionOrderField(ctx context.Context, v interface{}) (*ent.AppPermissionOrderField, error) {
 	var res = new(ent.AppPermissionOrderField)
 	err := res.UnmarshalGQL(v)
@@ -21487,6 +21772,99 @@ func (ec *executionContext) marshalOAppPermissionEdge2ᚖgithubᚗcomᚋwoocoos�
 		return graphql.Null
 	}
 	return ec._AppPermissionEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOAppPermissionKind2githubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx context.Context, v interface{}) (apppermission.Kind, error) {
+	var res apppermission.Kind
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOAppPermissionKind2githubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx context.Context, sel ast.SelectionSet, v apppermission.Kind) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOAppPermissionKind2ᚕgithubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKindᚄ(ctx context.Context, v interface{}) ([]apppermission.Kind, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]apppermission.Kind, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNAppPermissionKind2githubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOAppPermissionKind2ᚕgithubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKindᚄ(ctx context.Context, sel ast.SelectionSet, v []apppermission.Kind) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAppPermissionKind2githubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOAppPermissionKind2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx context.Context, v interface{}) (*apppermission.Kind, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(apppermission.Kind)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOAppPermissionKind2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚋapppermissionᚐKind(ctx context.Context, sel ast.SelectionSet, v *apppermission.Kind) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOAppPermissionOrder2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚐAppPermissionOrder(ctx context.Context, v interface{}) (*ent.AppPermissionOrder, error) {

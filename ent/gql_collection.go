@@ -34,7 +34,7 @@ func (a *AppQuery) collectField(ctx context.Context, op *graphql.OperationContex
 				path  = append(path, alias)
 				query = (&AppMenuClient{config: a.config}).Query()
 			)
-			args := newAppMenuPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newAppMenuPaginateArgs(fieldArgs(ctx, new(AppMenuWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -117,7 +117,7 @@ func (a *AppQuery) collectField(ctx context.Context, op *graphql.OperationContex
 				path  = append(path, alias)
 				query = (&AppPermissionClient{config: a.config}).Query()
 			)
-			args := newAppPermissionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newAppPermissionPaginateArgs(fieldArgs(ctx, new(AppPermissionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -244,6 +244,9 @@ func newAppPaginateArgs(rv map[string]interface{}) *appPaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*AppWhereInput); ok {
+		args.opts = append(args.opts, WithAppFilter(v.Filter))
+	}
 	return args
 }
 
@@ -332,6 +335,9 @@ func newAppMenuPaginateArgs(rv map[string]interface{}) *appmenuPaginateArgs {
 				args.opts = append(args.opts, WithAppMenuOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*AppMenuWhereInput); ok {
+		args.opts = append(args.opts, WithAppMenuFilter(v.Filter))
 	}
 	return args
 }
@@ -424,6 +430,9 @@ func newAppPermissionPaginateArgs(rv map[string]interface{}) *apppermissionPagin
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*AppPermissionWhereInput); ok {
+		args.opts = append(args.opts, WithAppPermissionFilter(v.Filter))
+	}
 	return args
 }
 
@@ -514,6 +523,9 @@ func newOrganizationPaginateArgs(rv map[string]interface{}) *organizationPaginat
 				args.opts = append(args.opts, WithOrganizationOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*OrganizationWhereInput); ok {
+		args.opts = append(args.opts, WithOrganizationFilter(v.Filter))
 	}
 	return args
 }
@@ -630,6 +642,9 @@ func newUserPaginateArgs(rv map[string]interface{}) *userPaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*UserWhereInput); ok {
+		args.opts = append(args.opts, WithUserFilter(v.Filter))
+	}
 	return args
 }
 
@@ -708,6 +723,9 @@ func newUserDevicePaginateArgs(rv map[string]interface{}) *userdevicePaginateArg
 				args.opts = append(args.opts, WithUserDeviceOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*UserDeviceWhereInput); ok {
+		args.opts = append(args.opts, WithUserDeviceFilter(v.Filter))
 	}
 	return args
 }
@@ -788,6 +806,9 @@ func newUserIdentityPaginateArgs(rv map[string]interface{}) *useridentityPaginat
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*UserIdentityWhereInput); ok {
+		args.opts = append(args.opts, WithUserIdentityFilter(v.Filter))
+	}
 	return args
 }
 
@@ -867,6 +888,9 @@ func newUserLoginProfilePaginateArgs(rv map[string]interface{}) *userloginprofil
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*UserLoginProfileWhereInput); ok {
+		args.opts = append(args.opts, WithUserLoginProfileFilter(v.Filter))
+	}
 	return args
 }
 
@@ -945,6 +969,9 @@ func newUserPasswordPaginateArgs(rv map[string]interface{}) *userpasswordPaginat
 				args.opts = append(args.opts, WithUserPasswordOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*UserPasswordWhereInput); ok {
+		args.opts = append(args.opts, WithUserPasswordFilter(v.Filter))
 	}
 	return args
 }

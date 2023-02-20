@@ -365,6 +365,36 @@ func NameContainsFold(v string) predicate.AppPermission {
 	return predicate.AppPermission(sql.FieldContainsFold(FieldName, v))
 }
 
+// KindEQ applies the EQ predicate on the "kind" field.
+func KindEQ(v Kind) predicate.AppPermission {
+	return predicate.AppPermission(sql.FieldEQ(FieldKind, v))
+}
+
+// KindNEQ applies the NEQ predicate on the "kind" field.
+func KindNEQ(v Kind) predicate.AppPermission {
+	return predicate.AppPermission(sql.FieldNEQ(FieldKind, v))
+}
+
+// KindIn applies the In predicate on the "kind" field.
+func KindIn(vs ...Kind) predicate.AppPermission {
+	return predicate.AppPermission(sql.FieldIn(FieldKind, vs...))
+}
+
+// KindNotIn applies the NotIn predicate on the "kind" field.
+func KindNotIn(vs ...Kind) predicate.AppPermission {
+	return predicate.AppPermission(sql.FieldNotIn(FieldKind, vs...))
+}
+
+// KindIsNil applies the IsNil predicate on the "kind" field.
+func KindIsNil() predicate.AppPermission {
+	return predicate.AppPermission(sql.FieldIsNull(FieldKind))
+}
+
+// KindNotNil applies the NotNil predicate on the "kind" field.
+func KindNotNil() predicate.AppPermission {
+	return predicate.AppPermission(sql.FieldNotNull(FieldKind))
+}
+
 // CommentsEQ applies the EQ predicate on the "comments" field.
 func CommentsEQ(v string) predicate.AppPermission {
 	return predicate.AppPermission(sql.FieldEQ(FieldComments, v))

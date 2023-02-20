@@ -80,6 +80,11 @@ func Name(v string) predicate.App {
 	return predicate.App(sql.FieldEQ(FieldName, v))
 }
 
+// Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
+func Code(v string) predicate.App {
+	return predicate.App(sql.FieldEQ(FieldCode, v))
+}
+
 // RedirectURI applies equality check predicate on the "redirect_uri" field. It's identical to RedirectURIEQ.
 func RedirectURI(v string) predicate.App {
 	return predicate.App(sql.FieldEQ(FieldRedirectURI, v))
@@ -355,16 +360,6 @@ func NameHasSuffix(v string) predicate.App {
 	return predicate.App(sql.FieldHasSuffix(FieldName, v))
 }
 
-// NameIsNil applies the IsNil predicate on the "name" field.
-func NameIsNil() predicate.App {
-	return predicate.App(sql.FieldIsNull(FieldName))
-}
-
-// NameNotNil applies the NotNil predicate on the "name" field.
-func NameNotNil() predicate.App {
-	return predicate.App(sql.FieldNotNull(FieldName))
-}
-
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.App {
 	return predicate.App(sql.FieldEqualFold(FieldName, v))
@@ -373,6 +368,71 @@ func NameEqualFold(v string) predicate.App {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.App {
 	return predicate.App(sql.FieldContainsFold(FieldName, v))
+}
+
+// CodeEQ applies the EQ predicate on the "code" field.
+func CodeEQ(v string) predicate.App {
+	return predicate.App(sql.FieldEQ(FieldCode, v))
+}
+
+// CodeNEQ applies the NEQ predicate on the "code" field.
+func CodeNEQ(v string) predicate.App {
+	return predicate.App(sql.FieldNEQ(FieldCode, v))
+}
+
+// CodeIn applies the In predicate on the "code" field.
+func CodeIn(vs ...string) predicate.App {
+	return predicate.App(sql.FieldIn(FieldCode, vs...))
+}
+
+// CodeNotIn applies the NotIn predicate on the "code" field.
+func CodeNotIn(vs ...string) predicate.App {
+	return predicate.App(sql.FieldNotIn(FieldCode, vs...))
+}
+
+// CodeGT applies the GT predicate on the "code" field.
+func CodeGT(v string) predicate.App {
+	return predicate.App(sql.FieldGT(FieldCode, v))
+}
+
+// CodeGTE applies the GTE predicate on the "code" field.
+func CodeGTE(v string) predicate.App {
+	return predicate.App(sql.FieldGTE(FieldCode, v))
+}
+
+// CodeLT applies the LT predicate on the "code" field.
+func CodeLT(v string) predicate.App {
+	return predicate.App(sql.FieldLT(FieldCode, v))
+}
+
+// CodeLTE applies the LTE predicate on the "code" field.
+func CodeLTE(v string) predicate.App {
+	return predicate.App(sql.FieldLTE(FieldCode, v))
+}
+
+// CodeContains applies the Contains predicate on the "code" field.
+func CodeContains(v string) predicate.App {
+	return predicate.App(sql.FieldContains(FieldCode, v))
+}
+
+// CodeHasPrefix applies the HasPrefix predicate on the "code" field.
+func CodeHasPrefix(v string) predicate.App {
+	return predicate.App(sql.FieldHasPrefix(FieldCode, v))
+}
+
+// CodeHasSuffix applies the HasSuffix predicate on the "code" field.
+func CodeHasSuffix(v string) predicate.App {
+	return predicate.App(sql.FieldHasSuffix(FieldCode, v))
+}
+
+// CodeEqualFold applies the EqualFold predicate on the "code" field.
+func CodeEqualFold(v string) predicate.App {
+	return predicate.App(sql.FieldEqualFold(FieldCode, v))
+}
+
+// CodeContainsFold applies the ContainsFold predicate on the "code" field.
+func CodeContainsFold(v string) predicate.App {
+	return predicate.App(sql.FieldContainsFold(FieldCode, v))
 }
 
 // KindEQ applies the EQ predicate on the "kind" field.

@@ -19,6 +19,10 @@ type Mutation {
     updateApp(id:ID!,input: UpdateAppInput!): App
     """删除应用"""
     deleteApp(id:ID!): Boolean!
+    """分配应用"""
+    assignOrganizationApp(orgID:ID!,appID:ID!): Boolean!
+    """取消分配应用"""
+    revokeOrganizationApp(orgID:ID!,appID:ID!): Boolean!
 }
 
 input EnableDirectoryInput {

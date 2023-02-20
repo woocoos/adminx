@@ -147,3 +147,10 @@ func (s *Service) CreateUserPassword(ctx context.Context, input *ent.CreateUserP
 
 	return
 }
+
+// DeleteApp 删除应用
+//
+// 该应用没有被关联才可以删除: 1. 没有组织目录关联 2. 没有用户关联
+func (s *Service) DeleteApp() (bool, error) {
+	panic("implement me")
+}

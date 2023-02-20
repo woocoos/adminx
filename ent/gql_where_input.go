@@ -93,10 +93,23 @@ type AppWhereInput struct {
 	NameContains     *string  `json:"nameContains,omitempty"`
 	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
 	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
-	NameIsNil        bool     `json:"nameIsNil,omitempty"`
-	NameNotNil       bool     `json:"nameNotNil,omitempty"`
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "code" field predicates.
+	Code             *string  `json:"code,omitempty"`
+	CodeNEQ          *string  `json:"codeNEQ,omitempty"`
+	CodeIn           []string `json:"codeIn,omitempty"`
+	CodeNotIn        []string `json:"codeNotIn,omitempty"`
+	CodeGT           *string  `json:"codeGT,omitempty"`
+	CodeGTE          *string  `json:"codeGTE,omitempty"`
+	CodeLT           *string  `json:"codeLT,omitempty"`
+	CodeLTE          *string  `json:"codeLTE,omitempty"`
+	CodeContains     *string  `json:"codeContains,omitempty"`
+	CodeHasPrefix    *string  `json:"codeHasPrefix,omitempty"`
+	CodeHasSuffix    *string  `json:"codeHasSuffix,omitempty"`
+	CodeEqualFold    *string  `json:"codeEqualFold,omitempty"`
+	CodeContainsFold *string  `json:"codeContainsFold,omitempty"`
 
 	// "kind" field predicates.
 	Kind      *app.Kind  `json:"kind,omitempty"`
@@ -483,17 +496,50 @@ func (i *AppWhereInput) P() (predicate.App, error) {
 	if i.NameHasSuffix != nil {
 		predicates = append(predicates, app.NameHasSuffix(*i.NameHasSuffix))
 	}
-	if i.NameIsNil {
-		predicates = append(predicates, app.NameIsNil())
-	}
-	if i.NameNotNil {
-		predicates = append(predicates, app.NameNotNil())
-	}
 	if i.NameEqualFold != nil {
 		predicates = append(predicates, app.NameEqualFold(*i.NameEqualFold))
 	}
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, app.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.Code != nil {
+		predicates = append(predicates, app.CodeEQ(*i.Code))
+	}
+	if i.CodeNEQ != nil {
+		predicates = append(predicates, app.CodeNEQ(*i.CodeNEQ))
+	}
+	if len(i.CodeIn) > 0 {
+		predicates = append(predicates, app.CodeIn(i.CodeIn...))
+	}
+	if len(i.CodeNotIn) > 0 {
+		predicates = append(predicates, app.CodeNotIn(i.CodeNotIn...))
+	}
+	if i.CodeGT != nil {
+		predicates = append(predicates, app.CodeGT(*i.CodeGT))
+	}
+	if i.CodeGTE != nil {
+		predicates = append(predicates, app.CodeGTE(*i.CodeGTE))
+	}
+	if i.CodeLT != nil {
+		predicates = append(predicates, app.CodeLT(*i.CodeLT))
+	}
+	if i.CodeLTE != nil {
+		predicates = append(predicates, app.CodeLTE(*i.CodeLTE))
+	}
+	if i.CodeContains != nil {
+		predicates = append(predicates, app.CodeContains(*i.CodeContains))
+	}
+	if i.CodeHasPrefix != nil {
+		predicates = append(predicates, app.CodeHasPrefix(*i.CodeHasPrefix))
+	}
+	if i.CodeHasSuffix != nil {
+		predicates = append(predicates, app.CodeHasSuffix(*i.CodeHasSuffix))
+	}
+	if i.CodeEqualFold != nil {
+		predicates = append(predicates, app.CodeEqualFold(*i.CodeEqualFold))
+	}
+	if i.CodeContainsFold != nil {
+		predicates = append(predicates, app.CodeContainsFold(*i.CodeContainsFold))
 	}
 	if i.Kind != nil {
 		predicates = append(predicates, app.KindEQ(*i.Kind))
@@ -1464,6 +1510,14 @@ type AppPermissionWhereInput struct {
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
+	// "kind" field predicates.
+	Kind       *apppermission.Kind  `json:"kind,omitempty"`
+	KindNEQ    *apppermission.Kind  `json:"kindNEQ,omitempty"`
+	KindIn     []apppermission.Kind `json:"kindIn,omitempty"`
+	KindNotIn  []apppermission.Kind `json:"kindNotIn,omitempty"`
+	KindIsNil  bool                 `json:"kindIsNil,omitempty"`
+	KindNotNil bool                 `json:"kindNotNil,omitempty"`
+
 	// "app" edge predicates.
 	HasApp     *bool            `json:"hasApp,omitempty"`
 	HasAppWith []*AppWhereInput `json:"hasAppWith,omitempty"`
@@ -1732,6 +1786,24 @@ func (i *AppPermissionWhereInput) P() (predicate.AppPermission, error) {
 	}
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, apppermission.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.Kind != nil {
+		predicates = append(predicates, apppermission.KindEQ(*i.Kind))
+	}
+	if i.KindNEQ != nil {
+		predicates = append(predicates, apppermission.KindNEQ(*i.KindNEQ))
+	}
+	if len(i.KindIn) > 0 {
+		predicates = append(predicates, apppermission.KindIn(i.KindIn...))
+	}
+	if len(i.KindNotIn) > 0 {
+		predicates = append(predicates, apppermission.KindNotIn(i.KindNotIn...))
+	}
+	if i.KindIsNil {
+		predicates = append(predicates, apppermission.KindIsNil())
+	}
+	if i.KindNotNil {
+		predicates = append(predicates, apppermission.KindNotNil())
 	}
 
 	if i.HasApp != nil {

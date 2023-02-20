@@ -29,6 +29,8 @@ type AppPermission struct {
 	AppID int `json:"app_id,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
+	// 读,写,列表
+	Kind apppermission.Kind `json:"kind,omitempty"`
 	// 备注
 	Comments string `json:"comments,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -80,7 +82,7 @@ func (*AppPermission) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case apppermission.FieldID, apppermission.FieldCreatedBy, apppermission.FieldUpdatedBy, apppermission.FieldAppID:
 			values[i] = new(sql.NullInt64)
-		case apppermission.FieldName, apppermission.FieldComments:
+		case apppermission.FieldName, apppermission.FieldKind, apppermission.FieldComments:
 			values[i] = new(sql.NullString)
 		case apppermission.FieldCreatedAt, apppermission.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -140,6 +142,12 @@ func (ap *AppPermission) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				ap.Name = value.String
+			}
+		case apppermission.FieldKind:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field kind", values[i])
+			} else if value.Valid {
+				ap.Kind = apppermission.Kind(value.String)
 			}
 		case apppermission.FieldComments:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -202,6 +210,9 @@ func (ap *AppPermission) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(ap.Name)
+	builder.WriteString(", ")
+	builder.WriteString("kind=")
+	builder.WriteString(fmt.Sprintf("%v", ap.Kind))
 	builder.WriteString(", ")
 	builder.WriteString("comments=")
 	builder.WriteString(ap.Comments)
