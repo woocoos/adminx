@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/predicate"
 	"github.com/woocoos/adminx/ent/userdevice"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserDeviceUpdate is the builder for updating UserDevice entities.
@@ -58,6 +59,14 @@ func (udu *UserDeviceUpdate) ClearUpdatedBy() *UserDeviceUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (udu *UserDeviceUpdate) SetUpdatedAt(t time.Time) *UserDeviceUpdate {
 	udu.mutation.SetUpdatedAt(t)
+	return udu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (udu *UserDeviceUpdate) SetNillableUpdatedAt(t *time.Time) *UserDeviceUpdate {
+	if t != nil {
+		udu.SetUpdatedAt(*t)
+	}
 	return udu
 }
 
@@ -174,15 +183,15 @@ func (udu *UserDeviceUpdate) ClearDeviceModel() *UserDeviceUpdate {
 }
 
 // SetStatus sets the "status" field.
-func (udu *UserDeviceUpdate) SetStatus(u userdevice.Status) *UserDeviceUpdate {
-	udu.mutation.SetStatus(u)
+func (udu *UserDeviceUpdate) SetStatus(ts types.SimpleStatus) *UserDeviceUpdate {
+	udu.mutation.SetStatus(ts)
 	return udu
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (udu *UserDeviceUpdate) SetNillableStatus(u *userdevice.Status) *UserDeviceUpdate {
-	if u != nil {
-		udu.SetStatus(*u)
+func (udu *UserDeviceUpdate) SetNillableStatus(ts *types.SimpleStatus) *UserDeviceUpdate {
+	if ts != nil {
+		udu.SetStatus(*ts)
 	}
 	return udu
 }
@@ -220,9 +229,6 @@ func (udu *UserDeviceUpdate) Mutation() *UserDeviceMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (udu *UserDeviceUpdate) Save(ctx context.Context) (int, error) {
-	if err := udu.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, UserDeviceMutation](ctx, udu.sqlSave, udu.mutation, udu.hooks)
 }
 
@@ -246,18 +252,6 @@ func (udu *UserDeviceUpdate) ExecX(ctx context.Context) {
 	if err := udu.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (udu *UserDeviceUpdate) defaults() error {
-	if _, ok := udu.mutation.UpdatedAt(); !ok && !udu.mutation.UpdatedAtCleared() {
-		if userdevice.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userdevice.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userdevice.UpdateDefaultUpdatedAt()
-		udu.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -425,6 +419,14 @@ func (uduo *UserDeviceUpdateOne) SetUpdatedAt(t time.Time) *UserDeviceUpdateOne 
 	return uduo
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (uduo *UserDeviceUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserDeviceUpdateOne {
+	if t != nil {
+		uduo.SetUpdatedAt(*t)
+	}
+	return uduo
+}
+
 // ClearUpdatedAt clears the value of the "updated_at" field.
 func (uduo *UserDeviceUpdateOne) ClearUpdatedAt() *UserDeviceUpdateOne {
 	uduo.mutation.ClearUpdatedAt()
@@ -538,15 +540,15 @@ func (uduo *UserDeviceUpdateOne) ClearDeviceModel() *UserDeviceUpdateOne {
 }
 
 // SetStatus sets the "status" field.
-func (uduo *UserDeviceUpdateOne) SetStatus(u userdevice.Status) *UserDeviceUpdateOne {
-	uduo.mutation.SetStatus(u)
+func (uduo *UserDeviceUpdateOne) SetStatus(ts types.SimpleStatus) *UserDeviceUpdateOne {
+	uduo.mutation.SetStatus(ts)
 	return uduo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (uduo *UserDeviceUpdateOne) SetNillableStatus(u *userdevice.Status) *UserDeviceUpdateOne {
-	if u != nil {
-		uduo.SetStatus(*u)
+func (uduo *UserDeviceUpdateOne) SetNillableStatus(ts *types.SimpleStatus) *UserDeviceUpdateOne {
+	if ts != nil {
+		uduo.SetStatus(*ts)
 	}
 	return uduo
 }
@@ -597,9 +599,6 @@ func (uduo *UserDeviceUpdateOne) Select(field string, fields ...string) *UserDev
 
 // Save executes the query and returns the updated UserDevice entity.
 func (uduo *UserDeviceUpdateOne) Save(ctx context.Context) (*UserDevice, error) {
-	if err := uduo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*UserDevice, UserDeviceMutation](ctx, uduo.sqlSave, uduo.mutation, uduo.hooks)
 }
 
@@ -623,18 +622,6 @@ func (uduo *UserDeviceUpdateOne) ExecX(ctx context.Context) {
 	if err := uduo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (uduo *UserDeviceUpdateOne) defaults() error {
-	if _, ok := uduo.mutation.UpdatedAt(); !ok && !uduo.mutation.UpdatedAtCleared() {
-		if userdevice.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userdevice.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userdevice.UpdateDefaultUpdatedAt()
-		uduo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

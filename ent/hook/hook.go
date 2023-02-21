@@ -21,6 +21,18 @@ func (f AppFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppMutation", m)
 }
 
+// The AppActionFunc type is an adapter to allow the use of ordinary
+// function as AppAction mutator.
+type AppActionFunc func(context.Context, *ent.AppActionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AppActionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AppActionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppActionMutation", m)
+}
+
 // The AppMenuFunc type is an adapter to allow the use of ordinary
 // function as AppMenu mutator.
 type AppMenuFunc func(context.Context, *ent.AppMenuMutation) (ent.Value, error)
@@ -33,16 +45,52 @@ func (f AppMenuFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppMenuMutation", m)
 }
 
-// The AppPermissionFunc type is an adapter to allow the use of ordinary
-// function as AppPermission mutator.
-type AppPermissionFunc func(context.Context, *ent.AppPermissionMutation) (ent.Value, error)
+// The AppPolicyFunc type is an adapter to allow the use of ordinary
+// function as AppPolicy mutator.
+type AppPolicyFunc func(context.Context, *ent.AppPolicyMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f AppPermissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.AppPermissionMutation); ok {
+func (f AppPolicyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AppPolicyMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppPermissionMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppPolicyMutation", m)
+}
+
+// The AppResFunc type is an adapter to allow the use of ordinary
+// function as AppRes mutator.
+type AppResFunc func(context.Context, *ent.AppResMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AppResFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AppResMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppResMutation", m)
+}
+
+// The AppRoleFunc type is an adapter to allow the use of ordinary
+// function as AppRole mutator.
+type AppRoleFunc func(context.Context, *ent.AppRoleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AppRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AppRoleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppRoleMutation", m)
+}
+
+// The AppRolePolicyFunc type is an adapter to allow the use of ordinary
+// function as AppRolePolicy mutator.
+type AppRolePolicyFunc func(context.Context, *ent.AppRolePolicyMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AppRolePolicyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AppRolePolicyMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AppRolePolicyMutation", m)
 }
 
 // The OrganizationFunc type is an adapter to allow the use of ordinary
@@ -57,6 +105,42 @@ func (f OrganizationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrganizationMutation", m)
 }
 
+// The OrganizationAppFunc type is an adapter to allow the use of ordinary
+// function as OrganizationApp mutator.
+type OrganizationAppFunc func(context.Context, *ent.OrganizationAppMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrganizationAppFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OrganizationAppMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrganizationAppMutation", m)
+}
+
+// The OrganizationPolicyFunc type is an adapter to allow the use of ordinary
+// function as OrganizationPolicy mutator.
+type OrganizationPolicyFunc func(context.Context, *ent.OrganizationPolicyMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrganizationPolicyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OrganizationPolicyMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrganizationPolicyMutation", m)
+}
+
+// The OrganizationRoleFunc type is an adapter to allow the use of ordinary
+// function as OrganizationRole mutator.
+type OrganizationRoleFunc func(context.Context, *ent.OrganizationRoleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrganizationRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OrganizationRoleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrganizationRoleMutation", m)
+}
+
 // The OrganizationUserFunc type is an adapter to allow the use of ordinary
 // function as OrganizationUser mutator.
 type OrganizationUserFunc func(context.Context, *ent.OrganizationUserMutation) (ent.Value, error)
@@ -67,6 +151,18 @@ func (f OrganizationUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrganizationUserMutation", m)
+}
+
+// The PermissionFunc type is an adapter to allow the use of ordinary
+// function as Permission mutator.
+type PermissionFunc func(context.Context, *ent.PermissionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PermissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PermissionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermissionMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

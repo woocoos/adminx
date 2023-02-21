@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/useridentity"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserIdentityCreate is the builder for creating a UserIdentity entity.
@@ -118,15 +119,15 @@ func (uic *UserIdentityCreate) SetNillableCodeExtend(s *string) *UserIdentityCre
 }
 
 // SetStatus sets the "status" field.
-func (uic *UserIdentityCreate) SetStatus(u useridentity.Status) *UserIdentityCreate {
-	uic.mutation.SetStatus(u)
+func (uic *UserIdentityCreate) SetStatus(ts types.SimpleStatus) *UserIdentityCreate {
+	uic.mutation.SetStatus(ts)
 	return uic
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (uic *UserIdentityCreate) SetNillableStatus(u *useridentity.Status) *UserIdentityCreate {
-	if u != nil {
-		uic.SetStatus(*u)
+func (uic *UserIdentityCreate) SetNillableStatus(ts *types.SimpleStatus) *UserIdentityCreate {
+	if ts != nil {
+		uic.SetStatus(*ts)
 	}
 	return uic
 }
@@ -185,13 +186,6 @@ func (uic *UserIdentityCreate) defaults() error {
 		}
 		v := useridentity.DefaultCreatedAt()
 		uic.mutation.SetCreatedAt(v)
-	}
-	if _, ok := uic.mutation.UpdatedAt(); !ok {
-		if useridentity.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized useridentity.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := useridentity.DefaultUpdatedAt()
-		uic.mutation.SetUpdatedAt(v)
 	}
 	return nil
 }

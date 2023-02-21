@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"github.com/99designs/gqlgen/graphql"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 const (
@@ -58,8 +60,16 @@ const (
 	EdgeOwner = "owner"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
 	EdgeUsers = "users"
+	// EdgeRolesAndGroups holds the string denoting the rolesandgroups edge name in mutations.
+	EdgeRolesAndGroups = "rolesAndGroups"
+	// EdgePermissions holds the string denoting the permissions edge name in mutations.
+	EdgePermissions = "permissions"
+	// EdgeApps holds the string denoting the apps edge name in mutations.
+	EdgeApps = "apps"
 	// EdgeOrganizationUser holds the string denoting the organization_user edge name in mutations.
 	EdgeOrganizationUser = "organization_user"
+	// EdgeOrganizationApp holds the string denoting the organization_app edge name in mutations.
+	EdgeOrganizationApp = "organization_app"
 	// Table holds the table name of the organization in the database.
 	Table = "organization"
 	// ParentTable is the table that holds the parent relation/edge.
@@ -82,6 +92,25 @@ const (
 	// UsersInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UsersInverseTable = "user"
+	// RolesAndGroupsTable is the table that holds the rolesAndGroups relation/edge.
+	RolesAndGroupsTable = "organization_role"
+	// RolesAndGroupsInverseTable is the table name for the OrganizationRole entity.
+	// It exists in this package in order to avoid circular dependency with the "organizationrole" package.
+	RolesAndGroupsInverseTable = "organization_role"
+	// RolesAndGroupsColumn is the table column denoting the rolesAndGroups relation/edge.
+	RolesAndGroupsColumn = "org_id"
+	// PermissionsTable is the table that holds the permissions relation/edge.
+	PermissionsTable = "permissions"
+	// PermissionsInverseTable is the table name for the Permission entity.
+	// It exists in this package in order to avoid circular dependency with the "permission" package.
+	PermissionsInverseTable = "permissions"
+	// PermissionsColumn is the table column denoting the permissions relation/edge.
+	PermissionsColumn = "org_id"
+	// AppsTable is the table that holds the apps relation/edge. The primary key declared below.
+	AppsTable = "organization_app"
+	// AppsInverseTable is the table name for the App entity.
+	// It exists in this package in order to avoid circular dependency with the "app" package.
+	AppsInverseTable = "app"
 	// OrganizationUserTable is the table that holds the organization_user relation/edge.
 	OrganizationUserTable = "organization_user"
 	// OrganizationUserInverseTable is the table name for the OrganizationUser entity.
@@ -89,6 +118,13 @@ const (
 	OrganizationUserInverseTable = "organization_user"
 	// OrganizationUserColumn is the table column denoting the organization_user relation/edge.
 	OrganizationUserColumn = "org_id"
+	// OrganizationAppTable is the table that holds the organization_app relation/edge.
+	OrganizationAppTable = "organization_app"
+	// OrganizationAppInverseTable is the table name for the OrganizationApp entity.
+	// It exists in this package in order to avoid circular dependency with the "organizationapp" package.
+	OrganizationAppInverseTable = "organization_app"
+	// OrganizationAppColumn is the table column denoting the organization_app relation/edge.
+	OrganizationAppColumn = "org_id"
 )
 
 // Columns holds all SQL columns for organization fields.
@@ -117,6 +153,9 @@ var (
 	// UsersPrimaryKey and UsersColumn2 are the table columns denoting the
 	// primary key for the users relation (M2M).
 	UsersPrimaryKey = []string{"org_id", "user_id"}
+	// AppsPrimaryKey and AppsColumn2 are the table columns denoting the
+	// primary key for the apps relation (M2M).
+	AppsPrimaryKey = []string{"org_id", "app_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -135,14 +174,10 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/woocoos/adminx/ent/runtime"
 var (
-	Hooks        [6]ent.Hook
+	Hooks        [5]ent.Hook
 	Interceptors [1]ent.Interceptor
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt func() time.Time
-	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
-	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultParentID holds the default value on creation for the "parent_id" field.
 	DefaultParentID int
 	// DomainValidator is a validator for the "domain" field. It is called by the builders before save.
@@ -182,23 +217,10 @@ func KindValidator(k Kind) error {
 	}
 }
 
-// Status defines the type for the "status" enum field.
-type Status string
-
-// Status values.
-const (
-	StatusActive   Status = "active"
-	StatusInactive Status = "inactive"
-)
-
-func (s Status) String() string {
-	return string(s)
-}
-
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
-func StatusValidator(s Status) error {
-	switch s {
-	case StatusActive, StatusInactive:
+func StatusValidator(s types.SimpleStatus) error {
+	switch s.String() {
+	case "active", "inactive", "processing":
 		return nil
 	default:
 		return fmt.Errorf("organization: invalid enum value for status field: %q", s)
@@ -223,20 +245,9 @@ func (e *Kind) UnmarshalGQL(val interface{}) error {
 	return nil
 }
 
-// MarshalGQL implements graphql.Marshaler interface.
-func (e Status) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *Status) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = Status(str)
-	if err := StatusValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid Status", str)
-	}
-	return nil
-}
+var (
+	// types.SimpleStatus must implement graphql.Marshaler.
+	_ graphql.Marshaler = (*types.SimpleStatus)(nil)
+	// types.SimpleStatus must implement graphql.Unmarshaler.
+	_ graphql.Unmarshaler = (*types.SimpleStatus)(nil)
+)

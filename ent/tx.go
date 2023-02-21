@@ -14,14 +14,30 @@ type Tx struct {
 	config
 	// App is the client for interacting with the App builders.
 	App *AppClient
+	// AppAction is the client for interacting with the AppAction builders.
+	AppAction *AppActionClient
 	// AppMenu is the client for interacting with the AppMenu builders.
 	AppMenu *AppMenuClient
-	// AppPermission is the client for interacting with the AppPermission builders.
-	AppPermission *AppPermissionClient
+	// AppPolicy is the client for interacting with the AppPolicy builders.
+	AppPolicy *AppPolicyClient
+	// AppRes is the client for interacting with the AppRes builders.
+	AppRes *AppResClient
+	// AppRole is the client for interacting with the AppRole builders.
+	AppRole *AppRoleClient
+	// AppRolePolicy is the client for interacting with the AppRolePolicy builders.
+	AppRolePolicy *AppRolePolicyClient
 	// Organization is the client for interacting with the Organization builders.
 	Organization *OrganizationClient
+	// OrganizationApp is the client for interacting with the OrganizationApp builders.
+	OrganizationApp *OrganizationAppClient
+	// OrganizationPolicy is the client for interacting with the OrganizationPolicy builders.
+	OrganizationPolicy *OrganizationPolicyClient
+	// OrganizationRole is the client for interacting with the OrganizationRole builders.
+	OrganizationRole *OrganizationRoleClient
 	// OrganizationUser is the client for interacting with the OrganizationUser builders.
 	OrganizationUser *OrganizationUserClient
+	// Permission is the client for interacting with the Permission builders.
+	Permission *PermissionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserDevice is the client for interacting with the UserDevice builders.
@@ -164,10 +180,18 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.App = NewAppClient(tx.config)
+	tx.AppAction = NewAppActionClient(tx.config)
 	tx.AppMenu = NewAppMenuClient(tx.config)
-	tx.AppPermission = NewAppPermissionClient(tx.config)
+	tx.AppPolicy = NewAppPolicyClient(tx.config)
+	tx.AppRes = NewAppResClient(tx.config)
+	tx.AppRole = NewAppRoleClient(tx.config)
+	tx.AppRolePolicy = NewAppRolePolicyClient(tx.config)
 	tx.Organization = NewOrganizationClient(tx.config)
+	tx.OrganizationApp = NewOrganizationAppClient(tx.config)
+	tx.OrganizationPolicy = NewOrganizationPolicyClient(tx.config)
+	tx.OrganizationRole = NewOrganizationRoleClient(tx.config)
 	tx.OrganizationUser = NewOrganizationUserClient(tx.config)
+	tx.Permission = NewPermissionClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserDevice = NewUserDeviceClient(tx.config)
 	tx.UserIdentity = NewUserIdentityClient(tx.config)

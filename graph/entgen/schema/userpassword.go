@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserPassword 管理用户密码
@@ -35,7 +36,7 @@ func (UserPassword) Fields() []ent.Field {
 		field.Enum("scene").Values("login").Optional().Comment("场景: login 普通登陆"),
 		field.String("password").Optional().Comment("密码").Sensitive(),
 		field.String("salt").MaxLen(45).Comment("盐").Sensitive().Annotations(entgql.Skip(entgql.SkipAll)),
-		field.Enum("status").NamedValues("active", "inactive").Optional(),
+		field.Enum("status").GoType(types.SimpleStatus("")).Optional(),
 		field.String("memo").Optional().Annotations(entgql.Skip(entgql.SkipWhereInput)),
 	}
 }

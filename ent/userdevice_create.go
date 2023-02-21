@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserDeviceCreate is the builder for creating a UserDevice entity.
@@ -160,15 +161,15 @@ func (udc *UserDeviceCreate) SetNillableDeviceModel(s *string) *UserDeviceCreate
 }
 
 // SetStatus sets the "status" field.
-func (udc *UserDeviceCreate) SetStatus(u userdevice.Status) *UserDeviceCreate {
-	udc.mutation.SetStatus(u)
+func (udc *UserDeviceCreate) SetStatus(ts types.SimpleStatus) *UserDeviceCreate {
+	udc.mutation.SetStatus(ts)
 	return udc
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (udc *UserDeviceCreate) SetNillableStatus(u *userdevice.Status) *UserDeviceCreate {
-	if u != nil {
-		udc.SetStatus(*u)
+func (udc *UserDeviceCreate) SetNillableStatus(ts *types.SimpleStatus) *UserDeviceCreate {
+	if ts != nil {
+		udc.SetStatus(*ts)
 	}
 	return udc
 }
@@ -241,13 +242,6 @@ func (udc *UserDeviceCreate) defaults() error {
 		}
 		v := userdevice.DefaultCreatedAt()
 		udc.mutation.SetCreatedAt(v)
-	}
-	if _, ok := udc.mutation.UpdatedAt(); !ok {
-		if userdevice.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userdevice.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userdevice.DefaultUpdatedAt()
-		udc.mutation.SetUpdatedAt(v)
 	}
 	return nil
 }

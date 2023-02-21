@@ -41,6 +41,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	App struct {
+		Actions              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppActionOrder, where *ent.AppActionWhereInput) int
 		AppKey               func(childComplexity int) int
 		AppSecret            func(childComplexity int) int
 		Code                 func(childComplexity int) int
@@ -52,14 +53,44 @@ type ComplexityRoot struct {
 		Logo                 func(childComplexity int) int
 		Menus                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppMenuOrder, where *ent.AppMenuWhereInput) int
 		Name                 func(childComplexity int) int
-		Permissions          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppPermissionOrder, where *ent.AppPermissionWhereInput) int
+		Organizations        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.OrganizationOrder, where *ent.OrganizationWhereInput) int
+		Policies             func(childComplexity int) int
 		RedirectURI          func(childComplexity int) int
 		RefreshTokenValidity func(childComplexity int) int
+		Resources            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppResOrder, where *ent.AppResWhereInput) int
+		Roles                func(childComplexity int) int
 		Scopes               func(childComplexity int) int
 		Status               func(childComplexity int) int
 		TokenValidity        func(childComplexity int) int
 		UpdatedAt            func(childComplexity int) int
 		UpdatedBy            func(childComplexity int) int
+	}
+
+	AppAction struct {
+		App       func(childComplexity int) int
+		AppID     func(childComplexity int) int
+		Comments  func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Kind      func(childComplexity int) int
+		Menus     func(childComplexity int) int
+		Method    func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Resources func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UpdatedBy func(childComplexity int) int
+	}
+
+	AppActionConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	AppActionEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
 	}
 
 	AppConnection struct {
@@ -74,20 +105,20 @@ type ComplexityRoot struct {
 	}
 
 	AppMenu struct {
-		App          func(childComplexity int) int
-		AppID        func(childComplexity int) int
-		Comments     func(childComplexity int) int
-		CreatedAt    func(childComplexity int) int
-		CreatedBy    func(childComplexity int) int
-		DisplaySort  func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Kind         func(childComplexity int) int
-		Name         func(childComplexity int) int
-		ParentID     func(childComplexity int) int
-		Permission   func(childComplexity int) int
-		PermissionID func(childComplexity int) int
-		UpdatedAt    func(childComplexity int) int
-		UpdatedBy    func(childComplexity int) int
+		Action      func(childComplexity int) int
+		ActionID    func(childComplexity int) int
+		App         func(childComplexity int) int
+		AppID       func(childComplexity int) int
+		Comments    func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		CreatedBy   func(childComplexity int) int
+		DisplaySort func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Kind        func(childComplexity int) int
+		Name        func(childComplexity int) int
+		ParentID    func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		UpdatedBy   func(childComplexity int) int
 	}
 
 	AppMenuConnection struct {
@@ -101,45 +132,98 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
-	AppPermission struct {
+	AppPolicy struct {
 		App       func(childComplexity int) int
 		AppID     func(childComplexity int) int
+		AutoGrant func(childComplexity int) int
 		Comments  func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
 		ID        func(childComplexity int) int
-		Kind      func(childComplexity int) int
-		Menus     func(childComplexity int) int
 		Name      func(childComplexity int) int
+		Roles     func(childComplexity int) int
+		Rules     func(childComplexity int) int
+		Status    func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UpdatedBy func(childComplexity int) int
+		Version   func(childComplexity int) int
 	}
 
-	AppPermissionConnection struct {
+	AppPolicyConnection struct {
 		Edges      func(childComplexity int) int
 		PageInfo   func(childComplexity int) int
 		TotalCount func(childComplexity int) int
 	}
 
-	AppPermissionEdge struct {
+	AppPolicyEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
 
+	AppRes struct {
+		App        func(childComplexity int) int
+		AppID      func(childComplexity int) int
+		ArnPattern func(childComplexity int) int
+		CreatedAt  func(childComplexity int) int
+		CreatedBy  func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Name       func(childComplexity int) int
+		TypeName   func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
+		UpdatedBy  func(childComplexity int) int
+	}
+
+	AppResConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	AppResEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	AppRole struct {
+		App       func(childComplexity int) int
+		AppID     func(childComplexity int) int
+		AutoGrant func(childComplexity int) int
+		Comments  func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
+		Editable  func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Policies  func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UpdatedBy func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateApp                 func(childComplexity int, input ent.CreateAppInput) int
-		CreateOrganization        func(childComplexity int, input ent.CreateOrganizationInput) int
-		CreateOrganizationAccount func(childComplexity int, input model.CreateOrganizationAccountInput) int
-		CreateOrganizationUser    func(childComplexity int, id int, input ent.CreateUserInput) int
-		DeleteApp                 func(childComplexity int, id int) int
-		DeleteOrganization        func(childComplexity int, id int) int
-		EnableDirectory           func(childComplexity int, input model.EnableDirectoryInput) int
-		UpdateApp                 func(childComplexity int, id int, input ent.UpdateAppInput) int
-		UpdateOrganization        func(childComplexity int, id int, input ent.UpdateOrganizationInput) int
-		UpdateUser                func(childComplexity int, id int, input ent.UpdateUserInput) int
+		AssignOrganizationApp       func(childComplexity int, orgID int, appID int) int
+		AssignOrganizationAppPolicy func(childComplexity int, orgID int, policyID int) int
+		CreateApp                   func(childComplexity int, input ent.CreateAppInput) int
+		CreateAppActions            func(childComplexity int, input []*ent.CreateAppActionInput) int
+		CreateAppMenus              func(childComplexity int, input []*ent.CreateAppMenuInput) int
+		CreateAppPolicies           func(childComplexity int, input []*ent.CreateAppPolicyInput) int
+		CreateAppRole               func(childComplexity int, input ent.CreateAppRoleInput) int
+		CreateOrganization          func(childComplexity int, input ent.CreateOrganizationInput) int
+		CreateOrganizationAccount   func(childComplexity int, input model.CreateOrganizationAccountInput) int
+		CreateOrganizationUser      func(childComplexity int, orgID int, input ent.CreateUserInput) int
+		DeleteApp                   func(childComplexity int, appID int) int
+		DeleteOrganization          func(childComplexity int, orgID int) int
+		EnableDirectory             func(childComplexity int, input model.EnableDirectoryInput) int
+		RevokeOrganizationApp       func(childComplexity int, orgID int, appID int) int
+		RevokeOrganizationAppPolicy func(childComplexity int, orgID int, policyID int) int
+		UpdateApp                   func(childComplexity int, appID int, input ent.UpdateAppInput) int
+		UpdateAppMenu               func(childComplexity int, input ent.UpdateAppMenuInput) int
+		UpdateAppRole               func(childComplexity int, input ent.UpdateAppRoleInput) int
+		UpdateOrganization          func(childComplexity int, orgID int, input ent.UpdateOrganizationInput) int
+		UpdateUser                  func(childComplexity int, userID int, input ent.UpdateUserInput) int
 	}
 
 	Organization struct {
+		Apps        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AppOrder, where *ent.AppWhereInput) int
 		Children    func(childComplexity int) int
 		Code        func(childComplexity int) int
 		CountryCode func(childComplexity int) int
@@ -154,6 +238,7 @@ type ComplexityRoot struct {
 		Parent      func(childComplexity int) int
 		ParentID    func(childComplexity int) int
 		Path        func(childComplexity int) int
+		Permissions func(childComplexity int) int
 		Profile     func(childComplexity int) int
 		Status      func(childComplexity int) int
 		Timezone    func(childComplexity int) int
@@ -177,6 +262,26 @@ type ComplexityRoot struct {
 		HasNextPage     func(childComplexity int) int
 		HasPreviousPage func(childComplexity int) int
 		StartCursor     func(childComplexity int) int
+	}
+
+	Permission struct {
+		EndAt         func(childComplexity int) int
+		ID            func(childComplexity int) int
+		OrgID         func(childComplexity int) int
+		OrgPolicyID   func(childComplexity int) int
+		Organization  func(childComplexity int) int
+		PrincipalKind func(childComplexity int) int
+		RoleID        func(childComplexity int) int
+		StartAt       func(childComplexity int) int
+		User          func(childComplexity int) int
+		UserID        func(childComplexity int) int
+	}
+
+	PolicyRule struct {
+		Actions    func(childComplexity int) int
+		Conditions func(childComplexity int) int
+		Effect     func(childComplexity int) int
+		Resources  func(childComplexity int) int
 	}
 
 	Query struct {
@@ -298,6 +403,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "App.actions":
+		if e.complexity.App.Actions == nil {
+			break
+		}
+
+		args, err := ec.field_App_actions_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.App.Actions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AppActionOrder), args["where"].(*ent.AppActionWhereInput)), true
+
 	case "App.appKey":
 		if e.complexity.App.AppKey == nil {
 			break
@@ -380,17 +497,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.App.Name(childComplexity), true
 
-	case "App.permissions":
-		if e.complexity.App.Permissions == nil {
+	case "App.organizations":
+		if e.complexity.App.Organizations == nil {
 			break
 		}
 
-		args, err := ec.field_App_permissions_args(context.TODO(), rawArgs)
+		args, err := ec.field_App_organizations_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.App.Permissions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AppPermissionOrder), args["where"].(*ent.AppPermissionWhereInput)), true
+		return e.complexity.App.Organizations(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.OrganizationOrder), args["where"].(*ent.OrganizationWhereInput)), true
+
+	case "App.policies":
+		if e.complexity.App.Policies == nil {
+			break
+		}
+
+		return e.complexity.App.Policies(childComplexity), true
 
 	case "App.redirectURI":
 		if e.complexity.App.RedirectURI == nil {
@@ -405,6 +529,25 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.App.RefreshTokenValidity(childComplexity), true
+
+	case "App.resources":
+		if e.complexity.App.Resources == nil {
+			break
+		}
+
+		args, err := ec.field_App_resources_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.App.Resources(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AppResOrder), args["where"].(*ent.AppResWhereInput)), true
+
+	case "App.roles":
+		if e.complexity.App.Roles == nil {
+			break
+		}
+
+		return e.complexity.App.Roles(childComplexity), true
 
 	case "App.scopes":
 		if e.complexity.App.Scopes == nil {
@@ -441,6 +584,132 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.App.UpdatedBy(childComplexity), true
 
+	case "AppAction.app":
+		if e.complexity.AppAction.App == nil {
+			break
+		}
+
+		return e.complexity.AppAction.App(childComplexity), true
+
+	case "AppAction.appID":
+		if e.complexity.AppAction.AppID == nil {
+			break
+		}
+
+		return e.complexity.AppAction.AppID(childComplexity), true
+
+	case "AppAction.comments":
+		if e.complexity.AppAction.Comments == nil {
+			break
+		}
+
+		return e.complexity.AppAction.Comments(childComplexity), true
+
+	case "AppAction.createdAt":
+		if e.complexity.AppAction.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.AppAction.CreatedAt(childComplexity), true
+
+	case "AppAction.createdBy":
+		if e.complexity.AppAction.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.AppAction.CreatedBy(childComplexity), true
+
+	case "AppAction.id":
+		if e.complexity.AppAction.ID == nil {
+			break
+		}
+
+		return e.complexity.AppAction.ID(childComplexity), true
+
+	case "AppAction.kind":
+		if e.complexity.AppAction.Kind == nil {
+			break
+		}
+
+		return e.complexity.AppAction.Kind(childComplexity), true
+
+	case "AppAction.menus":
+		if e.complexity.AppAction.Menus == nil {
+			break
+		}
+
+		return e.complexity.AppAction.Menus(childComplexity), true
+
+	case "AppAction.method":
+		if e.complexity.AppAction.Method == nil {
+			break
+		}
+
+		return e.complexity.AppAction.Method(childComplexity), true
+
+	case "AppAction.name":
+		if e.complexity.AppAction.Name == nil {
+			break
+		}
+
+		return e.complexity.AppAction.Name(childComplexity), true
+
+	case "AppAction.resources":
+		if e.complexity.AppAction.Resources == nil {
+			break
+		}
+
+		return e.complexity.AppAction.Resources(childComplexity), true
+
+	case "AppAction.updatedAt":
+		if e.complexity.AppAction.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.AppAction.UpdatedAt(childComplexity), true
+
+	case "AppAction.updatedBy":
+		if e.complexity.AppAction.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.AppAction.UpdatedBy(childComplexity), true
+
+	case "AppActionConnection.edges":
+		if e.complexity.AppActionConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.AppActionConnection.Edges(childComplexity), true
+
+	case "AppActionConnection.pageInfo":
+		if e.complexity.AppActionConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.AppActionConnection.PageInfo(childComplexity), true
+
+	case "AppActionConnection.totalCount":
+		if e.complexity.AppActionConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.AppActionConnection.TotalCount(childComplexity), true
+
+	case "AppActionEdge.cursor":
+		if e.complexity.AppActionEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.AppActionEdge.Cursor(childComplexity), true
+
+	case "AppActionEdge.node":
+		if e.complexity.AppActionEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.AppActionEdge.Node(childComplexity), true
+
 	case "AppConnection.edges":
 		if e.complexity.AppConnection.Edges == nil {
 			break
@@ -475,6 +744,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AppEdge.Node(childComplexity), true
+
+	case "AppMenu.action":
+		if e.complexity.AppMenu.Action == nil {
+			break
+		}
+
+		return e.complexity.AppMenu.Action(childComplexity), true
+
+	case "AppMenu.actionID":
+		if e.complexity.AppMenu.ActionID == nil {
+			break
+		}
+
+		return e.complexity.AppMenu.ActionID(childComplexity), true
 
 	case "AppMenu.app":
 		if e.complexity.AppMenu.App == nil {
@@ -546,20 +829,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AppMenu.ParentID(childComplexity), true
 
-	case "AppMenu.permission":
-		if e.complexity.AppMenu.Permission == nil {
-			break
-		}
-
-		return e.complexity.AppMenu.Permission(childComplexity), true
-
-	case "AppMenu.permissionID":
-		if e.complexity.AppMenu.PermissionID == nil {
-			break
-		}
-
-		return e.complexity.AppMenu.PermissionID(childComplexity), true
-
 	case "AppMenu.updatedAt":
 		if e.complexity.AppMenu.UpdatedAt == nil {
 			break
@@ -609,117 +878,351 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AppMenuEdge.Node(childComplexity), true
 
-	case "AppPermission.app":
-		if e.complexity.AppPermission.App == nil {
+	case "AppPolicy.app":
+		if e.complexity.AppPolicy.App == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.App(childComplexity), true
+		return e.complexity.AppPolicy.App(childComplexity), true
 
-	case "AppPermission.appID":
-		if e.complexity.AppPermission.AppID == nil {
+	case "AppPolicy.appID":
+		if e.complexity.AppPolicy.AppID == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.AppID(childComplexity), true
+		return e.complexity.AppPolicy.AppID(childComplexity), true
 
-	case "AppPermission.comments":
-		if e.complexity.AppPermission.Comments == nil {
+	case "AppPolicy.autoGrant":
+		if e.complexity.AppPolicy.AutoGrant == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.Comments(childComplexity), true
+		return e.complexity.AppPolicy.AutoGrant(childComplexity), true
 
-	case "AppPermission.createdAt":
-		if e.complexity.AppPermission.CreatedAt == nil {
+	case "AppPolicy.comments":
+		if e.complexity.AppPolicy.Comments == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.CreatedAt(childComplexity), true
+		return e.complexity.AppPolicy.Comments(childComplexity), true
 
-	case "AppPermission.createdBy":
-		if e.complexity.AppPermission.CreatedBy == nil {
+	case "AppPolicy.createdAt":
+		if e.complexity.AppPolicy.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.CreatedBy(childComplexity), true
+		return e.complexity.AppPolicy.CreatedAt(childComplexity), true
 
-	case "AppPermission.id":
-		if e.complexity.AppPermission.ID == nil {
+	case "AppPolicy.createdBy":
+		if e.complexity.AppPolicy.CreatedBy == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.ID(childComplexity), true
+		return e.complexity.AppPolicy.CreatedBy(childComplexity), true
 
-	case "AppPermission.kind":
-		if e.complexity.AppPermission.Kind == nil {
+	case "AppPolicy.id":
+		if e.complexity.AppPolicy.ID == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.Kind(childComplexity), true
+		return e.complexity.AppPolicy.ID(childComplexity), true
 
-	case "AppPermission.menus":
-		if e.complexity.AppPermission.Menus == nil {
+	case "AppPolicy.name":
+		if e.complexity.AppPolicy.Name == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.Menus(childComplexity), true
+		return e.complexity.AppPolicy.Name(childComplexity), true
 
-	case "AppPermission.name":
-		if e.complexity.AppPermission.Name == nil {
+	case "AppPolicy.roles":
+		if e.complexity.AppPolicy.Roles == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.Name(childComplexity), true
+		return e.complexity.AppPolicy.Roles(childComplexity), true
 
-	case "AppPermission.updatedAt":
-		if e.complexity.AppPermission.UpdatedAt == nil {
+	case "AppPolicy.rules":
+		if e.complexity.AppPolicy.Rules == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.UpdatedAt(childComplexity), true
+		return e.complexity.AppPolicy.Rules(childComplexity), true
 
-	case "AppPermission.updatedBy":
-		if e.complexity.AppPermission.UpdatedBy == nil {
+	case "AppPolicy.status":
+		if e.complexity.AppPolicy.Status == nil {
 			break
 		}
 
-		return e.complexity.AppPermission.UpdatedBy(childComplexity), true
+		return e.complexity.AppPolicy.Status(childComplexity), true
 
-	case "AppPermissionConnection.edges":
-		if e.complexity.AppPermissionConnection.Edges == nil {
+	case "AppPolicy.updatedAt":
+		if e.complexity.AppPolicy.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.AppPermissionConnection.Edges(childComplexity), true
+		return e.complexity.AppPolicy.UpdatedAt(childComplexity), true
 
-	case "AppPermissionConnection.pageInfo":
-		if e.complexity.AppPermissionConnection.PageInfo == nil {
+	case "AppPolicy.updatedBy":
+		if e.complexity.AppPolicy.UpdatedBy == nil {
 			break
 		}
 
-		return e.complexity.AppPermissionConnection.PageInfo(childComplexity), true
+		return e.complexity.AppPolicy.UpdatedBy(childComplexity), true
 
-	case "AppPermissionConnection.totalCount":
-		if e.complexity.AppPermissionConnection.TotalCount == nil {
+	case "AppPolicy.version":
+		if e.complexity.AppPolicy.Version == nil {
 			break
 		}
 
-		return e.complexity.AppPermissionConnection.TotalCount(childComplexity), true
+		return e.complexity.AppPolicy.Version(childComplexity), true
 
-	case "AppPermissionEdge.cursor":
-		if e.complexity.AppPermissionEdge.Cursor == nil {
+	case "AppPolicyConnection.edges":
+		if e.complexity.AppPolicyConnection.Edges == nil {
 			break
 		}
 
-		return e.complexity.AppPermissionEdge.Cursor(childComplexity), true
+		return e.complexity.AppPolicyConnection.Edges(childComplexity), true
 
-	case "AppPermissionEdge.node":
-		if e.complexity.AppPermissionEdge.Node == nil {
+	case "AppPolicyConnection.pageInfo":
+		if e.complexity.AppPolicyConnection.PageInfo == nil {
 			break
 		}
 
-		return e.complexity.AppPermissionEdge.Node(childComplexity), true
+		return e.complexity.AppPolicyConnection.PageInfo(childComplexity), true
+
+	case "AppPolicyConnection.totalCount":
+		if e.complexity.AppPolicyConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.AppPolicyConnection.TotalCount(childComplexity), true
+
+	case "AppPolicyEdge.cursor":
+		if e.complexity.AppPolicyEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.AppPolicyEdge.Cursor(childComplexity), true
+
+	case "AppPolicyEdge.node":
+		if e.complexity.AppPolicyEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.AppPolicyEdge.Node(childComplexity), true
+
+	case "AppRes.app":
+		if e.complexity.AppRes.App == nil {
+			break
+		}
+
+		return e.complexity.AppRes.App(childComplexity), true
+
+	case "AppRes.appID":
+		if e.complexity.AppRes.AppID == nil {
+			break
+		}
+
+		return e.complexity.AppRes.AppID(childComplexity), true
+
+	case "AppRes.arnPattern":
+		if e.complexity.AppRes.ArnPattern == nil {
+			break
+		}
+
+		return e.complexity.AppRes.ArnPattern(childComplexity), true
+
+	case "AppRes.createdAt":
+		if e.complexity.AppRes.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.AppRes.CreatedAt(childComplexity), true
+
+	case "AppRes.createdBy":
+		if e.complexity.AppRes.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.AppRes.CreatedBy(childComplexity), true
+
+	case "AppRes.id":
+		if e.complexity.AppRes.ID == nil {
+			break
+		}
+
+		return e.complexity.AppRes.ID(childComplexity), true
+
+	case "AppRes.name":
+		if e.complexity.AppRes.Name == nil {
+			break
+		}
+
+		return e.complexity.AppRes.Name(childComplexity), true
+
+	case "AppRes.typeName":
+		if e.complexity.AppRes.TypeName == nil {
+			break
+		}
+
+		return e.complexity.AppRes.TypeName(childComplexity), true
+
+	case "AppRes.updatedAt":
+		if e.complexity.AppRes.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.AppRes.UpdatedAt(childComplexity), true
+
+	case "AppRes.updatedBy":
+		if e.complexity.AppRes.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.AppRes.UpdatedBy(childComplexity), true
+
+	case "AppResConnection.edges":
+		if e.complexity.AppResConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.AppResConnection.Edges(childComplexity), true
+
+	case "AppResConnection.pageInfo":
+		if e.complexity.AppResConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.AppResConnection.PageInfo(childComplexity), true
+
+	case "AppResConnection.totalCount":
+		if e.complexity.AppResConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.AppResConnection.TotalCount(childComplexity), true
+
+	case "AppResEdge.cursor":
+		if e.complexity.AppResEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.AppResEdge.Cursor(childComplexity), true
+
+	case "AppResEdge.node":
+		if e.complexity.AppResEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.AppResEdge.Node(childComplexity), true
+
+	case "AppRole.app":
+		if e.complexity.AppRole.App == nil {
+			break
+		}
+
+		return e.complexity.AppRole.App(childComplexity), true
+
+	case "AppRole.appID":
+		if e.complexity.AppRole.AppID == nil {
+			break
+		}
+
+		return e.complexity.AppRole.AppID(childComplexity), true
+
+	case "AppRole.autoGrant":
+		if e.complexity.AppRole.AutoGrant == nil {
+			break
+		}
+
+		return e.complexity.AppRole.AutoGrant(childComplexity), true
+
+	case "AppRole.comments":
+		if e.complexity.AppRole.Comments == nil {
+			break
+		}
+
+		return e.complexity.AppRole.Comments(childComplexity), true
+
+	case "AppRole.createdAt":
+		if e.complexity.AppRole.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.AppRole.CreatedAt(childComplexity), true
+
+	case "AppRole.createdBy":
+		if e.complexity.AppRole.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.AppRole.CreatedBy(childComplexity), true
+
+	case "AppRole.editable":
+		if e.complexity.AppRole.Editable == nil {
+			break
+		}
+
+		return e.complexity.AppRole.Editable(childComplexity), true
+
+	case "AppRole.id":
+		if e.complexity.AppRole.ID == nil {
+			break
+		}
+
+		return e.complexity.AppRole.ID(childComplexity), true
+
+	case "AppRole.name":
+		if e.complexity.AppRole.Name == nil {
+			break
+		}
+
+		return e.complexity.AppRole.Name(childComplexity), true
+
+	case "AppRole.policies":
+		if e.complexity.AppRole.Policies == nil {
+			break
+		}
+
+		return e.complexity.AppRole.Policies(childComplexity), true
+
+	case "AppRole.updatedAt":
+		if e.complexity.AppRole.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.AppRole.UpdatedAt(childComplexity), true
+
+	case "AppRole.updatedBy":
+		if e.complexity.AppRole.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.AppRole.UpdatedBy(childComplexity), true
+
+	case "Mutation.assignOrganizationApp":
+		if e.complexity.Mutation.AssignOrganizationApp == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_assignOrganizationApp_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AssignOrganizationApp(childComplexity, args["orgID"].(int), args["appID"].(int)), true
+
+	case "Mutation.assignOrganizationAppPolicy":
+		if e.complexity.Mutation.AssignOrganizationAppPolicy == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_assignOrganizationAppPolicy_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AssignOrganizationAppPolicy(childComplexity, args["orgID"].(int), args["policyID"].(int)), true
 
 	case "Mutation.createApp":
 		if e.complexity.Mutation.CreateApp == nil {
@@ -732,6 +1235,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateApp(childComplexity, args["input"].(ent.CreateAppInput)), true
+
+	case "Mutation.createAppActions":
+		if e.complexity.Mutation.CreateAppActions == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createAppActions_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateAppActions(childComplexity, args["input"].([]*ent.CreateAppActionInput)), true
+
+	case "Mutation.createAppMenus":
+		if e.complexity.Mutation.CreateAppMenus == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createAppMenus_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateAppMenus(childComplexity, args["input"].([]*ent.CreateAppMenuInput)), true
+
+	case "Mutation.createAppPolicies":
+		if e.complexity.Mutation.CreateAppPolicies == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createAppPolicies_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateAppPolicies(childComplexity, args["input"].([]*ent.CreateAppPolicyInput)), true
+
+	case "Mutation.createAppRole":
+		if e.complexity.Mutation.CreateAppRole == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createAppRole_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateAppRole(childComplexity, args["input"].(ent.CreateAppRoleInput)), true
 
 	case "Mutation.createOrganization":
 		if e.complexity.Mutation.CreateOrganization == nil {
@@ -767,7 +1318,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateOrganizationUser(childComplexity, args["id"].(int), args["input"].(ent.CreateUserInput)), true
+		return e.complexity.Mutation.CreateOrganizationUser(childComplexity, args["orgID"].(int), args["input"].(ent.CreateUserInput)), true
 
 	case "Mutation.deleteApp":
 		if e.complexity.Mutation.DeleteApp == nil {
@@ -779,7 +1330,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteApp(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteApp(childComplexity, args["appID"].(int)), true
 
 	case "Mutation.deleteOrganization":
 		if e.complexity.Mutation.DeleteOrganization == nil {
@@ -791,7 +1342,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteOrganization(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteOrganization(childComplexity, args["orgID"].(int)), true
 
 	case "Mutation.enableDirectory":
 		if e.complexity.Mutation.EnableDirectory == nil {
@@ -805,6 +1356,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.EnableDirectory(childComplexity, args["input"].(model.EnableDirectoryInput)), true
 
+	case "Mutation.revokeOrganizationApp":
+		if e.complexity.Mutation.RevokeOrganizationApp == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_revokeOrganizationApp_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RevokeOrganizationApp(childComplexity, args["orgID"].(int), args["appID"].(int)), true
+
+	case "Mutation.revokeOrganizationAppPolicy":
+		if e.complexity.Mutation.RevokeOrganizationAppPolicy == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_revokeOrganizationAppPolicy_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RevokeOrganizationAppPolicy(childComplexity, args["orgID"].(int), args["policyID"].(int)), true
+
 	case "Mutation.updateApp":
 		if e.complexity.Mutation.UpdateApp == nil {
 			break
@@ -815,7 +1390,31 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateApp(childComplexity, args["id"].(int), args["input"].(ent.UpdateAppInput)), true
+		return e.complexity.Mutation.UpdateApp(childComplexity, args["appID"].(int), args["input"].(ent.UpdateAppInput)), true
+
+	case "Mutation.updateAppMenu":
+		if e.complexity.Mutation.UpdateAppMenu == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateAppMenu_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateAppMenu(childComplexity, args["input"].(ent.UpdateAppMenuInput)), true
+
+	case "Mutation.updateAppRole":
+		if e.complexity.Mutation.UpdateAppRole == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateAppRole_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateAppRole(childComplexity, args["input"].(ent.UpdateAppRoleInput)), true
 
 	case "Mutation.updateOrganization":
 		if e.complexity.Mutation.UpdateOrganization == nil {
@@ -827,7 +1426,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateOrganization(childComplexity, args["id"].(int), args["input"].(ent.UpdateOrganizationInput)), true
+		return e.complexity.Mutation.UpdateOrganization(childComplexity, args["orgID"].(int), args["input"].(ent.UpdateOrganizationInput)), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -839,7 +1438,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateUser(childComplexity, args["id"].(int), args["input"].(ent.UpdateUserInput)), true
+		return e.complexity.Mutation.UpdateUser(childComplexity, args["userID"].(int), args["input"].(ent.UpdateUserInput)), true
+
+	case "Organization.apps":
+		if e.complexity.Organization.Apps == nil {
+			break
+		}
+
+		args, err := ec.field_Organization_apps_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Organization.Apps(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AppOrder), args["where"].(*ent.AppWhereInput)), true
 
 	case "Organization.children":
 		if e.complexity.Organization.Children == nil {
@@ -939,6 +1550,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Organization.Path(childComplexity), true
 
+	case "Organization.permissions":
+		if e.complexity.Organization.Permissions == nil {
+			break
+		}
+
+		return e.complexity.Organization.Permissions(childComplexity), true
+
 	case "Organization.profile":
 		if e.complexity.Organization.Profile == nil {
 			break
@@ -1036,6 +1654,104 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PageInfo.StartCursor(childComplexity), true
+
+	case "Permission.endAt":
+		if e.complexity.Permission.EndAt == nil {
+			break
+		}
+
+		return e.complexity.Permission.EndAt(childComplexity), true
+
+	case "Permission.id":
+		if e.complexity.Permission.ID == nil {
+			break
+		}
+
+		return e.complexity.Permission.ID(childComplexity), true
+
+	case "Permission.orgID":
+		if e.complexity.Permission.OrgID == nil {
+			break
+		}
+
+		return e.complexity.Permission.OrgID(childComplexity), true
+
+	case "Permission.orgPolicyID":
+		if e.complexity.Permission.OrgPolicyID == nil {
+			break
+		}
+
+		return e.complexity.Permission.OrgPolicyID(childComplexity), true
+
+	case "Permission.organization":
+		if e.complexity.Permission.Organization == nil {
+			break
+		}
+
+		return e.complexity.Permission.Organization(childComplexity), true
+
+	case "Permission.principalKind":
+		if e.complexity.Permission.PrincipalKind == nil {
+			break
+		}
+
+		return e.complexity.Permission.PrincipalKind(childComplexity), true
+
+	case "Permission.roleID":
+		if e.complexity.Permission.RoleID == nil {
+			break
+		}
+
+		return e.complexity.Permission.RoleID(childComplexity), true
+
+	case "Permission.startAt":
+		if e.complexity.Permission.StartAt == nil {
+			break
+		}
+
+		return e.complexity.Permission.StartAt(childComplexity), true
+
+	case "Permission.user":
+		if e.complexity.Permission.User == nil {
+			break
+		}
+
+		return e.complexity.Permission.User(childComplexity), true
+
+	case "Permission.userID":
+		if e.complexity.Permission.UserID == nil {
+			break
+		}
+
+		return e.complexity.Permission.UserID(childComplexity), true
+
+	case "PolicyRule.actions":
+		if e.complexity.PolicyRule.Actions == nil {
+			break
+		}
+
+		return e.complexity.PolicyRule.Actions(childComplexity), true
+
+	case "PolicyRule.conditions":
+		if e.complexity.PolicyRule.Conditions == nil {
+			break
+		}
+
+		return e.complexity.PolicyRule.Conditions(childComplexity), true
+
+	case "PolicyRule.effect":
+		if e.complexity.PolicyRule.Effect == nil {
+			break
+		}
+
+		return e.complexity.PolicyRule.Effect(childComplexity), true
+
+	case "PolicyRule.resources":
+		if e.complexity.PolicyRule.Resources == nil {
+			break
+		}
+
+		return e.complexity.PolicyRule.Resources(childComplexity), true
 
 	case "Query.apps":
 		if e.complexity.Query.Apps == nil {
@@ -1628,26 +2344,48 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputAppActionOrder,
+		ec.unmarshalInputAppActionWhereInput,
 		ec.unmarshalInputAppMenuOrder,
 		ec.unmarshalInputAppMenuWhereInput,
 		ec.unmarshalInputAppOrder,
-		ec.unmarshalInputAppPermissionOrder,
-		ec.unmarshalInputAppPermissionWhereInput,
+		ec.unmarshalInputAppPolicyOrder,
+		ec.unmarshalInputAppPolicyWhereInput,
+		ec.unmarshalInputAppResOrder,
+		ec.unmarshalInputAppResWhereInput,
+		ec.unmarshalInputAppRoleOrder,
+		ec.unmarshalInputAppRoleWhereInput,
 		ec.unmarshalInputAppWhereInput,
+		ec.unmarshalInputCreateAppActionInput,
 		ec.unmarshalInputCreateAppInput,
+		ec.unmarshalInputCreateAppMenuInput,
+		ec.unmarshalInputCreateAppPolicyInput,
+		ec.unmarshalInputCreateAppResInput,
+		ec.unmarshalInputCreateAppRoleInput,
 		ec.unmarshalInputCreateOrganizationAccountInput,
 		ec.unmarshalInputCreateOrganizationInput,
+		ec.unmarshalInputCreateOrganizationPolicyInput,
 		ec.unmarshalInputCreateUserIdentityInput,
 		ec.unmarshalInputCreateUserInput,
 		ec.unmarshalInputCreateUserLoginProfileInput,
 		ec.unmarshalInputCreateUserPasswordInput,
 		ec.unmarshalInputEnableDirectoryInput,
 		ec.unmarshalInputOrganizationOrder,
+		ec.unmarshalInputOrganizationPolicyWhereInput,
+		ec.unmarshalInputOrganizationRoleWhereInput,
 		ec.unmarshalInputOrganizationUserOrder,
 		ec.unmarshalInputOrganizationUserWhereInput,
 		ec.unmarshalInputOrganizationWhereInput,
+		ec.unmarshalInputPermissionWhereInput,
+		ec.unmarshalInputPolicyRuleInput,
+		ec.unmarshalInputUpdateAppActionInput,
 		ec.unmarshalInputUpdateAppInput,
+		ec.unmarshalInputUpdateAppMenuInput,
+		ec.unmarshalInputUpdateAppPolicyInput,
+		ec.unmarshalInputUpdateAppResInput,
+		ec.unmarshalInputUpdateAppRoleInput,
 		ec.unmarshalInputUpdateOrganizationInput,
+		ec.unmarshalInputUpdateOrganizationPolicyInput,
 		ec.unmarshalInputUpdateUserIdentityInput,
 		ec.unmarshalInputUpdateUserInput,
 		ec.unmarshalInputUpdateUserLoginProfileInput,
@@ -1753,7 +2491,7 @@ type App implements Node {
   """备注"""
   comments: String
   """状态"""
-  status: AppStatus
+  status: AppSimpleStatus
   menus(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor
@@ -1773,7 +2511,7 @@ type App implements Node {
     """Filtering options for AppMenus returned from the connection."""
     where: AppMenuWhereInput
   ): AppMenuConnection!
-  permissions(
+  actions(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor
 
@@ -1786,12 +2524,207 @@ type App implements Node {
     """Returns the last _n_ elements from the list."""
     last: Int
 
-    """Ordering options for AppPermissions returned from the connection."""
-    orderBy: AppPermissionOrder
+    """Ordering options for AppActions returned from the connection."""
+    orderBy: AppActionOrder
 
-    """Filtering options for AppPermissions returned from the connection."""
-    where: AppPermissionWhereInput
-  ): AppPermissionConnection!
+    """Filtering options for AppActions returned from the connection."""
+    where: AppActionWhereInput
+  ): AppActionConnection!
+  resources(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for AppResSlice returned from the connection."""
+    orderBy: AppResOrder
+
+    """Filtering options for AppResSlice returned from the connection."""
+    where: AppResWhereInput
+  ): AppResConnection!
+  roles: [AppRole!]
+  policies: [AppPolicy!]
+  organizations(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Organizations returned from the connection."""
+    orderBy: OrganizationOrder
+
+    """Filtering options for Organizations returned from the connection."""
+    where: OrganizationWhereInput
+  ): OrganizationConnection!
+}
+type AppAction implements Node {
+  id: ID!
+  createdBy: Int!
+  createdAt: Time!
+  updatedBy: Int
+  updatedAt: Time
+  """所属应用"""
+  appID: ID!
+  """名称"""
+  name: String!
+  """restful,graphql,rpc"""
+  kind: AppActionKind!
+  """操作方法:读,写,列表"""
+  method: AppActionMethod!
+  """备注"""
+  comments: String
+  app: App!
+  menus: [AppMenu!]
+  resources: [AppRes!]
+}
+"""A connection to a list of items."""
+type AppActionConnection {
+  """A list of edges."""
+  edges: [AppActionEdge]
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+"""An edge in a connection."""
+type AppActionEdge {
+  """The item at the end of the edge."""
+  node: AppAction
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+}
+"""AppActionKind is enum for the field kind"""
+enum AppActionKind @goModel(model: "github.com/woocoos/adminx/ent/appaction.Kind") {
+  restful
+  graphql
+  rpc
+}
+"""AppActionMethod is enum for the field method"""
+enum AppActionMethod @goModel(model: "github.com/woocoos/adminx/ent/appaction.Method") {
+  read
+  write
+  list
+}
+"""Ordering options for AppAction connections"""
+input AppActionOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order AppActions."""
+  field: AppActionOrderField!
+}
+"""Properties by which AppAction connections can be ordered."""
+enum AppActionOrderField {
+  createdAt
+}
+"""
+AppActionWhereInput is used for filtering AppAction objects.
+Input was generated by ent.
+"""
+input AppActionWhereInput {
+  not: AppActionWhereInput
+  and: [AppActionWhereInput!]
+  or: [AppActionWhereInput!]
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  """created_by field predicates"""
+  createdBy: Int
+  createdByNEQ: Int
+  createdByIn: [Int!]
+  createdByNotIn: [Int!]
+  createdByGT: Int
+  createdByGTE: Int
+  createdByLT: Int
+  createdByLTE: Int
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """updated_by field predicates"""
+  updatedBy: Int
+  updatedByNEQ: Int
+  updatedByIn: [Int!]
+  updatedByNotIn: [Int!]
+  updatedByGT: Int
+  updatedByGTE: Int
+  updatedByLT: Int
+  updatedByLTE: Int
+  updatedByIsNil: Boolean
+  updatedByNotNil: Boolean
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  updatedAtIsNil: Boolean
+  updatedAtNotNil: Boolean
+  """app_id field predicates"""
+  appID: ID
+  appIDNEQ: ID
+  appIDIn: [ID!]
+  appIDNotIn: [ID!]
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  """kind field predicates"""
+  kind: AppActionKind
+  kindNEQ: AppActionKind
+  kindIn: [AppActionKind!]
+  kindNotIn: [AppActionKind!]
+  """method field predicates"""
+  method: AppActionMethod
+  methodNEQ: AppActionMethod
+  methodIn: [AppActionMethod!]
+  methodNotIn: [AppActionMethod!]
+  """app edge predicates"""
+  hasApp: Boolean
+  hasAppWith: [AppWhereInput!]
+  """menus edge predicates"""
+  hasMenus: Boolean
+  hasMenusWith: [AppMenuWhereInput!]
+  """resources edge predicates"""
+  hasResources: Boolean
+  hasResourcesWith: [AppResWhereInput!]
 }
 """A connection to a list of items."""
 type AppConnection {
@@ -1829,13 +2762,13 @@ type AppMenu implements Node {
   kind: AppMenuKind!
   """菜单名称"""
   name: String
-  """权限ID"""
-  permissionID: ID
+  """操作ID"""
+  actionID: ID
   """备注"""
   comments: String
   displaySort: Int
   app: App!
-  permission: AppPermission
+  action: AppAction
 }
 """A connection to a list of items."""
 type AppMenuConnection {
@@ -1961,19 +2894,19 @@ input AppMenuWhereInput {
   nameNotNil: Boolean
   nameEqualFold: String
   nameContainsFold: String
-  """permission_id field predicates"""
-  permissionID: ID
-  permissionIDNEQ: ID
-  permissionIDIn: [ID!]
-  permissionIDNotIn: [ID!]
-  permissionIDIsNil: Boolean
-  permissionIDNotNil: Boolean
+  """action_id field predicates"""
+  actionID: ID
+  actionIDNEQ: ID
+  actionIDIn: [ID!]
+  actionIDNotIn: [ID!]
+  actionIDIsNil: Boolean
+  actionIDNotNil: Boolean
   """app edge predicates"""
   hasApp: Boolean
   hasAppWith: [AppWhereInput!]
-  """permission edge predicates"""
-  hasPermission: Boolean
-  hasPermissionWith: [AppPermissionWhereInput!]
+  """action edge predicates"""
+  hasAction: Boolean
+  hasActionWith: [AppActionWhereInput!]
 }
 """Ordering options for App connections"""
 input AppOrder {
@@ -1986,7 +2919,7 @@ input AppOrder {
 enum AppOrderField {
   createdAt
 }
-type AppPermission implements Node {
+type AppPolicy implements Node {
   id: ID!
   createdBy: Int!
   createdAt: Time!
@@ -1994,56 +2927,62 @@ type AppPermission implements Node {
   updatedAt: Time
   """所属应用"""
   appID: ID!
-  """名称"""
-  name: String
-  """读,写,列表"""
-  kind: AppPermissionKind
-  """备注"""
-  comments: String
+  """策略名称"""
+  name: String!
+  """描述"""
+  comments: String!
+  """策略规则"""
+  rules: [PolicyRule!]!
+  """版本号"""
+  version: String!
+  """标识是否自动授予到账户"""
+  autoGrant: Boolean!
+  """状态"""
+  status: AppPolicySimpleStatus
   app: App!
-  menus: [AppMenu!]
+  roles: [AppRole!]
 }
 """A connection to a list of items."""
-type AppPermissionConnection {
+type AppPolicyConnection {
   """A list of edges."""
-  edges: [AppPermissionEdge]
+  edges: [AppPolicyEdge]
   """Information to aid in pagination."""
   pageInfo: PageInfo!
   """Identifies the total count of items in the connection."""
   totalCount: Int!
 }
 """An edge in a connection."""
-type AppPermissionEdge {
+type AppPolicyEdge {
   """The item at the end of the edge."""
-  node: AppPermission
+  node: AppPolicy
   """A cursor for use in pagination."""
   cursor: Cursor!
 }
-"""AppPermissionKind is enum for the field kind"""
-enum AppPermissionKind @goModel(model: "github.com/woocoos/adminx/ent/apppermission.Kind") {
-  read
-  write
-  list
-}
-"""Ordering options for AppPermission connections"""
-input AppPermissionOrder {
+"""Ordering options for AppPolicy connections"""
+input AppPolicyOrder {
   """The ordering direction."""
   direction: OrderDirection! = ASC
-  """The field by which to order AppPermissions."""
-  field: AppPermissionOrderField!
+  """The field by which to order AppPolicies."""
+  field: AppPolicyOrderField!
 }
-"""Properties by which AppPermission connections can be ordered."""
-enum AppPermissionOrderField {
+"""Properties by which AppPolicy connections can be ordered."""
+enum AppPolicyOrderField {
   createdAt
 }
+"""AppPolicySimpleStatus is enum for the field status"""
+enum AppPolicySimpleStatus @goModel(model: "github.com/woocoos/adminx/graph/entgen/types.SimpleStatus") {
+  active
+  inactive
+  processing
+}
 """
-AppPermissionWhereInput is used for filtering AppPermission objects.
+AppPolicyWhereInput is used for filtering AppPolicy objects.
 Input was generated by ent.
 """
-input AppPermissionWhereInput {
-  not: AppPermissionWhereInput
-  and: [AppPermissionWhereInput!]
-  or: [AppPermissionWhereInput!]
+input AppPolicyWhereInput {
+  not: AppPolicyWhereInput
+  and: [AppPolicyWhereInput!]
+  or: [AppPolicyWhereInput!]
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -2110,28 +3049,328 @@ input AppPermissionWhereInput {
   nameContains: String
   nameHasPrefix: String
   nameHasSuffix: String
-  nameIsNil: Boolean
-  nameNotNil: Boolean
   nameEqualFold: String
   nameContainsFold: String
-  """kind field predicates"""
-  kind: AppPermissionKind
-  kindNEQ: AppPermissionKind
-  kindIn: [AppPermissionKind!]
-  kindNotIn: [AppPermissionKind!]
-  kindIsNil: Boolean
-  kindNotNil: Boolean
+  """comments field predicates"""
+  comments: String
+  commentsNEQ: String
+  commentsIn: [String!]
+  commentsNotIn: [String!]
+  commentsGT: String
+  commentsGTE: String
+  commentsLT: String
+  commentsLTE: String
+  commentsContains: String
+  commentsHasPrefix: String
+  commentsHasSuffix: String
+  commentsEqualFold: String
+  commentsContainsFold: String
+  """version field predicates"""
+  version: String
+  versionNEQ: String
+  versionIn: [String!]
+  versionNotIn: [String!]
+  versionGT: String
+  versionGTE: String
+  versionLT: String
+  versionLTE: String
+  versionContains: String
+  versionHasPrefix: String
+  versionHasSuffix: String
+  versionEqualFold: String
+  versionContainsFold: String
+  """auto_grant field predicates"""
+  autoGrant: Boolean
+  autoGrantNEQ: Boolean
+  """status field predicates"""
+  status: AppPolicySimpleStatus
+  statusNEQ: AppPolicySimpleStatus
+  statusIn: [AppPolicySimpleStatus!]
+  statusNotIn: [AppPolicySimpleStatus!]
+  statusIsNil: Boolean
+  statusNotNil: Boolean
   """app edge predicates"""
   hasApp: Boolean
   hasAppWith: [AppWhereInput!]
-  """menus edge predicates"""
-  hasMenus: Boolean
-  hasMenusWith: [AppMenuWhereInput!]
+  """roles edge predicates"""
+  hasRoles: Boolean
+  hasRolesWith: [AppRoleWhereInput!]
 }
-"""AppStatus is enum for the field status"""
-enum AppStatus @goModel(model: "github.com/woocoos/adminx/ent/app.Status") {
+type AppRes implements Node {
+  id: ID!
+  createdBy: Int!
+  createdAt: Time!
+  updatedBy: Int
+  updatedAt: Time
+  """所属应用"""
+  appID: ID!
+  """资源名称"""
+  name: String!
+  """资源类型名称,如数据库表名"""
+  typeName: String!
+  """应用资源表达式"""
+  arnPattern: String!
+  app: App!
+}
+"""A connection to a list of items."""
+type AppResConnection {
+  """A list of edges."""
+  edges: [AppResEdge]
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+"""An edge in a connection."""
+type AppResEdge {
+  """The item at the end of the edge."""
+  node: AppRes
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+}
+"""Ordering options for AppRes connections"""
+input AppResOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order AppResSlice."""
+  field: AppResOrderField!
+}
+"""Properties by which AppRes connections can be ordered."""
+enum AppResOrderField {
+  createdAt
+}
+"""
+AppResWhereInput is used for filtering AppRes objects.
+Input was generated by ent.
+"""
+input AppResWhereInput {
+  not: AppResWhereInput
+  and: [AppResWhereInput!]
+  or: [AppResWhereInput!]
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  """created_by field predicates"""
+  createdBy: Int
+  createdByNEQ: Int
+  createdByIn: [Int!]
+  createdByNotIn: [Int!]
+  createdByGT: Int
+  createdByGTE: Int
+  createdByLT: Int
+  createdByLTE: Int
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """updated_by field predicates"""
+  updatedBy: Int
+  updatedByNEQ: Int
+  updatedByIn: [Int!]
+  updatedByNotIn: [Int!]
+  updatedByGT: Int
+  updatedByGTE: Int
+  updatedByLT: Int
+  updatedByLTE: Int
+  updatedByIsNil: Boolean
+  updatedByNotNil: Boolean
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  updatedAtIsNil: Boolean
+  updatedAtNotNil: Boolean
+  """app_id field predicates"""
+  appID: ID
+  appIDNEQ: ID
+  appIDIn: [ID!]
+  appIDNotIn: [ID!]
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  """type_name field predicates"""
+  typeName: String
+  typeNameNEQ: String
+  typeNameIn: [String!]
+  typeNameNotIn: [String!]
+  typeNameGT: String
+  typeNameGTE: String
+  typeNameLT: String
+  typeNameLTE: String
+  typeNameContains: String
+  typeNameHasPrefix: String
+  typeNameHasSuffix: String
+  typeNameEqualFold: String
+  typeNameContainsFold: String
+  """arn_pattern field predicates"""
+  arnPattern: String
+  arnPatternNEQ: String
+  arnPatternIn: [String!]
+  arnPatternNotIn: [String!]
+  arnPatternGT: String
+  arnPatternGTE: String
+  arnPatternLT: String
+  arnPatternLTE: String
+  arnPatternContains: String
+  arnPatternHasPrefix: String
+  arnPatternHasSuffix: String
+  arnPatternEqualFold: String
+  arnPatternContainsFold: String
+  """app edge predicates"""
+  hasApp: Boolean
+  hasAppWith: [AppWhereInput!]
+}
+type AppRole implements Node {
+  id: ID!
+  createdBy: Int!
+  createdAt: Time!
+  updatedBy: Int
+  updatedAt: Time
+  """所属应用"""
+  appID: ID!
+  """角色名称"""
+  name: String!
+  """备注"""
+  comments: String
+  """标识是否自动授予到账户"""
+  autoGrant: Boolean!
+  """授权后是否可编辑"""
+  editable: Boolean!
+  app: App!
+  policies: [AppPolicy!]
+}
+"""Ordering options for AppRole connections"""
+input AppRoleOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order AppRoles."""
+  field: AppRoleOrderField!
+}
+"""Properties by which AppRole connections can be ordered."""
+enum AppRoleOrderField {
+  createdAt
+}
+"""
+AppRoleWhereInput is used for filtering AppRole objects.
+Input was generated by ent.
+"""
+input AppRoleWhereInput {
+  not: AppRoleWhereInput
+  and: [AppRoleWhereInput!]
+  or: [AppRoleWhereInput!]
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  """created_by field predicates"""
+  createdBy: Int
+  createdByNEQ: Int
+  createdByIn: [Int!]
+  createdByNotIn: [Int!]
+  createdByGT: Int
+  createdByGTE: Int
+  createdByLT: Int
+  createdByLTE: Int
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """updated_by field predicates"""
+  updatedBy: Int
+  updatedByNEQ: Int
+  updatedByIn: [Int!]
+  updatedByNotIn: [Int!]
+  updatedByGT: Int
+  updatedByGTE: Int
+  updatedByLT: Int
+  updatedByLTE: Int
+  updatedByIsNil: Boolean
+  updatedByNotNil: Boolean
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  updatedAtIsNil: Boolean
+  updatedAtNotNil: Boolean
+  """app_id field predicates"""
+  appID: ID
+  appIDNEQ: ID
+  appIDIn: [ID!]
+  appIDNotIn: [ID!]
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  """auto_grant field predicates"""
+  autoGrant: Boolean
+  autoGrantNEQ: Boolean
+  """editable field predicates"""
+  editable: Boolean
+  editableNEQ: Boolean
+  """app edge predicates"""
+  hasApp: Boolean
+  hasAppWith: [AppWhereInput!]
+  """policies edge predicates"""
+  hasPolicies: Boolean
+  hasPoliciesWith: [AppPolicyWhereInput!]
+}
+"""AppSimpleStatus is enum for the field status"""
+enum AppSimpleStatus @goModel(model: "github.com/woocoos/adminx/graph/entgen/types.SimpleStatus") {
   active
   inactive
+  processing
 }
 """
 AppWhereInput is used for filtering App objects.
@@ -2342,18 +3581,47 @@ input AppWhereInput {
   commentsEqualFold: String
   commentsContainsFold: String
   """status field predicates"""
-  status: AppStatus
-  statusNEQ: AppStatus
-  statusIn: [AppStatus!]
-  statusNotIn: [AppStatus!]
+  status: AppSimpleStatus
+  statusNEQ: AppSimpleStatus
+  statusIn: [AppSimpleStatus!]
+  statusNotIn: [AppSimpleStatus!]
   statusIsNil: Boolean
   statusNotNil: Boolean
   """menus edge predicates"""
   hasMenus: Boolean
   hasMenusWith: [AppMenuWhereInput!]
-  """permissions edge predicates"""
-  hasPermissions: Boolean
-  hasPermissionsWith: [AppPermissionWhereInput!]
+  """actions edge predicates"""
+  hasActions: Boolean
+  hasActionsWith: [AppActionWhereInput!]
+  """resources edge predicates"""
+  hasResources: Boolean
+  hasResourcesWith: [AppResWhereInput!]
+  """roles edge predicates"""
+  hasRoles: Boolean
+  hasRolesWith: [AppRoleWhereInput!]
+  """policies edge predicates"""
+  hasPolicies: Boolean
+  hasPoliciesWith: [AppPolicyWhereInput!]
+  """organizations edge predicates"""
+  hasOrganizations: Boolean
+  hasOrganizationsWith: [OrganizationWhereInput!]
+}
+"""
+CreateAppActionInput is used for create AppAction object.
+Input was generated by ent.
+"""
+input CreateAppActionInput {
+  """名称"""
+  name: String!
+  """restful,graphql,rpc"""
+  kind: AppActionKind!
+  """操作方法:读,写,列表"""
+  method: AppActionMethod!
+  """备注"""
+  comments: String
+  appID: ID!
+  menuIDs: [ID!]
+  resourceIDs: [ID!]
 }
 """
 CreateAppInput is used for create App object.
@@ -2383,9 +3651,78 @@ input CreateAppInput {
   """备注"""
   comments: String
   """状态"""
-  status: AppStatus
+  status: AppSimpleStatus
   menuIDs: [ID!]
-  permissionIDs: [ID!]
+  actionIDs: [ID!]
+  resourceIDs: [ID!]
+  roleIDs: [ID!]
+  policyIDs: [ID!]
+  organizationIDs: [ID!]
+}
+"""
+CreateAppMenuInput is used for create AppMenu object.
+Input was generated by ent.
+"""
+input CreateAppMenuInput {
+  """父级ID"""
+  parentID: Int!
+  """目录,菜单项"""
+  kind: AppMenuKind!
+  """菜单名称"""
+  name: String
+  """备注"""
+  comments: String
+  appID: ID!
+  actionID: ID
+}
+"""
+CreateAppPolicyInput is used for create AppPolicy object.
+Input was generated by ent.
+"""
+input CreateAppPolicyInput {
+  """策略名称"""
+  name: String!
+  """描述"""
+  comments: String!
+  """策略规则"""
+  rules: [PolicyRuleInput!]!
+  """版本号"""
+  version: String!
+  """标识是否自动授予到账户"""
+  autoGrant: Boolean
+  """状态"""
+  status: AppPolicySimpleStatus
+  appID: ID!
+  roleIDs: [ID!]
+}
+"""
+CreateAppResInput is used for create AppRes object.
+Input was generated by ent.
+"""
+input CreateAppResInput {
+  """资源名称"""
+  name: String!
+  """资源类型名称,如数据库表名"""
+  typeName: String!
+  """应用资源表达式"""
+  arnPattern: String!
+  appID: ID!
+}
+"""
+CreateAppRoleInput is used for create AppRole object.
+Input was generated by ent.
+"""
+input CreateAppRoleInput {
+  """角色名称"""
+  name: String!
+  """备注"""
+  comments: String
+  """标识是否自动授予到账户"""
+  autoGrant: Boolean
+  """授权后是否可编辑"""
+  editable: Boolean
+  appID: ID!
+  policyIDs: [ID!]
 }
 """
 CreateOrganizationInput is used for create Organization object.
@@ -2399,13 +3736,30 @@ input CreateOrganizationInput {
   """简介"""
   profile: String
   """状态"""
-  status: OrganizationStatus
+  status: OrganizationSimpleStatus
   """国家或地区2字码"""
   countryCode: String
   """时区"""
   timezone: String
   parentID: ID!
   ownerID: ID
+  appIDs: [ID!]
+}
+"""
+CreateOrganizationPolicyInput is used for create OrganizationPolicy object.
+Input was generated by ent.
+"""
+input CreateOrganizationPolicyInput {
+  """组织ID"""
+  orgID: Int!
+  """所属应用策略,如果是自定义应用策略,则为空"""
+  appPolicyID: Int
+  """策略名称"""
+  name: String!
+  """描述"""
+  comments: String!
+  """策略规则,如果是应用策略,则为空"""
+  rules: [PolicyRuleInput!]!
 }
 """
 CreateUserIdentityInput is used for create UserIdentity object.
@@ -2419,7 +3773,7 @@ input CreateUserIdentityInput {
   """扩展标识码,比如微信的openID"""
   codeExtend: String
   """状态,部分登陆方式需要验证通过才可启用"""
-  status: UserIdentityStatus
+  status: UserIdentitySimpleStatus
   userID: ID
 }
 """
@@ -2432,7 +3786,7 @@ input CreateUserInput {
   """显示名"""
   displayName: String!
   """状态"""
-  status: UserStatus
+  status: UserSimpleStatus
   """备注"""
   comments: String
   identityIDs: [ID!]
@@ -2458,7 +3812,7 @@ input CreateUserLoginProfileInput {
   """多因素验证密钥"""
   mfaSecret: String
   """多因素验证状态"""
-  mfaStatus: UserLoginProfileMfaStatus
+  mfaStatus: UserLoginProfileSimpleStatus
   userID: ID
 }
 """
@@ -2470,7 +3824,7 @@ input CreateUserPasswordInput {
   scene: UserPasswordScene
   """密码"""
   password: String
-  status: UserPasswordStatus
+  status: UserPasswordSimpleStatus
   memo: String
   userID: ID
 }
@@ -2514,7 +3868,7 @@ type Organization implements Node {
   """简介"""
   profile: String
   """状态"""
-  status: OrganizationStatus
+  status: OrganizationSimpleStatus
   """路径编码"""
   path: String
   displaySort: Int
@@ -2524,6 +3878,26 @@ type Organization implements Node {
   timezone: String
   parent: Organization!
   children: [Organization!]
+  permissions: [Permission!]
+  apps(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Apps returned from the connection."""
+    orderBy: AppOrder
+
+    """Filtering options for Apps returned from the connection."""
+    where: AppWhereInput
+  ): AppConnection!
 }
 """A connection to a list of items."""
 type OrganizationConnection {
@@ -2552,10 +3926,124 @@ input OrganizationOrder {
 enum OrganizationOrderField {
   createdAt
 }
-"""OrganizationStatus is enum for the field status"""
-enum OrganizationStatus @goModel(model: "github.com/woocoos/adminx/ent/organization.Status") {
+"""
+OrganizationPolicyWhereInput is used for filtering OrganizationPolicy objects.
+Input was generated by ent.
+"""
+input OrganizationPolicyWhereInput {
+  not: OrganizationPolicyWhereInput
+  and: [OrganizationPolicyWhereInput!]
+  or: [OrganizationPolicyWhereInput!]
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  """org_id field predicates"""
+  orgID: Int
+  orgIDNEQ: Int
+  orgIDIn: [Int!]
+  orgIDNotIn: [Int!]
+  orgIDGT: Int
+  orgIDGTE: Int
+  orgIDLT: Int
+  orgIDLTE: Int
+  """app_policy_id field predicates"""
+  appPolicyID: Int
+  appPolicyIDNEQ: Int
+  appPolicyIDIn: [Int!]
+  appPolicyIDNotIn: [Int!]
+  appPolicyIDGT: Int
+  appPolicyIDGTE: Int
+  appPolicyIDLT: Int
+  appPolicyIDLTE: Int
+  appPolicyIDIsNil: Boolean
+  appPolicyIDNotNil: Boolean
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  """comments field predicates"""
+  comments: String
+  commentsNEQ: String
+  commentsIn: [String!]
+  commentsNotIn: [String!]
+  commentsGT: String
+  commentsGTE: String
+  commentsLT: String
+  commentsLTE: String
+  commentsContains: String
+  commentsHasPrefix: String
+  commentsHasSuffix: String
+  commentsEqualFold: String
+  commentsContainsFold: String
+}
+"""OrganizationRoleKind is enum for the field kind"""
+enum OrganizationRoleKind @goModel(model: "github.com/woocoos/adminx/ent/organizationrole.Kind") {
+  group
+  role
+}
+"""
+OrganizationRoleWhereInput is used for filtering OrganizationRole objects.
+Input was generated by ent.
+"""
+input OrganizationRoleWhereInput {
+  not: OrganizationRoleWhereInput
+  and: [OrganizationRoleWhereInput!]
+  or: [OrganizationRoleWhereInput!]
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  """org_id field predicates"""
+  orgID: ID
+  orgIDNEQ: ID
+  orgIDIn: [ID!]
+  orgIDNotIn: [ID!]
+  """kind field predicates"""
+  kind: OrganizationRoleKind
+  kindNEQ: OrganizationRoleKind
+  kindIn: [OrganizationRoleKind!]
+  kindNotIn: [OrganizationRoleKind!]
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+}
+"""OrganizationSimpleStatus is enum for the field status"""
+enum OrganizationSimpleStatus @goModel(model: "github.com/woocoos/adminx/graph/entgen/types.SimpleStatus") {
   active
   inactive
+  processing
 }
 """Ordering options for OrganizationUser connections"""
 input OrganizationUserOrder {
@@ -2767,10 +4255,10 @@ input OrganizationWhereInput {
   nameEqualFold: String
   nameContainsFold: String
   """status field predicates"""
-  status: OrganizationStatus
-  statusNEQ: OrganizationStatus
-  statusIn: [OrganizationStatus!]
-  statusNotIn: [OrganizationStatus!]
+  status: OrganizationSimpleStatus
+  statusNEQ: OrganizationSimpleStatus
+  statusIn: [OrganizationSimpleStatus!]
+  statusNotIn: [OrganizationSimpleStatus!]
   statusIsNil: Boolean
   statusNotNil: Boolean
   """path field predicates"""
@@ -2830,6 +4318,9 @@ input OrganizationWhereInput {
   """owner edge predicates"""
   hasOwner: Boolean
   hasOwnerWith: [UserWhereInput!]
+  """apps edge predicates"""
+  hasApps: Boolean
+  hasAppsWith: [AppWhereInput!]
 }
 """
 Information about pagination in a connection.
@@ -2844,6 +4335,113 @@ type PageInfo {
   startCursor: Cursor
   """When paginating forwards, the cursor to continue."""
   endCursor: Cursor
+}
+type Permission implements Node {
+  id: ID!
+  """授权组织"""
+  orgID: ID!
+  """授权类型:角色,用户"""
+  principalKind: PermissionPrincipalKind!
+  """授权类型为用户的ID"""
+  userID: ID
+  """授权类型为角色或用户组的ID"""
+  roleID: Int
+  """策略"""
+  orgPolicyID: Int!
+  """生效开始时间"""
+  startAt: Time
+  """生效结束时间"""
+  endAt: Time
+  organization: Organization!
+  user: User
+}
+"""PermissionPrincipalKind is enum for the field principal_kind"""
+enum PermissionPrincipalKind @goModel(model: "github.com/woocoos/adminx/ent/permission.PrincipalKind") {
+  user
+  role
+}
+"""
+PermissionWhereInput is used for filtering Permission objects.
+Input was generated by ent.
+"""
+input PermissionWhereInput {
+  not: PermissionWhereInput
+  and: [PermissionWhereInput!]
+  or: [PermissionWhereInput!]
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  """org_id field predicates"""
+  orgID: ID
+  orgIDNEQ: ID
+  orgIDIn: [ID!]
+  orgIDNotIn: [ID!]
+  """principal_kind field predicates"""
+  principalKind: PermissionPrincipalKind
+  principalKindNEQ: PermissionPrincipalKind
+  principalKindIn: [PermissionPrincipalKind!]
+  principalKindNotIn: [PermissionPrincipalKind!]
+  """user_id field predicates"""
+  userID: ID
+  userIDNEQ: ID
+  userIDIn: [ID!]
+  userIDNotIn: [ID!]
+  userIDIsNil: Boolean
+  userIDNotNil: Boolean
+  """role_id field predicates"""
+  roleID: Int
+  roleIDNEQ: Int
+  roleIDIn: [Int!]
+  roleIDNotIn: [Int!]
+  roleIDGT: Int
+  roleIDGTE: Int
+  roleIDLT: Int
+  roleIDLTE: Int
+  roleIDIsNil: Boolean
+  roleIDNotNil: Boolean
+  """org_policy_id field predicates"""
+  orgPolicyID: Int
+  orgPolicyIDNEQ: Int
+  orgPolicyIDIn: [Int!]
+  orgPolicyIDNotIn: [Int!]
+  orgPolicyIDGT: Int
+  orgPolicyIDGTE: Int
+  orgPolicyIDLT: Int
+  orgPolicyIDLTE: Int
+  """start_at field predicates"""
+  startAt: Time
+  startAtNEQ: Time
+  startAtIn: [Time!]
+  startAtNotIn: [Time!]
+  startAtGT: Time
+  startAtGTE: Time
+  startAtLT: Time
+  startAtLTE: Time
+  startAtIsNil: Boolean
+  startAtNotNil: Boolean
+  """end_at field predicates"""
+  endAt: Time
+  endAtNEQ: Time
+  endAtIn: [Time!]
+  endAtNotIn: [Time!]
+  endAtGT: Time
+  endAtGTE: Time
+  endAtLT: Time
+  endAtLTE: Time
+  endAtIsNil: Boolean
+  endAtNotNil: Boolean
+  """organization edge predicates"""
+  hasOrganization: Boolean
+  hasOrganizationWith: [OrganizationWhereInput!]
+  """user edge predicates"""
+  hasUser: Boolean
+  hasUserWith: [UserWhereInput!]
 }
 type Query {
   """Fetches an object given its ID."""
@@ -2917,6 +4515,29 @@ type Query {
 """The builtin Time type"""
 scalar Time
 """
+UpdateAppActionInput is used for update AppAction object.
+Input was generated by ent.
+"""
+input UpdateAppActionInput {
+  """名称"""
+  name: String
+  """restful,graphql,rpc"""
+  kind: AppActionKind
+  """操作方法:读,写,列表"""
+  method: AppActionMethod
+  """备注"""
+  comments: String
+  clearComments: Boolean
+  appID: ID
+  clearApp: Boolean
+  addMenuIDs: [ID!]
+  removeMenuIDs: [ID!]
+  clearMenus: Boolean
+  addResourceIDs: [ID!]
+  removeResourceIDs: [ID!]
+  clearResources: Boolean
+}
+"""
 UpdateAppInput is used for update App object.
 Input was generated by ent.
 """
@@ -2952,14 +4573,105 @@ input UpdateAppInput {
   comments: String
   clearComments: Boolean
   """状态"""
-  status: AppStatus
+  status: AppSimpleStatus
   clearStatus: Boolean
   addMenuIDs: [ID!]
   removeMenuIDs: [ID!]
   clearMenus: Boolean
-  addPermissionIDs: [ID!]
-  removePermissionIDs: [ID!]
-  clearPermissions: Boolean
+  addActionIDs: [ID!]
+  removeActionIDs: [ID!]
+  clearActions: Boolean
+  addResourceIDs: [ID!]
+  removeResourceIDs: [ID!]
+  clearResources: Boolean
+  addRoleIDs: [ID!]
+  removeRoleIDs: [ID!]
+  clearRoles: Boolean
+  addPolicyIDs: [ID!]
+  removePolicyIDs: [ID!]
+  clearPolicies: Boolean
+  addOrganizationIDs: [ID!]
+  removeOrganizationIDs: [ID!]
+  clearOrganizations: Boolean
+}
+"""
+UpdateAppMenuInput is used for update AppMenu object.
+Input was generated by ent.
+"""
+input UpdateAppMenuInput {
+  """父级ID"""
+  parentID: Int
+  """目录,菜单项"""
+  kind: AppMenuKind
+  """菜单名称"""
+  name: String
+  clearName: Boolean
+  """备注"""
+  comments: String
+  clearComments: Boolean
+  appID: ID
+  clearApp: Boolean
+  actionID: ID
+  clearAction: Boolean
+}
+"""
+UpdateAppPolicyInput is used for update AppPolicy object.
+Input was generated by ent.
+"""
+input UpdateAppPolicyInput {
+  """策略名称"""
+  name: String
+  """描述"""
+  comments: String
+  """策略规则"""
+  rules: [PolicyRuleInput!]
+  appendRules: [PolicyRuleInput!]
+  """版本号"""
+  version: String
+  """标识是否自动授予到账户"""
+  autoGrant: Boolean
+  """状态"""
+  status: AppPolicySimpleStatus
+  clearStatus: Boolean
+  appID: ID
+  clearApp: Boolean
+  addRoleIDs: [ID!]
+  removeRoleIDs: [ID!]
+  clearRoles: Boolean
+}
+"""
+UpdateAppResInput is used for update AppRes object.
+Input was generated by ent.
+"""
+input UpdateAppResInput {
+  """资源名称"""
+  name: String
+  """资源类型名称,如数据库表名"""
+  typeName: String
+  """应用资源表达式"""
+  arnPattern: String
+  appID: ID
+  clearApp: Boolean
+}
+"""
+UpdateAppRoleInput is used for update AppRole object.
+Input was generated by ent.
+"""
+input UpdateAppRoleInput {
+  """角色名称"""
+  name: String
+  """备注"""
+  comments: String
+  clearComments: Boolean
+  """标识是否自动授予到账户"""
+  autoGrant: Boolean
+  """授权后是否可编辑"""
+  editable: Boolean
+  appID: ID
+  clearApp: Boolean
+  addPolicyIDs: [ID!]
+  removePolicyIDs: [ID!]
+  clearPolicies: Boolean
 }
 """
 UpdateOrganizationInput is used for update Organization object.
@@ -2975,7 +4687,7 @@ input UpdateOrganizationInput {
   profile: String
   clearProfile: Boolean
   """状态"""
-  status: OrganizationStatus
+  status: OrganizationSimpleStatus
   clearStatus: Boolean
   """国家或地区2字码"""
   countryCode: String
@@ -2987,6 +4699,27 @@ input UpdateOrganizationInput {
   clearParent: Boolean
   ownerID: ID
   clearOwner: Boolean
+  addAppIDs: [ID!]
+  removeAppIDs: [ID!]
+  clearApps: Boolean
+}
+"""
+UpdateOrganizationPolicyInput is used for update OrganizationPolicy object.
+Input was generated by ent.
+"""
+input UpdateOrganizationPolicyInput {
+  """组织ID"""
+  orgID: Int
+  """所属应用策略,如果是自定义应用策略,则为空"""
+  appPolicyID: Int
+  clearAppPolicyID: Boolean
+  """策略名称"""
+  name: String
+  """描述"""
+  comments: String
+  """策略规则,如果是应用策略,则为空"""
+  rules: [PolicyRuleInput!]
+  appendRules: [PolicyRuleInput!]
 }
 """
 UpdateUserIdentityInput is used for update UserIdentity object.
@@ -3002,7 +4735,7 @@ input UpdateUserIdentityInput {
   codeExtend: String
   clearCodeExtend: Boolean
   """状态,部分登陆方式需要验证通过才可启用"""
-  status: UserIdentityStatus
+  status: UserIdentitySimpleStatus
   clearStatus: Boolean
 }
 """
@@ -3051,7 +4784,7 @@ input UpdateUserLoginProfileInput {
   mfaSecret: String
   clearMfaSecret: Boolean
   """多因素验证状态"""
-  mfaStatus: UserLoginProfileMfaStatus
+  mfaStatus: UserLoginProfileSimpleStatus
   clearMfaStatus: Boolean
 }
 """
@@ -3065,7 +4798,7 @@ input UpdateUserPasswordInput {
   """密码"""
   password: String
   clearPassword: Boolean
-  status: UserPasswordStatus
+  status: UserPasswordSimpleStatus
   clearStatus: Boolean
   memo: String
   clearMemo: Boolean
@@ -3088,7 +4821,7 @@ type User implements Node {
   """注册时IP"""
   registerIP: String!
   """状态"""
-  status: UserStatus
+  status: UserSimpleStatus
   """备注"""
   comments: String
   identities: [UserIdentity!]
@@ -3126,7 +4859,7 @@ type UserDevice implements Node {
   appVersion: String
   deviceModel: String
   """状态,可用或不可用及其他待确认状态"""
-  status: UserDeviceStatus
+  status: UserDeviceSimpleStatus
   """备注"""
   comments: String
   user: User
@@ -3142,10 +4875,11 @@ input UserDeviceOrder {
 enum UserDeviceOrderField {
   createdAt
 }
-"""UserDeviceStatus is enum for the field status"""
-enum UserDeviceStatus @goModel(model: "github.com/woocoos/adminx/ent/userdevice.Status") {
+"""UserDeviceSimpleStatus is enum for the field status"""
+enum UserDeviceSimpleStatus @goModel(model: "github.com/woocoos/adminx/graph/entgen/types.SimpleStatus") {
   active
   inactive
+  processing
 }
 """
 UserDeviceWhereInput is used for filtering UserDevice objects.
@@ -3306,10 +5040,10 @@ input UserDeviceWhereInput {
   deviceModelEqualFold: String
   deviceModelContainsFold: String
   """status field predicates"""
-  status: UserDeviceStatus
-  statusNEQ: UserDeviceStatus
-  statusIn: [UserDeviceStatus!]
-  statusNotIn: [UserDeviceStatus!]
+  status: UserDeviceSimpleStatus
+  statusNEQ: UserDeviceSimpleStatus
+  statusIn: [UserDeviceSimpleStatus!]
+  statusNotIn: [UserDeviceSimpleStatus!]
   statusIsNil: Boolean
   statusNotNil: Boolean
   """user edge predicates"""
@@ -3337,7 +5071,7 @@ type UserIdentity implements Node {
   """扩展标识码,比如微信的openID"""
   codeExtend: String
   """状态,部分登陆方式需要验证通过才可启用"""
-  status: UserIdentityStatus
+  status: UserIdentitySimpleStatus
   user: User
 }
 """UserIdentityKind is enum for the field kind"""
@@ -3359,11 +5093,11 @@ input UserIdentityOrder {
 enum UserIdentityOrderField {
   createdAt
 }
-"""UserIdentityStatus is enum for the field status"""
-enum UserIdentityStatus @goModel(model: "github.com/woocoos/adminx/ent/useridentity.Status") {
-  verify
+"""UserIdentitySimpleStatus is enum for the field status"""
+enum UserIdentitySimpleStatus @goModel(model: "github.com/woocoos/adminx/graph/entgen/types.SimpleStatus") {
   active
   inactive
+  processing
 }
 """
 UserIdentityWhereInput is used for filtering UserIdentity objects.
@@ -3467,10 +5201,10 @@ input UserIdentityWhereInput {
   codeExtendEqualFold: String
   codeExtendContainsFold: String
   """status field predicates"""
-  status: UserIdentityStatus
-  statusNEQ: UserIdentityStatus
-  statusIn: [UserIdentityStatus!]
-  statusNotIn: [UserIdentityStatus!]
+  status: UserIdentitySimpleStatus
+  statusNEQ: UserIdentitySimpleStatus
+  statusIn: [UserIdentitySimpleStatus!]
+  statusNotIn: [UserIdentitySimpleStatus!]
   statusIsNil: Boolean
   statusNotNil: Boolean
   """user edge predicates"""
@@ -3498,13 +5232,8 @@ type UserLoginProfile implements Node {
   """是否开启多因素验证"""
   mfaEnabled: Boolean
   """多因素验证状态"""
-  mfaStatus: UserLoginProfileMfaStatus
+  mfaStatus: UserLoginProfileSimpleStatus
   user: User
-}
-"""UserLoginProfileMfaStatus is enum for the field mfa_status"""
-enum UserLoginProfileMfaStatus @goModel(model: "github.com/woocoos/adminx/ent/userloginprofile.MfaStatus") {
-  enable
-  inactive
 }
 """Ordering options for UserLoginProfile connections"""
 input UserLoginProfileOrder {
@@ -3522,6 +5251,12 @@ enum UserLoginProfileSetKind @goModel(model: "github.com/woocoos/adminx/ent/user
   keep
   customer
   auto
+}
+"""UserLoginProfileSimpleStatus is enum for the field mfa_status"""
+enum UserLoginProfileSimpleStatus @goModel(model: "github.com/woocoos/adminx/graph/entgen/types.SimpleStatus") {
+  active
+  inactive
+  processing
 }
 """
 UserLoginProfileWhereInput is used for filtering UserLoginProfile objects.
@@ -3611,10 +5346,10 @@ input UserLoginProfileWhereInput {
   mfaEnabledIsNil: Boolean
   mfaEnabledNotNil: Boolean
   """mfa_status field predicates"""
-  mfaStatus: UserLoginProfileMfaStatus
-  mfaStatusNEQ: UserLoginProfileMfaStatus
-  mfaStatusIn: [UserLoginProfileMfaStatus!]
-  mfaStatusNotIn: [UserLoginProfileMfaStatus!]
+  mfaStatus: UserLoginProfileSimpleStatus
+  mfaStatusNEQ: UserLoginProfileSimpleStatus
+  mfaStatusIn: [UserLoginProfileSimpleStatus!]
+  mfaStatusNotIn: [UserLoginProfileSimpleStatus!]
   mfaStatusIsNil: Boolean
   mfaStatusNotNil: Boolean
   """user edge predicates"""
@@ -3641,7 +5376,7 @@ type UserPassword implements Node {
   userID: ID
   """场景: login 普通登陆"""
   scene: UserPasswordScene
-  status: UserPasswordStatus
+  status: UserPasswordSimpleStatus
   memo: String
   user: User
 }
@@ -3660,9 +5395,11 @@ enum UserPasswordOrderField {
 enum UserPasswordScene @goModel(model: "github.com/woocoos/adminx/ent/userpassword.Scene") {
   login
 }
-"""UserPasswordStatus is enum for the field status"""
-enum UserPasswordStatus @goModel(model: "github.com/woocoos/adminx/ent/userpassword.Status") {
+"""UserPasswordSimpleStatus is enum for the field status"""
+enum UserPasswordSimpleStatus @goModel(model: "github.com/woocoos/adminx/graph/entgen/types.SimpleStatus") {
+  active
   inactive
+  processing
 }
 """
 UserPasswordWhereInput is used for filtering UserPassword objects.
@@ -3736,21 +5473,21 @@ input UserPasswordWhereInput {
   sceneIsNil: Boolean
   sceneNotNil: Boolean
   """status field predicates"""
-  status: UserPasswordStatus
-  statusNEQ: UserPasswordStatus
-  statusIn: [UserPasswordStatus!]
-  statusNotIn: [UserPasswordStatus!]
+  status: UserPasswordSimpleStatus
+  statusNEQ: UserPasswordSimpleStatus
+  statusIn: [UserPasswordSimpleStatus!]
+  statusNotIn: [UserPasswordSimpleStatus!]
   statusIsNil: Boolean
   statusNotNil: Boolean
   """user edge predicates"""
   hasUser: Boolean
   hasUserWith: [UserWhereInput!]
 }
-"""UserStatus is enum for the field status"""
-enum UserStatus @goModel(model: "github.com/woocoos/adminx/ent/user.Status") {
-  processing
+"""UserSimpleStatus is enum for the field status"""
+enum UserSimpleStatus @goModel(model: "github.com/woocoos/adminx/graph/entgen/types.SimpleStatus") {
   active
   inactive
+  processing
 }
 """UserUserType is enum for the field user_type"""
 enum UserUserType @goModel(model: "github.com/woocoos/adminx/ent/user.UserType") {
@@ -3873,10 +5610,10 @@ input UserWhereInput {
   registerIPEqualFold: String
   registerIPContainsFold: String
   """status field predicates"""
-  status: UserStatus
-  statusNEQ: UserStatus
-  statusIn: [UserStatus!]
-  statusNotIn: [UserStatus!]
+  status: UserSimpleStatus
+  statusNEQ: UserSimpleStatus
+  statusIn: [UserSimpleStatus!]
+  statusNotIn: [UserSimpleStatus!]
   statusIsNil: Boolean
   statusNotNil: Boolean
   """identities edge predicates"""
@@ -3895,7 +5632,23 @@ input UserWhereInput {
 `, BuiltIn: false},
 	{Name: "../doc/types.graphql", Input: `scalar GID
 
-`, BuiltIn: false},
+enum PolicyEffect {
+    allow
+    deny
+}
+type PolicyRule {
+    effect: PolicyEffect!
+    actions: [String!]
+    resources: [String!]
+    conditions: [String!]
+}
+
+input PolicyRuleInput {
+    effect: PolicyEffect!
+    actions: [String!]
+    resources: [String!]
+    conditions: [String!]
+}`, BuiltIn: false},
 	{Name: "../doc/query.graphql", Input: `extend type Query {
     """获取全局ID,开发用途"""
     globalID(type: String!, id: ID!): GID
@@ -3906,21 +5659,41 @@ input UserWhereInput {
     """创建组织目录"""
     createOrganization(input: CreateOrganizationInput!): Organization
     """更新组织目录"""
-    updateOrganization(id:ID!,input: UpdateOrganizationInput!): Organization
+    updateOrganization(orgID:ID!,input: UpdateOrganizationInput!): Organization
     """删除组织目录"""
-    deleteOrganization(id:ID!): Boolean!
+    deleteOrganization(orgID:ID!): Boolean!
     """创建组织成员(管理账户)"""
     createOrganizationAccount(input: CreateOrganizationAccountInput!): User
     """创建组织用户"""
-    createOrganizationUser(id:ID!,input: CreateUserInput!): User
+    createOrganizationUser(orgID:ID!,input: CreateUserInput!): User
     """更新用户"""
-    updateUser(id:ID!,input: UpdateUserInput!): User
+    updateUser(userID:ID!,input: UpdateUserInput!): User
     """创建应用"""
     createApp(input: CreateAppInput!): App
     """更新应用"""
-    updateApp(id:ID!,input: UpdateAppInput!): App
+    updateApp(appID:ID!,input: UpdateAppInput!): App
     """删除应用"""
-    deleteApp(id:ID!): Boolean!
+    deleteApp(appID:ID!): Boolean!
+    """创建应用操作"""
+    createAppActions(input: [CreateAppActionInput!]): Boolean!
+    """创建应用菜单"""
+    createAppMenus(input: [CreateAppMenuInput!]): Boolean!
+    """创建应用策略模板"""
+    createAppPolicies(input: [CreateAppPolicyInput!]): Boolean!
+    """更新应用菜单"""
+    updateAppMenu(input: UpdateAppMenuInput!): AppMenu
+    """创建应用角色"""
+    createAppRole(input: CreateAppRoleInput!): AppRole
+    """更新应用角色"""
+    updateAppRole(input: UpdateAppRoleInput!): AppRole
+    """分配应用,将自动分配应用下的所有资源"""
+    assignOrganizationApp(orgID:ID!,appID:ID!): Boolean!
+    """取消分配应用"""
+    revokeOrganizationApp(orgID:ID!,appID:ID!): Boolean!
+    """分配应用策略到组织"""
+    assignOrganizationAppPolicy(orgID:ID!,policyID:ID!): Boolean!
+    """取消分配到组织应用策略"""
+    revokeOrganizationAppPolicy(orgID:ID!,policyID:ID!): Boolean!
 }
 
 input EnableDirectoryInput {

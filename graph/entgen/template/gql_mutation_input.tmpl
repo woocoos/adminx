@@ -27,7 +27,9 @@
             // {{ $input }} represents a mutation input for updating {{ plural $names.Node | lower }}.
         {{- end }}
         type {{ $input }} struct {
+        {{- if $n.IsCreate }}
             {{ $n.ID.StructField }} {{ if not $n.ID.Nillable }}*{{ end }}{{ $n.ID.Type.String}}
+        {{- end }}
         {{- range $f := $fields }}
             {{- if $f.ClearOp }}
                 {{ print "Clear" $f.StructField }} bool

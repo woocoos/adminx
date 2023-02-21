@@ -9,17 +9,41 @@ import (
 // App is the predicate function for app builders.
 type App func(*sql.Selector)
 
+// AppAction is the predicate function for appaction builders.
+type AppAction func(*sql.Selector)
+
 // AppMenu is the predicate function for appmenu builders.
 type AppMenu func(*sql.Selector)
 
-// AppPermission is the predicate function for apppermission builders.
-type AppPermission func(*sql.Selector)
+// AppPolicy is the predicate function for apppolicy builders.
+type AppPolicy func(*sql.Selector)
+
+// AppRes is the predicate function for appres builders.
+type AppRes func(*sql.Selector)
+
+// AppRole is the predicate function for approle builders.
+type AppRole func(*sql.Selector)
+
+// AppRolePolicy is the predicate function for approlepolicy builders.
+type AppRolePolicy func(*sql.Selector)
 
 // Organization is the predicate function for organization builders.
 type Organization func(*sql.Selector)
 
+// OrganizationApp is the predicate function for organizationapp builders.
+type OrganizationApp func(*sql.Selector)
+
+// OrganizationPolicy is the predicate function for organizationpolicy builders.
+type OrganizationPolicy func(*sql.Selector)
+
+// OrganizationRole is the predicate function for organizationrole builders.
+type OrganizationRole func(*sql.Selector)
+
 // OrganizationUser is the predicate function for organizationuser builders.
 type OrganizationUser func(*sql.Selector)
+
+// Permission is the predicate function for permission builders.
+type Permission func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

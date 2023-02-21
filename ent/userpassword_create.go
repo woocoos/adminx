@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userpassword"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserPasswordCreate is the builder for creating a UserPassword entity.
@@ -118,15 +119,15 @@ func (upc *UserPasswordCreate) SetSalt(s string) *UserPasswordCreate {
 }
 
 // SetStatus sets the "status" field.
-func (upc *UserPasswordCreate) SetStatus(u userpassword.Status) *UserPasswordCreate {
-	upc.mutation.SetStatus(u)
+func (upc *UserPasswordCreate) SetStatus(ts types.SimpleStatus) *UserPasswordCreate {
+	upc.mutation.SetStatus(ts)
 	return upc
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (upc *UserPasswordCreate) SetNillableStatus(u *userpassword.Status) *UserPasswordCreate {
-	if u != nil {
-		upc.SetStatus(*u)
+func (upc *UserPasswordCreate) SetNillableStatus(ts *types.SimpleStatus) *UserPasswordCreate {
+	if ts != nil {
+		upc.SetStatus(*ts)
 	}
 	return upc
 }
@@ -199,13 +200,6 @@ func (upc *UserPasswordCreate) defaults() error {
 		}
 		v := userpassword.DefaultCreatedAt()
 		upc.mutation.SetCreatedAt(v)
-	}
-	if _, ok := upc.mutation.UpdatedAt(); !ok {
-		if userpassword.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userpassword.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userpassword.DefaultUpdatedAt()
-		upc.mutation.SetUpdatedAt(v)
 	}
 	return nil
 }

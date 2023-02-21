@@ -12,9 +12,14 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
+	"github.com/woocoos/adminx/ent/apppolicy"
+	"github.com/woocoos/adminx/ent/appres"
+	"github.com/woocoos/adminx/ent/approle"
+	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/predicate"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // AppUpdate is the builder for updating App entities.
@@ -60,6 +65,14 @@ func (au *AppUpdate) ClearUpdatedBy() *AppUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (au *AppUpdate) SetUpdatedAt(t time.Time) *AppUpdate {
 	au.mutation.SetUpdatedAt(t)
+	return au
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (au *AppUpdate) SetNillableUpdatedAt(t *time.Time) *AppUpdate {
+	if t != nil {
+		au.SetUpdatedAt(*t)
+	}
 	return au
 }
 
@@ -262,15 +275,15 @@ func (au *AppUpdate) ClearComments() *AppUpdate {
 }
 
 // SetStatus sets the "status" field.
-func (au *AppUpdate) SetStatus(a app.Status) *AppUpdate {
-	au.mutation.SetStatus(a)
+func (au *AppUpdate) SetStatus(ts types.SimpleStatus) *AppUpdate {
+	au.mutation.SetStatus(ts)
 	return au
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (au *AppUpdate) SetNillableStatus(a *app.Status) *AppUpdate {
-	if a != nil {
-		au.SetStatus(*a)
+func (au *AppUpdate) SetNillableStatus(ts *types.SimpleStatus) *AppUpdate {
+	if ts != nil {
+		au.SetStatus(*ts)
 	}
 	return au
 }
@@ -296,19 +309,79 @@ func (au *AppUpdate) AddMenus(a ...*AppMenu) *AppUpdate {
 	return au.AddMenuIDs(ids...)
 }
 
-// AddPermissionIDs adds the "permissions" edge to the AppPermission entity by IDs.
-func (au *AppUpdate) AddPermissionIDs(ids ...int) *AppUpdate {
-	au.mutation.AddPermissionIDs(ids...)
+// AddActionIDs adds the "actions" edge to the AppAction entity by IDs.
+func (au *AppUpdate) AddActionIDs(ids ...int) *AppUpdate {
+	au.mutation.AddActionIDs(ids...)
 	return au
 }
 
-// AddPermissions adds the "permissions" edges to the AppPermission entity.
-func (au *AppUpdate) AddPermissions(a ...*AppPermission) *AppUpdate {
+// AddActions adds the "actions" edges to the AppAction entity.
+func (au *AppUpdate) AddActions(a ...*AppAction) *AppUpdate {
 	ids := make([]int, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return au.AddPermissionIDs(ids...)
+	return au.AddActionIDs(ids...)
+}
+
+// AddResourceIDs adds the "resources" edge to the AppRes entity by IDs.
+func (au *AppUpdate) AddResourceIDs(ids ...int) *AppUpdate {
+	au.mutation.AddResourceIDs(ids...)
+	return au
+}
+
+// AddResources adds the "resources" edges to the AppRes entity.
+func (au *AppUpdate) AddResources(a ...*AppRes) *AppUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddResourceIDs(ids...)
+}
+
+// AddRoleIDs adds the "roles" edge to the AppRole entity by IDs.
+func (au *AppUpdate) AddRoleIDs(ids ...int) *AppUpdate {
+	au.mutation.AddRoleIDs(ids...)
+	return au
+}
+
+// AddRoles adds the "roles" edges to the AppRole entity.
+func (au *AppUpdate) AddRoles(a ...*AppRole) *AppUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddRoleIDs(ids...)
+}
+
+// AddPolicyIDs adds the "policies" edge to the AppPolicy entity by IDs.
+func (au *AppUpdate) AddPolicyIDs(ids ...int) *AppUpdate {
+	au.mutation.AddPolicyIDs(ids...)
+	return au
+}
+
+// AddPolicies adds the "policies" edges to the AppPolicy entity.
+func (au *AppUpdate) AddPolicies(a ...*AppPolicy) *AppUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddPolicyIDs(ids...)
+}
+
+// AddOrganizationIDs adds the "organizations" edge to the Organization entity by IDs.
+func (au *AppUpdate) AddOrganizationIDs(ids ...int) *AppUpdate {
+	au.mutation.AddOrganizationIDs(ids...)
+	return au
+}
+
+// AddOrganizations adds the "organizations" edges to the Organization entity.
+func (au *AppUpdate) AddOrganizations(o ...*Organization) *AppUpdate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return au.AddOrganizationIDs(ids...)
 }
 
 // Mutation returns the AppMutation object of the builder.
@@ -337,32 +410,113 @@ func (au *AppUpdate) RemoveMenus(a ...*AppMenu) *AppUpdate {
 	return au.RemoveMenuIDs(ids...)
 }
 
-// ClearPermissions clears all "permissions" edges to the AppPermission entity.
-func (au *AppUpdate) ClearPermissions() *AppUpdate {
-	au.mutation.ClearPermissions()
+// ClearActions clears all "actions" edges to the AppAction entity.
+func (au *AppUpdate) ClearActions() *AppUpdate {
+	au.mutation.ClearActions()
 	return au
 }
 
-// RemovePermissionIDs removes the "permissions" edge to AppPermission entities by IDs.
-func (au *AppUpdate) RemovePermissionIDs(ids ...int) *AppUpdate {
-	au.mutation.RemovePermissionIDs(ids...)
+// RemoveActionIDs removes the "actions" edge to AppAction entities by IDs.
+func (au *AppUpdate) RemoveActionIDs(ids ...int) *AppUpdate {
+	au.mutation.RemoveActionIDs(ids...)
 	return au
 }
 
-// RemovePermissions removes "permissions" edges to AppPermission entities.
-func (au *AppUpdate) RemovePermissions(a ...*AppPermission) *AppUpdate {
+// RemoveActions removes "actions" edges to AppAction entities.
+func (au *AppUpdate) RemoveActions(a ...*AppAction) *AppUpdate {
 	ids := make([]int, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return au.RemovePermissionIDs(ids...)
+	return au.RemoveActionIDs(ids...)
+}
+
+// ClearResources clears all "resources" edges to the AppRes entity.
+func (au *AppUpdate) ClearResources() *AppUpdate {
+	au.mutation.ClearResources()
+	return au
+}
+
+// RemoveResourceIDs removes the "resources" edge to AppRes entities by IDs.
+func (au *AppUpdate) RemoveResourceIDs(ids ...int) *AppUpdate {
+	au.mutation.RemoveResourceIDs(ids...)
+	return au
+}
+
+// RemoveResources removes "resources" edges to AppRes entities.
+func (au *AppUpdate) RemoveResources(a ...*AppRes) *AppUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveResourceIDs(ids...)
+}
+
+// ClearRoles clears all "roles" edges to the AppRole entity.
+func (au *AppUpdate) ClearRoles() *AppUpdate {
+	au.mutation.ClearRoles()
+	return au
+}
+
+// RemoveRoleIDs removes the "roles" edge to AppRole entities by IDs.
+func (au *AppUpdate) RemoveRoleIDs(ids ...int) *AppUpdate {
+	au.mutation.RemoveRoleIDs(ids...)
+	return au
+}
+
+// RemoveRoles removes "roles" edges to AppRole entities.
+func (au *AppUpdate) RemoveRoles(a ...*AppRole) *AppUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveRoleIDs(ids...)
+}
+
+// ClearPolicies clears all "policies" edges to the AppPolicy entity.
+func (au *AppUpdate) ClearPolicies() *AppUpdate {
+	au.mutation.ClearPolicies()
+	return au
+}
+
+// RemovePolicyIDs removes the "policies" edge to AppPolicy entities by IDs.
+func (au *AppUpdate) RemovePolicyIDs(ids ...int) *AppUpdate {
+	au.mutation.RemovePolicyIDs(ids...)
+	return au
+}
+
+// RemovePolicies removes "policies" edges to AppPolicy entities.
+func (au *AppUpdate) RemovePolicies(a ...*AppPolicy) *AppUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemovePolicyIDs(ids...)
+}
+
+// ClearOrganizations clears all "organizations" edges to the Organization entity.
+func (au *AppUpdate) ClearOrganizations() *AppUpdate {
+	au.mutation.ClearOrganizations()
+	return au
+}
+
+// RemoveOrganizationIDs removes the "organizations" edge to Organization entities by IDs.
+func (au *AppUpdate) RemoveOrganizationIDs(ids ...int) *AppUpdate {
+	au.mutation.RemoveOrganizationIDs(ids...)
+	return au
+}
+
+// RemoveOrganizations removes "organizations" edges to Organization entities.
+func (au *AppUpdate) RemoveOrganizations(o ...*Organization) *AppUpdate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return au.RemoveOrganizationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AppUpdate) Save(ctx context.Context) (int, error) {
-	if err := au.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, AppMutation](ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
@@ -386,18 +540,6 @@ func (au *AppUpdate) ExecX(ctx context.Context) {
 	if err := au.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (au *AppUpdate) defaults() error {
-	if _, ok := au.mutation.UpdatedAt(); !ok && !au.mutation.UpdatedAtCleared() {
-		if app.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized app.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := app.UpdateDefaultUpdatedAt()
-		au.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -590,33 +732,33 @@ func (au *AppUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.PermissionsCleared() {
+	if au.mutation.ActionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   app.PermissionsTable,
-			Columns: []string{app.PermissionsColumn},
+			Table:   app.ActionsTable,
+			Columns: []string{app.ActionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedPermissionsIDs(); len(nodes) > 0 && !au.mutation.PermissionsCleared() {
+	if nodes := au.mutation.RemovedActionsIDs(); len(nodes) > 0 && !au.mutation.ActionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   app.PermissionsTable,
-			Columns: []string{app.PermissionsColumn},
+			Table:   app.ActionsTable,
+			Columns: []string{app.ActionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
@@ -625,23 +767,251 @@ func (au *AppUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.PermissionsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.ActionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   app.PermissionsTable,
-			Columns: []string{app.PermissionsColumn},
+			Table:   app.ActionsTable,
+			Columns: []string{app.ActionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.ResourcesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.ResourcesTable,
+			Columns: []string{app.ResourcesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: appres.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedResourcesIDs(); len(nodes) > 0 && !au.mutation.ResourcesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.ResourcesTable,
+			Columns: []string{app.ResourcesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: appres.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.ResourcesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.ResourcesTable,
+			Columns: []string{app.ResourcesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: appres.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.RolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.RolesTable,
+			Columns: []string{app.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approle.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedRolesIDs(); len(nodes) > 0 && !au.mutation.RolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.RolesTable,
+			Columns: []string{app.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approle.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.RolesTable,
+			Columns: []string{app.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approle.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.PoliciesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.PoliciesTable,
+			Columns: []string{app.PoliciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: apppolicy.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedPoliciesIDs(); len(nodes) > 0 && !au.mutation.PoliciesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.PoliciesTable,
+			Columns: []string{app.PoliciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: apppolicy.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.PoliciesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.PoliciesTable,
+			Columns: []string{app.PoliciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: apppolicy.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.OrganizationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   app.OrganizationsTable,
+			Columns: app.OrganizationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		createE := &OrganizationAppCreate{config: au.config, mutation: newOrganizationAppMutation(au.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedOrganizationsIDs(); len(nodes) > 0 && !au.mutation.OrganizationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   app.OrganizationsTable,
+			Columns: app.OrganizationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: au.config, mutation: newOrganizationAppMutation(au.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.OrganizationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   app.OrganizationsTable,
+			Columns: app.OrganizationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: au.config, mutation: newOrganizationAppMutation(au.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
@@ -694,6 +1064,14 @@ func (auo *AppUpdateOne) ClearUpdatedBy() *AppUpdateOne {
 // SetUpdatedAt sets the "updated_at" field.
 func (auo *AppUpdateOne) SetUpdatedAt(t time.Time) *AppUpdateOne {
 	auo.mutation.SetUpdatedAt(t)
+	return auo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (auo *AppUpdateOne) SetNillableUpdatedAt(t *time.Time) *AppUpdateOne {
+	if t != nil {
+		auo.SetUpdatedAt(*t)
+	}
 	return auo
 }
 
@@ -896,15 +1274,15 @@ func (auo *AppUpdateOne) ClearComments() *AppUpdateOne {
 }
 
 // SetStatus sets the "status" field.
-func (auo *AppUpdateOne) SetStatus(a app.Status) *AppUpdateOne {
-	auo.mutation.SetStatus(a)
+func (auo *AppUpdateOne) SetStatus(ts types.SimpleStatus) *AppUpdateOne {
+	auo.mutation.SetStatus(ts)
 	return auo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (auo *AppUpdateOne) SetNillableStatus(a *app.Status) *AppUpdateOne {
-	if a != nil {
-		auo.SetStatus(*a)
+func (auo *AppUpdateOne) SetNillableStatus(ts *types.SimpleStatus) *AppUpdateOne {
+	if ts != nil {
+		auo.SetStatus(*ts)
 	}
 	return auo
 }
@@ -930,19 +1308,79 @@ func (auo *AppUpdateOne) AddMenus(a ...*AppMenu) *AppUpdateOne {
 	return auo.AddMenuIDs(ids...)
 }
 
-// AddPermissionIDs adds the "permissions" edge to the AppPermission entity by IDs.
-func (auo *AppUpdateOne) AddPermissionIDs(ids ...int) *AppUpdateOne {
-	auo.mutation.AddPermissionIDs(ids...)
+// AddActionIDs adds the "actions" edge to the AppAction entity by IDs.
+func (auo *AppUpdateOne) AddActionIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.AddActionIDs(ids...)
 	return auo
 }
 
-// AddPermissions adds the "permissions" edges to the AppPermission entity.
-func (auo *AppUpdateOne) AddPermissions(a ...*AppPermission) *AppUpdateOne {
+// AddActions adds the "actions" edges to the AppAction entity.
+func (auo *AppUpdateOne) AddActions(a ...*AppAction) *AppUpdateOne {
 	ids := make([]int, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return auo.AddPermissionIDs(ids...)
+	return auo.AddActionIDs(ids...)
+}
+
+// AddResourceIDs adds the "resources" edge to the AppRes entity by IDs.
+func (auo *AppUpdateOne) AddResourceIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.AddResourceIDs(ids...)
+	return auo
+}
+
+// AddResources adds the "resources" edges to the AppRes entity.
+func (auo *AppUpdateOne) AddResources(a ...*AppRes) *AppUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddResourceIDs(ids...)
+}
+
+// AddRoleIDs adds the "roles" edge to the AppRole entity by IDs.
+func (auo *AppUpdateOne) AddRoleIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.AddRoleIDs(ids...)
+	return auo
+}
+
+// AddRoles adds the "roles" edges to the AppRole entity.
+func (auo *AppUpdateOne) AddRoles(a ...*AppRole) *AppUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddRoleIDs(ids...)
+}
+
+// AddPolicyIDs adds the "policies" edge to the AppPolicy entity by IDs.
+func (auo *AppUpdateOne) AddPolicyIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.AddPolicyIDs(ids...)
+	return auo
+}
+
+// AddPolicies adds the "policies" edges to the AppPolicy entity.
+func (auo *AppUpdateOne) AddPolicies(a ...*AppPolicy) *AppUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddPolicyIDs(ids...)
+}
+
+// AddOrganizationIDs adds the "organizations" edge to the Organization entity by IDs.
+func (auo *AppUpdateOne) AddOrganizationIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.AddOrganizationIDs(ids...)
+	return auo
+}
+
+// AddOrganizations adds the "organizations" edges to the Organization entity.
+func (auo *AppUpdateOne) AddOrganizations(o ...*Organization) *AppUpdateOne {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return auo.AddOrganizationIDs(ids...)
 }
 
 // Mutation returns the AppMutation object of the builder.
@@ -971,25 +1409,109 @@ func (auo *AppUpdateOne) RemoveMenus(a ...*AppMenu) *AppUpdateOne {
 	return auo.RemoveMenuIDs(ids...)
 }
 
-// ClearPermissions clears all "permissions" edges to the AppPermission entity.
-func (auo *AppUpdateOne) ClearPermissions() *AppUpdateOne {
-	auo.mutation.ClearPermissions()
+// ClearActions clears all "actions" edges to the AppAction entity.
+func (auo *AppUpdateOne) ClearActions() *AppUpdateOne {
+	auo.mutation.ClearActions()
 	return auo
 }
 
-// RemovePermissionIDs removes the "permissions" edge to AppPermission entities by IDs.
-func (auo *AppUpdateOne) RemovePermissionIDs(ids ...int) *AppUpdateOne {
-	auo.mutation.RemovePermissionIDs(ids...)
+// RemoveActionIDs removes the "actions" edge to AppAction entities by IDs.
+func (auo *AppUpdateOne) RemoveActionIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.RemoveActionIDs(ids...)
 	return auo
 }
 
-// RemovePermissions removes "permissions" edges to AppPermission entities.
-func (auo *AppUpdateOne) RemovePermissions(a ...*AppPermission) *AppUpdateOne {
+// RemoveActions removes "actions" edges to AppAction entities.
+func (auo *AppUpdateOne) RemoveActions(a ...*AppAction) *AppUpdateOne {
 	ids := make([]int, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return auo.RemovePermissionIDs(ids...)
+	return auo.RemoveActionIDs(ids...)
+}
+
+// ClearResources clears all "resources" edges to the AppRes entity.
+func (auo *AppUpdateOne) ClearResources() *AppUpdateOne {
+	auo.mutation.ClearResources()
+	return auo
+}
+
+// RemoveResourceIDs removes the "resources" edge to AppRes entities by IDs.
+func (auo *AppUpdateOne) RemoveResourceIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.RemoveResourceIDs(ids...)
+	return auo
+}
+
+// RemoveResources removes "resources" edges to AppRes entities.
+func (auo *AppUpdateOne) RemoveResources(a ...*AppRes) *AppUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveResourceIDs(ids...)
+}
+
+// ClearRoles clears all "roles" edges to the AppRole entity.
+func (auo *AppUpdateOne) ClearRoles() *AppUpdateOne {
+	auo.mutation.ClearRoles()
+	return auo
+}
+
+// RemoveRoleIDs removes the "roles" edge to AppRole entities by IDs.
+func (auo *AppUpdateOne) RemoveRoleIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.RemoveRoleIDs(ids...)
+	return auo
+}
+
+// RemoveRoles removes "roles" edges to AppRole entities.
+func (auo *AppUpdateOne) RemoveRoles(a ...*AppRole) *AppUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveRoleIDs(ids...)
+}
+
+// ClearPolicies clears all "policies" edges to the AppPolicy entity.
+func (auo *AppUpdateOne) ClearPolicies() *AppUpdateOne {
+	auo.mutation.ClearPolicies()
+	return auo
+}
+
+// RemovePolicyIDs removes the "policies" edge to AppPolicy entities by IDs.
+func (auo *AppUpdateOne) RemovePolicyIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.RemovePolicyIDs(ids...)
+	return auo
+}
+
+// RemovePolicies removes "policies" edges to AppPolicy entities.
+func (auo *AppUpdateOne) RemovePolicies(a ...*AppPolicy) *AppUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemovePolicyIDs(ids...)
+}
+
+// ClearOrganizations clears all "organizations" edges to the Organization entity.
+func (auo *AppUpdateOne) ClearOrganizations() *AppUpdateOne {
+	auo.mutation.ClearOrganizations()
+	return auo
+}
+
+// RemoveOrganizationIDs removes the "organizations" edge to Organization entities by IDs.
+func (auo *AppUpdateOne) RemoveOrganizationIDs(ids ...int) *AppUpdateOne {
+	auo.mutation.RemoveOrganizationIDs(ids...)
+	return auo
+}
+
+// RemoveOrganizations removes "organizations" edges to Organization entities.
+func (auo *AppUpdateOne) RemoveOrganizations(o ...*Organization) *AppUpdateOne {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return auo.RemoveOrganizationIDs(ids...)
 }
 
 // Where appends a list predicates to the AppUpdate builder.
@@ -1007,9 +1529,6 @@ func (auo *AppUpdateOne) Select(field string, fields ...string) *AppUpdateOne {
 
 // Save executes the query and returns the updated App entity.
 func (auo *AppUpdateOne) Save(ctx context.Context) (*App, error) {
-	if err := auo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*App, AppMutation](ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
@@ -1033,18 +1552,6 @@ func (auo *AppUpdateOne) ExecX(ctx context.Context) {
 	if err := auo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (auo *AppUpdateOne) defaults() error {
-	if _, ok := auo.mutation.UpdatedAt(); !ok && !auo.mutation.UpdatedAtCleared() {
-		if app.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized app.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := app.UpdateDefaultUpdatedAt()
-		auo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -1254,33 +1761,33 @@ func (auo *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.PermissionsCleared() {
+	if auo.mutation.ActionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   app.PermissionsTable,
-			Columns: []string{app.PermissionsColumn},
+			Table:   app.ActionsTable,
+			Columns: []string{app.ActionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedPermissionsIDs(); len(nodes) > 0 && !auo.mutation.PermissionsCleared() {
+	if nodes := auo.mutation.RemovedActionsIDs(); len(nodes) > 0 && !auo.mutation.ActionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   app.PermissionsTable,
-			Columns: []string{app.PermissionsColumn},
+			Table:   app.ActionsTable,
+			Columns: []string{app.ActionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
@@ -1289,23 +1796,251 @@ func (auo *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.PermissionsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.ActionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   app.PermissionsTable,
-			Columns: []string{app.PermissionsColumn},
+			Table:   app.ActionsTable,
+			Columns: []string{app.ActionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.ResourcesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.ResourcesTable,
+			Columns: []string{app.ResourcesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: appres.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedResourcesIDs(); len(nodes) > 0 && !auo.mutation.ResourcesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.ResourcesTable,
+			Columns: []string{app.ResourcesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: appres.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.ResourcesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.ResourcesTable,
+			Columns: []string{app.ResourcesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: appres.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.RolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.RolesTable,
+			Columns: []string{app.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approle.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedRolesIDs(); len(nodes) > 0 && !auo.mutation.RolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.RolesTable,
+			Columns: []string{app.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approle.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.RolesTable,
+			Columns: []string{app.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approle.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.PoliciesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.PoliciesTable,
+			Columns: []string{app.PoliciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: apppolicy.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedPoliciesIDs(); len(nodes) > 0 && !auo.mutation.PoliciesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.PoliciesTable,
+			Columns: []string{app.PoliciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: apppolicy.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.PoliciesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.PoliciesTable,
+			Columns: []string{app.PoliciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: apppolicy.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.OrganizationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   app.OrganizationsTable,
+			Columns: app.OrganizationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		createE := &OrganizationAppCreate{config: auo.config, mutation: newOrganizationAppMutation(auo.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedOrganizationsIDs(); len(nodes) > 0 && !auo.mutation.OrganizationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   app.OrganizationsTable,
+			Columns: app.OrganizationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: auo.config, mutation: newOrganizationAppMutation(auo.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.OrganizationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   app.OrganizationsTable,
+			Columns: app.OrganizationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: auo.config, mutation: newOrganizationAppMutation(auo.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &App{config: auo.config}

@@ -154,13 +154,6 @@ func (ouc *OrganizationUserCreate) defaults() error {
 		v := organizationuser.DefaultCreatedAt()
 		ouc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := ouc.mutation.UpdatedAt(); !ok {
-		if organizationuser.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized organizationuser.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := organizationuser.DefaultUpdatedAt()
-		ouc.mutation.SetUpdatedAt(v)
-	}
 	return nil
 }
 

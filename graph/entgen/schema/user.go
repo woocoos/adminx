@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // User holds the schema definition for the User entity.
@@ -52,7 +53,7 @@ func (User) Fields() []ent.Field {
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
 		field.String("register_ip").Comment("注册时IP").Nillable().MaxLen(45).
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
-		field.Enum("status").Values("processing", "active", "inactive").Optional().Comment("状态").
+		field.Enum("status").GoType(types.SimpleStatus("")).Optional().Comment("状态").
 			Annotations(entgql.Skip(entgql.SkipMutationUpdateInput)),
 		field.String("comments").Optional().Comment("备注").Annotations(entgql.Skip(entgql.SkipWhereInput)),
 	}
@@ -68,5 +69,7 @@ func (User) Edges() []ent.Edge {
 		edge.From("organizations", Organization.Type).Ref("users").Comment("用户所属组织").
 			Through("organization_user", OrganizationUser.Type).Annotations(entgql.Skip(entgql.SkipAll)),
 		//edge.From("directory", Organization.Type).Ref("owner").Unique().Comment("目录"),
+		edge.From("permissions", Permission.Type).Ref("user").Comment("用户权限").
+			Annotations(entgql.Skip(entgql.SkipAll)),
 	}
 }

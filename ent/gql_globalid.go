@@ -13,9 +13,13 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
+	"github.com/woocoos/adminx/ent/apppolicy"
+	"github.com/woocoos/adminx/ent/appres"
+	"github.com/woocoos/adminx/ent/approle"
 	"github.com/woocoos/adminx/ent/organization"
+	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
 	"github.com/woocoos/adminx/ent/useridentity"
@@ -29,21 +33,45 @@ func (a *App) GlobalID(context.Context) (string, error) {
 	return base64.StdEncoding.EncodeToString([]byte(id)), nil
 }
 
+// GlobalID returns the global identifier for the given AppAction node.
+func (aa *AppAction) GlobalID(context.Context) (string, error) {
+	id := fmt.Sprintf("%s:%d", appaction.Table, aa.ID)
+	return base64.StdEncoding.EncodeToString([]byte(id)), nil
+}
+
 // GlobalID returns the global identifier for the given AppMenu node.
 func (am *AppMenu) GlobalID(context.Context) (string, error) {
 	id := fmt.Sprintf("%s:%d", appmenu.Table, am.ID)
 	return base64.StdEncoding.EncodeToString([]byte(id)), nil
 }
 
-// GlobalID returns the global identifier for the given AppPermission node.
-func (ap *AppPermission) GlobalID(context.Context) (string, error) {
-	id := fmt.Sprintf("%s:%d", apppermission.Table, ap.ID)
+// GlobalID returns the global identifier for the given AppPolicy node.
+func (ap *AppPolicy) GlobalID(context.Context) (string, error) {
+	id := fmt.Sprintf("%s:%d", apppolicy.Table, ap.ID)
+	return base64.StdEncoding.EncodeToString([]byte(id)), nil
+}
+
+// GlobalID returns the global identifier for the given AppRes node.
+func (ar *AppRes) GlobalID(context.Context) (string, error) {
+	id := fmt.Sprintf("%s:%d", appres.Table, ar.ID)
+	return base64.StdEncoding.EncodeToString([]byte(id)), nil
+}
+
+// GlobalID returns the global identifier for the given AppRole node.
+func (ar *AppRole) GlobalID(context.Context) (string, error) {
+	id := fmt.Sprintf("%s:%d", approle.Table, ar.ID)
 	return base64.StdEncoding.EncodeToString([]byte(id)), nil
 }
 
 // GlobalID returns the global identifier for the given Organization node.
 func (o *Organization) GlobalID(context.Context) (string, error) {
 	id := fmt.Sprintf("%s:%d", organization.Table, o.ID)
+	return base64.StdEncoding.EncodeToString([]byte(id)), nil
+}
+
+// GlobalID returns the global identifier for the given Permission node.
+func (pe *Permission) GlobalID(context.Context) (string, error) {
+	id := fmt.Sprintf("%s:%d", permission.Table, pe.ID)
 	return base64.StdEncoding.EncodeToString([]byte(id)), nil
 }
 
@@ -96,11 +124,19 @@ func GlobalID(tp, id string) (string, error) {
 	switch tp {
 	case app.Table:
 		break
+	case appaction.Table:
+		break
 	case appmenu.Table:
 		break
-	case apppermission.Table:
+	case apppolicy.Table:
+		break
+	case appres.Table:
+		break
+	case approle.Table:
 		break
 	case organization.Table:
+		break
+	case permission.Table:
 		break
 	case user.Table:
 		break

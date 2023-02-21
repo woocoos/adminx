@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userpassword"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserPassword is the model entity for the UserPassword schema.
@@ -34,7 +35,7 @@ type UserPassword struct {
 	// 盐
 	Salt string `json:"-"`
 	// Status holds the value of the "status" field.
-	Status userpassword.Status `json:"status,omitempty"`
+	Status types.SimpleStatus `json:"status,omitempty"`
 	// Memo holds the value of the "memo" field.
 	Memo string `json:"memo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -150,7 +151,7 @@ func (up *UserPassword) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				up.Status = userpassword.Status(value.String)
+				up.Status = types.SimpleStatus(value.String)
 			}
 		case userpassword.FieldMemo:
 			if value, ok := values[i].(*sql.NullString); !ok {

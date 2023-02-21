@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserLoginProfile 用户登陆配置
@@ -45,7 +46,7 @@ func (UserLoginProfile) Fields() []ent.Field {
 		field.Bool("mfa_enabled").Optional().Comment("是否开启多因素验证"),
 		field.String("mfa_secret").Optional().MaxLen(100).Comment("多因素验证密钥").Sensitive(),
 		field.Enum("mfa_status").Optional().
-			Values("enable", "inactive").Comment("多因素验证状态"),
+			GoType(types.SimpleStatus("")).Comment("多因素验证状态"),
 	}
 }
 

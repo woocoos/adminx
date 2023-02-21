@@ -63,6 +63,14 @@ func (ouu *OrganizationUserUpdate) SetUpdatedAt(t time.Time) *OrganizationUserUp
 	return ouu
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ouu *OrganizationUserUpdate) SetNillableUpdatedAt(t *time.Time) *OrganizationUserUpdate {
+	if t != nil {
+		ouu.SetUpdatedAt(*t)
+	}
+	return ouu
+}
+
 // ClearUpdatedAt clears the value of the "updated_at" field.
 func (ouu *OrganizationUserUpdate) ClearUpdatedAt() *OrganizationUserUpdate {
 	ouu.mutation.ClearUpdatedAt()
@@ -122,9 +130,6 @@ func (ouu *OrganizationUserUpdate) ClearUser() *OrganizationUserUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ouu *OrganizationUserUpdate) Save(ctx context.Context) (int, error) {
-	if err := ouu.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, OrganizationUserMutation](ctx, ouu.sqlSave, ouu.mutation, ouu.hooks)
 }
 
@@ -148,18 +153,6 @@ func (ouu *OrganizationUserUpdate) ExecX(ctx context.Context) {
 	if err := ouu.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (ouu *OrganizationUserUpdate) defaults() error {
-	if _, ok := ouu.mutation.UpdatedAt(); !ok && !ouu.mutation.UpdatedAtCleared() {
-		if organizationuser.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized organizationuser.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := organizationuser.UpdateDefaultUpdatedAt()
-		ouu.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -326,6 +319,14 @@ func (ouuo *OrganizationUserUpdateOne) SetUpdatedAt(t time.Time) *OrganizationUs
 	return ouuo
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ouuo *OrganizationUserUpdateOne) SetNillableUpdatedAt(t *time.Time) *OrganizationUserUpdateOne {
+	if t != nil {
+		ouuo.SetUpdatedAt(*t)
+	}
+	return ouuo
+}
+
 // ClearUpdatedAt clears the value of the "updated_at" field.
 func (ouuo *OrganizationUserUpdateOne) ClearUpdatedAt() *OrganizationUserUpdateOne {
 	ouuo.mutation.ClearUpdatedAt()
@@ -398,9 +399,6 @@ func (ouuo *OrganizationUserUpdateOne) Select(field string, fields ...string) *O
 
 // Save executes the query and returns the updated OrganizationUser entity.
 func (ouuo *OrganizationUserUpdateOne) Save(ctx context.Context) (*OrganizationUser, error) {
-	if err := ouuo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*OrganizationUser, OrganizationUserMutation](ctx, ouuo.sqlSave, ouuo.mutation, ouuo.hooks)
 }
 
@@ -424,18 +422,6 @@ func (ouuo *OrganizationUserUpdateOne) ExecX(ctx context.Context) {
 	if err := ouuo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (ouuo *OrganizationUserUpdateOne) defaults() error {
-	if _, ok := ouuo.mutation.UpdatedAt(); !ok && !ouuo.mutation.UpdatedAtCleared() {
-		if organizationuser.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized organizationuser.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := organizationuser.UpdateDefaultUpdatedAt()
-		ouuo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

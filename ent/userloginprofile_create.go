@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userloginprofile"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserLoginProfileCreate is the builder for creating a UserLoginProfile entity.
@@ -180,15 +181,15 @@ func (ulpc *UserLoginProfileCreate) SetNillableMfaSecret(s *string) *UserLoginPr
 }
 
 // SetMfaStatus sets the "mfa_status" field.
-func (ulpc *UserLoginProfileCreate) SetMfaStatus(us userloginprofile.MfaStatus) *UserLoginProfileCreate {
-	ulpc.mutation.SetMfaStatus(us)
+func (ulpc *UserLoginProfileCreate) SetMfaStatus(ts types.SimpleStatus) *UserLoginProfileCreate {
+	ulpc.mutation.SetMfaStatus(ts)
 	return ulpc
 }
 
 // SetNillableMfaStatus sets the "mfa_status" field if the given value is not nil.
-func (ulpc *UserLoginProfileCreate) SetNillableMfaStatus(us *userloginprofile.MfaStatus) *UserLoginProfileCreate {
-	if us != nil {
-		ulpc.SetMfaStatus(*us)
+func (ulpc *UserLoginProfileCreate) SetNillableMfaStatus(ts *types.SimpleStatus) *UserLoginProfileCreate {
+	if ts != nil {
+		ulpc.SetMfaStatus(*ts)
 	}
 	return ulpc
 }
@@ -247,13 +248,6 @@ func (ulpc *UserLoginProfileCreate) defaults() error {
 		}
 		v := userloginprofile.DefaultCreatedAt()
 		ulpc.mutation.SetCreatedAt(v)
-	}
-	if _, ok := ulpc.mutation.UpdatedAt(); !ok {
-		if userloginprofile.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userloginprofile.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userloginprofile.DefaultUpdatedAt()
-		ulpc.mutation.SetUpdatedAt(v)
 	}
 	return nil
 }

@@ -32,16 +32,16 @@ const (
 	FieldKind = "kind"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldPermissionID holds the string denoting the permission_id field in the database.
-	FieldPermissionID = "permission_id"
+	// FieldActionID holds the string denoting the action_id field in the database.
+	FieldActionID = "action_id"
 	// FieldComments holds the string denoting the comments field in the database.
 	FieldComments = "comments"
 	// FieldDisplaySort holds the string denoting the display_sort field in the database.
 	FieldDisplaySort = "display_sort"
 	// EdgeApp holds the string denoting the app edge name in mutations.
 	EdgeApp = "app"
-	// EdgePermission holds the string denoting the permission edge name in mutations.
-	EdgePermission = "permission"
+	// EdgeAction holds the string denoting the action edge name in mutations.
+	EdgeAction = "action"
 	// Table holds the table name of the appmenu in the database.
 	Table = "app_menu"
 	// AppTable is the table that holds the app relation/edge.
@@ -51,13 +51,13 @@ const (
 	AppInverseTable = "app"
 	// AppColumn is the table column denoting the app relation/edge.
 	AppColumn = "app_id"
-	// PermissionTable is the table that holds the permission relation/edge.
-	PermissionTable = "app_menu"
-	// PermissionInverseTable is the table name for the AppPermission entity.
-	// It exists in this package in order to avoid circular dependency with the "apppermission" package.
-	PermissionInverseTable = "app_permission"
-	// PermissionColumn is the table column denoting the permission relation/edge.
-	PermissionColumn = "permission_id"
+	// ActionTable is the table that holds the action relation/edge.
+	ActionTable = "app_menu"
+	// ActionInverseTable is the table name for the AppAction entity.
+	// It exists in this package in order to avoid circular dependency with the "appaction" package.
+	ActionInverseTable = "app_action"
+	// ActionColumn is the table column denoting the action relation/edge.
+	ActionColumn = "action_id"
 )
 
 // Columns holds all SQL columns for appmenu fields.
@@ -71,7 +71,7 @@ var Columns = []string{
 	FieldParentID,
 	FieldKind,
 	FieldName,
-	FieldPermissionID,
+	FieldActionID,
 	FieldComments,
 	FieldDisplaySort,
 }
@@ -92,13 +92,9 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/woocoos/adminx/ent/runtime"
 var (
-	Hooks [3]ent.Hook
+	Hooks [2]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt func() time.Time
-	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
-	UpdateDefaultUpdatedAt func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.

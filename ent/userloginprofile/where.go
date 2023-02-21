@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/woocoos/adminx/ent/predicate"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // ID filters vertices based on their ID field.
@@ -616,23 +617,33 @@ func MfaSecretContainsFold(v string) predicate.UserLoginProfile {
 }
 
 // MfaStatusEQ applies the EQ predicate on the "mfa_status" field.
-func MfaStatusEQ(v MfaStatus) predicate.UserLoginProfile {
-	return predicate.UserLoginProfile(sql.FieldEQ(FieldMfaStatus, v))
+func MfaStatusEQ(v types.SimpleStatus) predicate.UserLoginProfile {
+	vc := v
+	return predicate.UserLoginProfile(sql.FieldEQ(FieldMfaStatus, vc))
 }
 
 // MfaStatusNEQ applies the NEQ predicate on the "mfa_status" field.
-func MfaStatusNEQ(v MfaStatus) predicate.UserLoginProfile {
-	return predicate.UserLoginProfile(sql.FieldNEQ(FieldMfaStatus, v))
+func MfaStatusNEQ(v types.SimpleStatus) predicate.UserLoginProfile {
+	vc := v
+	return predicate.UserLoginProfile(sql.FieldNEQ(FieldMfaStatus, vc))
 }
 
 // MfaStatusIn applies the In predicate on the "mfa_status" field.
-func MfaStatusIn(vs ...MfaStatus) predicate.UserLoginProfile {
-	return predicate.UserLoginProfile(sql.FieldIn(FieldMfaStatus, vs...))
+func MfaStatusIn(vs ...types.SimpleStatus) predicate.UserLoginProfile {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserLoginProfile(sql.FieldIn(FieldMfaStatus, v...))
 }
 
 // MfaStatusNotIn applies the NotIn predicate on the "mfa_status" field.
-func MfaStatusNotIn(vs ...MfaStatus) predicate.UserLoginProfile {
-	return predicate.UserLoginProfile(sql.FieldNotIn(FieldMfaStatus, vs...))
+func MfaStatusNotIn(vs ...types.SimpleStatus) predicate.UserLoginProfile {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserLoginProfile(sql.FieldNotIn(FieldMfaStatus, v...))
 }
 
 // MfaStatusIsNil applies the IsNil predicate on the "mfa_status" field.

@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // App is the model entity for the App schema.
@@ -47,7 +48,7 @@ type App struct {
 	// 备注
 	Comments string `json:"comments,omitempty"`
 	// 状态
-	Status app.Status `json:"status,omitempty"`
+	Status types.SimpleStatus `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AppQuery when eager-loading is set.
 	Edges AppEdges `json:"edges"`
@@ -58,15 +59,30 @@ type AppEdges struct {
 	// 菜单
 	Menus []*AppMenu `json:"menus,omitempty"`
 	// 权限
-	Permissions []*AppPermission `json:"permissions,omitempty"`
+	Actions []*AppAction `json:"actions,omitempty"`
+	// 资源
+	Resources []*AppRes `json:"resources,omitempty"`
+	// 角色
+	Roles []*AppRole `json:"roles,omitempty"`
+	// 策略
+	Policies []*AppPolicy `json:"policies,omitempty"`
+	// 使用该应用的组织
+	Organizations []*Organization `json:"organizations,omitempty"`
+	// OrganizationApp holds the value of the organization_app edge.
+	OrganizationApp []*OrganizationApp `json:"organization_app,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [7]bool
 	// totalCount holds the count of the edges above.
-	totalCount [2]map[string]int
+	totalCount [6]map[string]int
 
-	namedMenus       map[string][]*AppMenu
-	namedPermissions map[string][]*AppPermission
+	namedMenus           map[string][]*AppMenu
+	namedActions         map[string][]*AppAction
+	namedResources       map[string][]*AppRes
+	namedRoles           map[string][]*AppRole
+	namedPolicies        map[string][]*AppPolicy
+	namedOrganizations   map[string][]*Organization
+	namedOrganizationApp map[string][]*OrganizationApp
 }
 
 // MenusOrErr returns the Menus value or an error if the edge
@@ -78,13 +94,58 @@ func (e AppEdges) MenusOrErr() ([]*AppMenu, error) {
 	return nil, &NotLoadedError{edge: "menus"}
 }
 
-// PermissionsOrErr returns the Permissions value or an error if the edge
+// ActionsOrErr returns the Actions value or an error if the edge
 // was not loaded in eager-loading.
-func (e AppEdges) PermissionsOrErr() ([]*AppPermission, error) {
+func (e AppEdges) ActionsOrErr() ([]*AppAction, error) {
 	if e.loadedTypes[1] {
-		return e.Permissions, nil
+		return e.Actions, nil
 	}
-	return nil, &NotLoadedError{edge: "permissions"}
+	return nil, &NotLoadedError{edge: "actions"}
+}
+
+// ResourcesOrErr returns the Resources value or an error if the edge
+// was not loaded in eager-loading.
+func (e AppEdges) ResourcesOrErr() ([]*AppRes, error) {
+	if e.loadedTypes[2] {
+		return e.Resources, nil
+	}
+	return nil, &NotLoadedError{edge: "resources"}
+}
+
+// RolesOrErr returns the Roles value or an error if the edge
+// was not loaded in eager-loading.
+func (e AppEdges) RolesOrErr() ([]*AppRole, error) {
+	if e.loadedTypes[3] {
+		return e.Roles, nil
+	}
+	return nil, &NotLoadedError{edge: "roles"}
+}
+
+// PoliciesOrErr returns the Policies value or an error if the edge
+// was not loaded in eager-loading.
+func (e AppEdges) PoliciesOrErr() ([]*AppPolicy, error) {
+	if e.loadedTypes[4] {
+		return e.Policies, nil
+	}
+	return nil, &NotLoadedError{edge: "policies"}
+}
+
+// OrganizationsOrErr returns the Organizations value or an error if the edge
+// was not loaded in eager-loading.
+func (e AppEdges) OrganizationsOrErr() ([]*Organization, error) {
+	if e.loadedTypes[5] {
+		return e.Organizations, nil
+	}
+	return nil, &NotLoadedError{edge: "organizations"}
+}
+
+// OrganizationAppOrErr returns the OrganizationApp value or an error if the edge
+// was not loaded in eager-loading.
+func (e AppEdges) OrganizationAppOrErr() ([]*OrganizationApp, error) {
+	if e.loadedTypes[6] {
+		return e.OrganizationApp, nil
+	}
+	return nil, &NotLoadedError{edge: "organization_app"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -213,7 +274,7 @@ func (a *App) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				a.Status = app.Status(value.String)
+				a.Status = types.SimpleStatus(value.String)
 			}
 		}
 	}
@@ -225,9 +286,34 @@ func (a *App) QueryMenus() *AppMenuQuery {
 	return NewAppClient(a.config).QueryMenus(a)
 }
 
-// QueryPermissions queries the "permissions" edge of the App entity.
-func (a *App) QueryPermissions() *AppPermissionQuery {
-	return NewAppClient(a.config).QueryPermissions(a)
+// QueryActions queries the "actions" edge of the App entity.
+func (a *App) QueryActions() *AppActionQuery {
+	return NewAppClient(a.config).QueryActions(a)
+}
+
+// QueryResources queries the "resources" edge of the App entity.
+func (a *App) QueryResources() *AppResQuery {
+	return NewAppClient(a.config).QueryResources(a)
+}
+
+// QueryRoles queries the "roles" edge of the App entity.
+func (a *App) QueryRoles() *AppRoleQuery {
+	return NewAppClient(a.config).QueryRoles(a)
+}
+
+// QueryPolicies queries the "policies" edge of the App entity.
+func (a *App) QueryPolicies() *AppPolicyQuery {
+	return NewAppClient(a.config).QueryPolicies(a)
+}
+
+// QueryOrganizations queries the "organizations" edge of the App entity.
+func (a *App) QueryOrganizations() *OrganizationQuery {
+	return NewAppClient(a.config).QueryOrganizations(a)
+}
+
+// QueryOrganizationApp queries the "organization_app" edge of the App entity.
+func (a *App) QueryOrganizationApp() *OrganizationAppQuery {
+	return NewAppClient(a.config).QueryOrganizationApp(a)
 }
 
 // Update returns a builder for updating this App.
@@ -328,27 +414,147 @@ func (a *App) appendNamedMenus(name string, edges ...*AppMenu) {
 	}
 }
 
-// NamedPermissions returns the Permissions named value or an error if the edge was not
+// NamedActions returns the Actions named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (a *App) NamedPermissions(name string) ([]*AppPermission, error) {
-	if a.Edges.namedPermissions == nil {
+func (a *App) NamedActions(name string) ([]*AppAction, error) {
+	if a.Edges.namedActions == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := a.Edges.namedPermissions[name]
+	nodes, ok := a.Edges.namedActions[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (a *App) appendNamedPermissions(name string, edges ...*AppPermission) {
-	if a.Edges.namedPermissions == nil {
-		a.Edges.namedPermissions = make(map[string][]*AppPermission)
+func (a *App) appendNamedActions(name string, edges ...*AppAction) {
+	if a.Edges.namedActions == nil {
+		a.Edges.namedActions = make(map[string][]*AppAction)
 	}
 	if len(edges) == 0 {
-		a.Edges.namedPermissions[name] = []*AppPermission{}
+		a.Edges.namedActions[name] = []*AppAction{}
 	} else {
-		a.Edges.namedPermissions[name] = append(a.Edges.namedPermissions[name], edges...)
+		a.Edges.namedActions[name] = append(a.Edges.namedActions[name], edges...)
+	}
+}
+
+// NamedResources returns the Resources named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (a *App) NamedResources(name string) ([]*AppRes, error) {
+	if a.Edges.namedResources == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := a.Edges.namedResources[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (a *App) appendNamedResources(name string, edges ...*AppRes) {
+	if a.Edges.namedResources == nil {
+		a.Edges.namedResources = make(map[string][]*AppRes)
+	}
+	if len(edges) == 0 {
+		a.Edges.namedResources[name] = []*AppRes{}
+	} else {
+		a.Edges.namedResources[name] = append(a.Edges.namedResources[name], edges...)
+	}
+}
+
+// NamedRoles returns the Roles named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (a *App) NamedRoles(name string) ([]*AppRole, error) {
+	if a.Edges.namedRoles == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := a.Edges.namedRoles[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (a *App) appendNamedRoles(name string, edges ...*AppRole) {
+	if a.Edges.namedRoles == nil {
+		a.Edges.namedRoles = make(map[string][]*AppRole)
+	}
+	if len(edges) == 0 {
+		a.Edges.namedRoles[name] = []*AppRole{}
+	} else {
+		a.Edges.namedRoles[name] = append(a.Edges.namedRoles[name], edges...)
+	}
+}
+
+// NamedPolicies returns the Policies named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (a *App) NamedPolicies(name string) ([]*AppPolicy, error) {
+	if a.Edges.namedPolicies == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := a.Edges.namedPolicies[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (a *App) appendNamedPolicies(name string, edges ...*AppPolicy) {
+	if a.Edges.namedPolicies == nil {
+		a.Edges.namedPolicies = make(map[string][]*AppPolicy)
+	}
+	if len(edges) == 0 {
+		a.Edges.namedPolicies[name] = []*AppPolicy{}
+	} else {
+		a.Edges.namedPolicies[name] = append(a.Edges.namedPolicies[name], edges...)
+	}
+}
+
+// NamedOrganizations returns the Organizations named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (a *App) NamedOrganizations(name string) ([]*Organization, error) {
+	if a.Edges.namedOrganizations == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := a.Edges.namedOrganizations[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (a *App) appendNamedOrganizations(name string, edges ...*Organization) {
+	if a.Edges.namedOrganizations == nil {
+		a.Edges.namedOrganizations = make(map[string][]*Organization)
+	}
+	if len(edges) == 0 {
+		a.Edges.namedOrganizations[name] = []*Organization{}
+	} else {
+		a.Edges.namedOrganizations[name] = append(a.Edges.namedOrganizations[name], edges...)
+	}
+}
+
+// NamedOrganizationApp returns the OrganizationApp named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (a *App) NamedOrganizationApp(name string) ([]*OrganizationApp, error) {
+	if a.Edges.namedOrganizationApp == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := a.Edges.namedOrganizationApp[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (a *App) appendNamedOrganizationApp(name string, edges ...*OrganizationApp) {
+	if a.Edges.namedOrganizationApp == nil {
+		a.Edges.namedOrganizationApp = make(map[string][]*OrganizationApp)
+	}
+	if len(edges) == 0 {
+		a.Edges.namedOrganizationApp[name] = []*OrganizationApp{}
+	} else {
+		a.Edges.namedOrganizationApp[name] = append(a.Edges.namedOrganizationApp[name], edges...)
 	}
 }
 

@@ -10,9 +10,13 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/woocoos/adminx/ent/app"
 	"github.com/woocoos/adminx/ent/organization"
+	"github.com/woocoos/adminx/ent/organizationrole"
 	"github.com/woocoos/adminx/ent/organizationuser"
+	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/user"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // OrganizationCreate is the builder for creating a Organization entity.
@@ -175,15 +179,15 @@ func (oc *OrganizationCreate) SetNillableProfile(s *string) *OrganizationCreate 
 }
 
 // SetStatus sets the "status" field.
-func (oc *OrganizationCreate) SetStatus(o organization.Status) *OrganizationCreate {
-	oc.mutation.SetStatus(o)
+func (oc *OrganizationCreate) SetStatus(ts types.SimpleStatus) *OrganizationCreate {
+	oc.mutation.SetStatus(ts)
 	return oc
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (oc *OrganizationCreate) SetNillableStatus(o *organization.Status) *OrganizationCreate {
-	if o != nil {
-		oc.SetStatus(*o)
+func (oc *OrganizationCreate) SetNillableStatus(ts *types.SimpleStatus) *OrganizationCreate {
+	if ts != nil {
+		oc.SetStatus(*ts)
 	}
 	return oc
 }
@@ -298,6 +302,51 @@ func (oc *OrganizationCreate) AddUsers(u ...*User) *OrganizationCreate {
 	return oc.AddUserIDs(ids...)
 }
 
+// AddRolesAndGroupIDs adds the "rolesAndGroups" edge to the OrganizationRole entity by IDs.
+func (oc *OrganizationCreate) AddRolesAndGroupIDs(ids ...int) *OrganizationCreate {
+	oc.mutation.AddRolesAndGroupIDs(ids...)
+	return oc
+}
+
+// AddRolesAndGroups adds the "rolesAndGroups" edges to the OrganizationRole entity.
+func (oc *OrganizationCreate) AddRolesAndGroups(o ...*OrganizationRole) *OrganizationCreate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return oc.AddRolesAndGroupIDs(ids...)
+}
+
+// AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
+func (oc *OrganizationCreate) AddPermissionIDs(ids ...int) *OrganizationCreate {
+	oc.mutation.AddPermissionIDs(ids...)
+	return oc
+}
+
+// AddPermissions adds the "permissions" edges to the Permission entity.
+func (oc *OrganizationCreate) AddPermissions(p ...*Permission) *OrganizationCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return oc.AddPermissionIDs(ids...)
+}
+
+// AddAppIDs adds the "apps" edge to the App entity by IDs.
+func (oc *OrganizationCreate) AddAppIDs(ids ...int) *OrganizationCreate {
+	oc.mutation.AddAppIDs(ids...)
+	return oc
+}
+
+// AddApps adds the "apps" edges to the App entity.
+func (oc *OrganizationCreate) AddApps(a ...*App) *OrganizationCreate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return oc.AddAppIDs(ids...)
+}
+
 // AddOrganizationUserIDs adds the "organization_user" edge to the OrganizationUser entity by IDs.
 func (oc *OrganizationCreate) AddOrganizationUserIDs(ids ...int) *OrganizationCreate {
 	oc.mutation.AddOrganizationUserIDs(ids...)
@@ -356,13 +405,6 @@ func (oc *OrganizationCreate) defaults() error {
 		}
 		v := organization.DefaultCreatedAt()
 		oc.mutation.SetCreatedAt(v)
-	}
-	if _, ok := oc.mutation.UpdatedAt(); !ok {
-		if organization.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized organization.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := organization.DefaultUpdatedAt()
-		oc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := oc.mutation.ParentID(); !ok {
 		v := organization.DefaultParentID
@@ -599,6 +641,67 @@ func (oc *OrganizationCreate) createSpec() (*Organization, *sqlgraph.CreateSpec)
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &OrganizationUserCreate{config: oc.config, mutation: newOrganizationUserMutation(oc.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.RolesAndGroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.RolesAndGroupsTable,
+			Columns: []string{organization.RolesAndGroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organizationrole.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.PermissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.PermissionsTable,
+			Columns: []string{organization.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.AppsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   organization.AppsTable,
+			Columns: organization.AppsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: app.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: oc.config, mutation: newOrganizationAppMutation(oc.config, OpCreate)}
 		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields

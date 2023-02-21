@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserDevice holds the schema definition for the UserDevice entity.
@@ -40,7 +41,7 @@ func (UserDevice) Fields() []ent.Field {
 		field.String("system_version").MaxLen(45).Optional(),
 		field.String("app_version").MaxLen(45).Optional(),
 		field.String("device_model").MaxLen(45).Optional(),
-		field.Enum("status").Values("active", "inactive").Optional().Comment("状态,可用或不可用及其他待确认状态"),
+		field.Enum("status").GoType(types.SimpleStatus("")).Optional().Comment("状态,可用或不可用及其他待确认状态"),
 		field.String("comments").Optional().Comment("备注").Annotations(entgql.Skip(entgql.SkipWhereInput)),
 	}
 }

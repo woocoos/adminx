@@ -12,6 +12,7 @@ import (
 	gen "github.com/woocoos/adminx/ent"
 	"github.com/woocoos/adminx/ent/hook"
 	"github.com/woocoos/adminx/ent/organization"
+	"github.com/woocoos/adminx/graph/entgen/types"
 	"regexp"
 	"strconv"
 )
@@ -56,7 +57,7 @@ func (Organization) Fields() []ent.Field {
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
 		field.String("name").MaxLen(100).Comment("组织名称"),
 		field.String("profile").Comment("简介").Optional().Annotations(entgql.Skip(entgql.SkipWhereInput)),
-		field.Enum("status").Values("active", "inactive").Optional().Comment("状态"),
+		field.Enum("status").GoType(types.SimpleStatus("")).Optional().Comment("状态"),
 		field.Text("path").Optional().Comment("路径编码").
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
 		field.Int32("display_sort").Optional().
@@ -76,6 +77,12 @@ func (Organization) Edges() []ent.Edge {
 			Annotations(entgql.Skip(entgql.SkipType)),
 		edge.To("users", User.Type).Through("organization_user", OrganizationUser.Type).
 			Annotations(entgql.Skip(entgql.SkipAll)).Comment("组织下用户"),
+		edge.To("rolesAndGroups", OrganizationRole.Type).
+			Annotations(entgql.Skip(entgql.SkipAll)).Comment("组织下角色及用户组"),
+		edge.To("permissions", Permission.Type).Comment("组织授权信息").
+			Annotations(entgql.Skip(entgql.SkipWhereInput, entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+		edge.To("apps", App.Type).Comment("组织下应用").Through("organization_app", OrganizationApp.Type).
+			Annotations(entgql.RelayConnection()),
 	}
 }
 

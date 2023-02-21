@@ -90,9 +90,9 @@ func Name(v string) predicate.AppMenu {
 	return predicate.AppMenu(sql.FieldEQ(FieldName, v))
 }
 
-// PermissionID applies equality check predicate on the "permission_id" field. It's identical to PermissionIDEQ.
-func PermissionID(v int) predicate.AppMenu {
-	return predicate.AppMenu(sql.FieldEQ(FieldPermissionID, v))
+// ActionID applies equality check predicate on the "action_id" field. It's identical to ActionIDEQ.
+func ActionID(v int) predicate.AppMenu {
+	return predicate.AppMenu(sql.FieldEQ(FieldActionID, v))
 }
 
 // Comments applies equality check predicate on the "comments" field. It's identical to CommentsEQ.
@@ -440,34 +440,34 @@ func NameContainsFold(v string) predicate.AppMenu {
 	return predicate.AppMenu(sql.FieldContainsFold(FieldName, v))
 }
 
-// PermissionIDEQ applies the EQ predicate on the "permission_id" field.
-func PermissionIDEQ(v int) predicate.AppMenu {
-	return predicate.AppMenu(sql.FieldEQ(FieldPermissionID, v))
+// ActionIDEQ applies the EQ predicate on the "action_id" field.
+func ActionIDEQ(v int) predicate.AppMenu {
+	return predicate.AppMenu(sql.FieldEQ(FieldActionID, v))
 }
 
-// PermissionIDNEQ applies the NEQ predicate on the "permission_id" field.
-func PermissionIDNEQ(v int) predicate.AppMenu {
-	return predicate.AppMenu(sql.FieldNEQ(FieldPermissionID, v))
+// ActionIDNEQ applies the NEQ predicate on the "action_id" field.
+func ActionIDNEQ(v int) predicate.AppMenu {
+	return predicate.AppMenu(sql.FieldNEQ(FieldActionID, v))
 }
 
-// PermissionIDIn applies the In predicate on the "permission_id" field.
-func PermissionIDIn(vs ...int) predicate.AppMenu {
-	return predicate.AppMenu(sql.FieldIn(FieldPermissionID, vs...))
+// ActionIDIn applies the In predicate on the "action_id" field.
+func ActionIDIn(vs ...int) predicate.AppMenu {
+	return predicate.AppMenu(sql.FieldIn(FieldActionID, vs...))
 }
 
-// PermissionIDNotIn applies the NotIn predicate on the "permission_id" field.
-func PermissionIDNotIn(vs ...int) predicate.AppMenu {
-	return predicate.AppMenu(sql.FieldNotIn(FieldPermissionID, vs...))
+// ActionIDNotIn applies the NotIn predicate on the "action_id" field.
+func ActionIDNotIn(vs ...int) predicate.AppMenu {
+	return predicate.AppMenu(sql.FieldNotIn(FieldActionID, vs...))
 }
 
-// PermissionIDIsNil applies the IsNil predicate on the "permission_id" field.
-func PermissionIDIsNil() predicate.AppMenu {
-	return predicate.AppMenu(sql.FieldIsNull(FieldPermissionID))
+// ActionIDIsNil applies the IsNil predicate on the "action_id" field.
+func ActionIDIsNil() predicate.AppMenu {
+	return predicate.AppMenu(sql.FieldIsNull(FieldActionID))
 }
 
-// PermissionIDNotNil applies the NotNil predicate on the "permission_id" field.
-func PermissionIDNotNil() predicate.AppMenu {
-	return predicate.AppMenu(sql.FieldNotNull(FieldPermissionID))
+// ActionIDNotNil applies the NotNil predicate on the "action_id" field.
+func ActionIDNotNil() predicate.AppMenu {
+	return predicate.AppMenu(sql.FieldNotNull(FieldActionID))
 }
 
 // CommentsEQ applies the EQ predicate on the "comments" field.
@@ -622,24 +622,24 @@ func HasAppWith(preds ...predicate.App) predicate.AppMenu {
 	})
 }
 
-// HasPermission applies the HasEdge predicate on the "permission" edge.
-func HasPermission() predicate.AppMenu {
+// HasAction applies the HasEdge predicate on the "action" edge.
+func HasAction() predicate.AppMenu {
 	return predicate.AppMenu(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PermissionTable, PermissionColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, ActionTable, ActionColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPermissionWith applies the HasEdge predicate on the "permission" edge with a given conditions (other predicates).
-func HasPermissionWith(preds ...predicate.AppPermission) predicate.AppMenu {
+// HasActionWith applies the HasEdge predicate on the "action" edge with a given conditions (other predicates).
+func HasActionWith(preds ...predicate.AppAction) predicate.AppMenu {
 	return predicate.AppMenu(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PermissionInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PermissionTable, PermissionColumn),
+			sqlgraph.To(ActionInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ActionTable, ActionColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

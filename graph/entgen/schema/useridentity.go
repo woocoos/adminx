@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserIdentity 用户登陆身份
@@ -39,7 +40,7 @@ func (UserIdentity) Fields() []ent.Field {
 			Comment("身份标识类型 手机、邮箱、用户名、微信、qq"),
 		field.String("code").Optional().Unique().Comment("用户名、邮箱、手机、unionid、qq"),
 		field.String("code_extend").Optional().Comment("扩展标识码,比如微信的openID"),
-		field.Enum("status").Values("verify", "active", "inactive").Optional().
+		field.Enum("status").GoType(types.SimpleStatus("")).Optional().
 			Comment("状态,部分登陆方式需要验证通过才可启用"),
 	}
 }

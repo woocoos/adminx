@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"github.com/99designs/gqlgen/graphql"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 const (
@@ -50,8 +52,18 @@ const (
 	FieldStatus = "status"
 	// EdgeMenus holds the string denoting the menus edge name in mutations.
 	EdgeMenus = "menus"
-	// EdgePermissions holds the string denoting the permissions edge name in mutations.
-	EdgePermissions = "permissions"
+	// EdgeActions holds the string denoting the actions edge name in mutations.
+	EdgeActions = "actions"
+	// EdgeResources holds the string denoting the resources edge name in mutations.
+	EdgeResources = "resources"
+	// EdgeRoles holds the string denoting the roles edge name in mutations.
+	EdgeRoles = "roles"
+	// EdgePolicies holds the string denoting the policies edge name in mutations.
+	EdgePolicies = "policies"
+	// EdgeOrganizations holds the string denoting the organizations edge name in mutations.
+	EdgeOrganizations = "organizations"
+	// EdgeOrganizationApp holds the string denoting the organization_app edge name in mutations.
+	EdgeOrganizationApp = "organization_app"
 	// Table holds the table name of the app in the database.
 	Table = "app"
 	// MenusTable is the table that holds the menus relation/edge.
@@ -61,13 +73,46 @@ const (
 	MenusInverseTable = "app_menu"
 	// MenusColumn is the table column denoting the menus relation/edge.
 	MenusColumn = "app_id"
-	// PermissionsTable is the table that holds the permissions relation/edge.
-	PermissionsTable = "app_permission"
-	// PermissionsInverseTable is the table name for the AppPermission entity.
-	// It exists in this package in order to avoid circular dependency with the "apppermission" package.
-	PermissionsInverseTable = "app_permission"
-	// PermissionsColumn is the table column denoting the permissions relation/edge.
-	PermissionsColumn = "app_id"
+	// ActionsTable is the table that holds the actions relation/edge.
+	ActionsTable = "app_action"
+	// ActionsInverseTable is the table name for the AppAction entity.
+	// It exists in this package in order to avoid circular dependency with the "appaction" package.
+	ActionsInverseTable = "app_action"
+	// ActionsColumn is the table column denoting the actions relation/edge.
+	ActionsColumn = "app_id"
+	// ResourcesTable is the table that holds the resources relation/edge.
+	ResourcesTable = "app_res"
+	// ResourcesInverseTable is the table name for the AppRes entity.
+	// It exists in this package in order to avoid circular dependency with the "appres" package.
+	ResourcesInverseTable = "app_res"
+	// ResourcesColumn is the table column denoting the resources relation/edge.
+	ResourcesColumn = "app_id"
+	// RolesTable is the table that holds the roles relation/edge.
+	RolesTable = "app_role"
+	// RolesInverseTable is the table name for the AppRole entity.
+	// It exists in this package in order to avoid circular dependency with the "approle" package.
+	RolesInverseTable = "app_role"
+	// RolesColumn is the table column denoting the roles relation/edge.
+	RolesColumn = "app_id"
+	// PoliciesTable is the table that holds the policies relation/edge.
+	PoliciesTable = "app_policy"
+	// PoliciesInverseTable is the table name for the AppPolicy entity.
+	// It exists in this package in order to avoid circular dependency with the "apppolicy" package.
+	PoliciesInverseTable = "app_policy"
+	// PoliciesColumn is the table column denoting the policies relation/edge.
+	PoliciesColumn = "app_id"
+	// OrganizationsTable is the table that holds the organizations relation/edge. The primary key declared below.
+	OrganizationsTable = "organization_app"
+	// OrganizationsInverseTable is the table name for the Organization entity.
+	// It exists in this package in order to avoid circular dependency with the "organization" package.
+	OrganizationsInverseTable = "organization"
+	// OrganizationAppTable is the table that holds the organization_app relation/edge.
+	OrganizationAppTable = "organization_app"
+	// OrganizationAppInverseTable is the table name for the OrganizationApp entity.
+	// It exists in this package in order to avoid circular dependency with the "organizationapp" package.
+	OrganizationAppInverseTable = "organization_app"
+	// OrganizationAppColumn is the table column denoting the organization_app relation/edge.
+	OrganizationAppColumn = "app_id"
 )
 
 // Columns holds all SQL columns for app fields.
@@ -91,6 +136,12 @@ var Columns = []string{
 	FieldStatus,
 }
 
+var (
+	// OrganizationsPrimaryKey and OrganizationsColumn2 are the table columns denoting the
+	// primary key for the organizations relation (M2M).
+	OrganizationsPrimaryKey = []string{"org_id", "app_id"}
+)
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
@@ -107,13 +158,9 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/woocoos/adminx/ent/runtime"
 var (
-	Hooks [2]ent.Hook
+	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt func() time.Time
-	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
-	UpdateDefaultUpdatedAt func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
@@ -152,23 +199,12 @@ func KindValidator(k Kind) error {
 	}
 }
 
-// Status defines the type for the "status" enum field.
-type Status string
-
-// Status values.
-const (
-	StatusActive   Status = "active"
-	StatusInactive Status = "inactive"
-)
-
-func (s Status) String() string {
-	return string(s)
-}
+const DefaultStatus types.SimpleStatus = "active"
 
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
-func StatusValidator(s Status) error {
-	switch s {
-	case StatusActive, StatusInactive:
+func StatusValidator(s types.SimpleStatus) error {
+	switch s.String() {
+	case "active", "inactive", "processing":
 		return nil
 	default:
 		return fmt.Errorf("app: invalid enum value for status field: %q", s)
@@ -193,20 +229,9 @@ func (e *Kind) UnmarshalGQL(val interface{}) error {
 	return nil
 }
 
-// MarshalGQL implements graphql.Marshaler interface.
-func (e Status) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *Status) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = Status(str)
-	if err := StatusValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid Status", str)
-	}
-	return nil
-}
+var (
+	// types.SimpleStatus must implement graphql.Marshaler.
+	_ graphql.Marshaler = (*types.SimpleStatus)(nil)
+	// types.SimpleStatus must implement graphql.Unmarshaler.
+	_ graphql.Unmarshaler = (*types.SimpleStatus)(nil)
+)

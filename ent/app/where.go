@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/woocoos/adminx/ent/predicate"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // ID filters vertices based on their ID field.
@@ -1006,23 +1007,33 @@ func CommentsContainsFold(v string) predicate.App {
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.App {
-	return predicate.App(sql.FieldEQ(FieldStatus, v))
+func StatusEQ(v types.SimpleStatus) predicate.App {
+	vc := v
+	return predicate.App(sql.FieldEQ(FieldStatus, vc))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.App {
-	return predicate.App(sql.FieldNEQ(FieldStatus, v))
+func StatusNEQ(v types.SimpleStatus) predicate.App {
+	vc := v
+	return predicate.App(sql.FieldNEQ(FieldStatus, vc))
 }
 
 // StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.App {
-	return predicate.App(sql.FieldIn(FieldStatus, vs...))
+func StatusIn(vs ...types.SimpleStatus) predicate.App {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.App(sql.FieldIn(FieldStatus, v...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.App {
-	return predicate.App(sql.FieldNotIn(FieldStatus, vs...))
+func StatusNotIn(vs ...types.SimpleStatus) predicate.App {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.App(sql.FieldNotIn(FieldStatus, v...))
 }
 
 // StatusIsNil applies the IsNil predicate on the "status" field.
@@ -1062,24 +1073,159 @@ func HasMenusWith(preds ...predicate.AppMenu) predicate.App {
 	})
 }
 
-// HasPermissions applies the HasEdge predicate on the "permissions" edge.
-func HasPermissions() predicate.App {
+// HasActions applies the HasEdge predicate on the "actions" edge.
+func HasActions() predicate.App {
 	return predicate.App(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, PermissionsTable, PermissionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, ActionsTable, ActionsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPermissionsWith applies the HasEdge predicate on the "permissions" edge with a given conditions (other predicates).
-func HasPermissionsWith(preds ...predicate.AppPermission) predicate.App {
+// HasActionsWith applies the HasEdge predicate on the "actions" edge with a given conditions (other predicates).
+func HasActionsWith(preds ...predicate.AppAction) predicate.App {
 	return predicate.App(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PermissionsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, PermissionsTable, PermissionsColumn),
+			sqlgraph.To(ActionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ActionsTable, ActionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasResources applies the HasEdge predicate on the "resources" edge.
+func HasResources() predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ResourcesTable, ResourcesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasResourcesWith applies the HasEdge predicate on the "resources" edge with a given conditions (other predicates).
+func HasResourcesWith(preds ...predicate.AppRes) predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ResourcesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ResourcesTable, ResourcesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRoles applies the HasEdge predicate on the "roles" edge.
+func HasRoles() predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RolesTable, RolesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRolesWith applies the HasEdge predicate on the "roles" edge with a given conditions (other predicates).
+func HasRolesWith(preds ...predicate.AppRole) predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RolesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RolesTable, RolesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPolicies applies the HasEdge predicate on the "policies" edge.
+func HasPolicies() predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PoliciesTable, PoliciesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPoliciesWith applies the HasEdge predicate on the "policies" edge with a given conditions (other predicates).
+func HasPoliciesWith(preds ...predicate.AppPolicy) predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PoliciesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PoliciesTable, PoliciesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOrganizations applies the HasEdge predicate on the "organizations" edge.
+func HasOrganizations() predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, OrganizationsTable, OrganizationsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOrganizationsWith applies the HasEdge predicate on the "organizations" edge with a given conditions (other predicates).
+func HasOrganizationsWith(preds ...predicate.Organization) predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(OrganizationsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, OrganizationsTable, OrganizationsPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOrganizationApp applies the HasEdge predicate on the "organization_app" edge.
+func HasOrganizationApp() predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, OrganizationAppTable, OrganizationAppColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOrganizationAppWith applies the HasEdge predicate on the "organization_app" edge with a given conditions (other predicates).
+func HasOrganizationAppWith(preds ...predicate.OrganizationApp) predicate.App {
+	return predicate.App(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(OrganizationAppInverseTable, OrganizationAppColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, OrganizationAppTable, OrganizationAppColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

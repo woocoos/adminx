@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userloginprofile"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // User is the model entity for the User schema.
@@ -38,7 +39,7 @@ type User struct {
 	// 注册时IP
 	RegisterIP *string `json:"register_ip,omitempty"`
 	// 状态
-	Status user.Status `json:"status,omitempty"`
+	Status types.SimpleStatus `json:"status,omitempty"`
 	// 备注
 	Comments string `json:"comments,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -58,11 +59,13 @@ type UserEdges struct {
 	Devices []*UserDevice `json:"devices,omitempty"`
 	// 用户所属组织
 	Organizations []*Organization `json:"organizations,omitempty"`
+	// 用户权限
+	Permissions []*Permission `json:"permissions,omitempty"`
 	// OrganizationUser holds the value of the organization_user edge.
 	OrganizationUser []*OrganizationUser `json:"organization_user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 	// totalCount holds the count of the edges above.
 	totalCount [4]map[string]int
 
@@ -70,6 +73,7 @@ type UserEdges struct {
 	namedPasswords        map[string][]*UserPassword
 	namedDevices          map[string][]*UserDevice
 	namedOrganizations    map[string][]*Organization
+	namedPermissions      map[string][]*Permission
 	namedOrganizationUser map[string][]*OrganizationUser
 }
 
@@ -122,10 +126,19 @@ func (e UserEdges) OrganizationsOrErr() ([]*Organization, error) {
 	return nil, &NotLoadedError{edge: "organizations"}
 }
 
+// PermissionsOrErr returns the Permissions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) PermissionsOrErr() ([]*Permission, error) {
+	if e.loadedTypes[5] {
+		return e.Permissions, nil
+	}
+	return nil, &NotLoadedError{edge: "permissions"}
+}
+
 // OrganizationUserOrErr returns the OrganizationUser value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) OrganizationUserOrErr() ([]*OrganizationUser, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.OrganizationUser, nil
 	}
 	return nil, &NotLoadedError{edge: "organization_user"}
@@ -228,7 +241,7 @@ func (u *User) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				u.Status = user.Status(value.String)
+				u.Status = types.SimpleStatus(value.String)
 			}
 		case user.FieldComments:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -264,6 +277,11 @@ func (u *User) QueryDevices() *UserDeviceQuery {
 // QueryOrganizations queries the "organizations" edge of the User entity.
 func (u *User) QueryOrganizations() *OrganizationQuery {
 	return NewUserClient(u.config).QueryOrganizations(u)
+}
+
+// QueryPermissions queries the "permissions" edge of the User entity.
+func (u *User) QueryPermissions() *PermissionQuery {
+	return NewUserClient(u.config).QueryPermissions(u)
 }
 
 // QueryOrganizationUser queries the "organization_user" edge of the User entity.
@@ -428,6 +446,30 @@ func (u *User) appendNamedOrganizations(name string, edges ...*Organization) {
 		u.Edges.namedOrganizations[name] = []*Organization{}
 	} else {
 		u.Edges.namedOrganizations[name] = append(u.Edges.namedOrganizations[name], edges...)
+	}
+}
+
+// NamedPermissions returns the Permissions named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (u *User) NamedPermissions(name string) ([]*Permission, error) {
+	if u.Edges.namedPermissions == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := u.Edges.namedPermissions[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (u *User) appendNamedPermissions(name string, edges ...*Permission) {
+	if u.Edges.namedPermissions == nil {
+		u.Edges.namedPermissions = make(map[string][]*Permission)
+	}
+	if len(edges) == 0 {
+		u.Edges.namedPermissions[name] = []*Permission{}
+	} else {
+		u.Edges.namedPermissions[name] = append(u.Edges.namedPermissions[name], edges...)
 	}
 }
 

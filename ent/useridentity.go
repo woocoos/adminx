@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/useridentity"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserIdentity is the model entity for the UserIdentity schema.
@@ -34,7 +35,7 @@ type UserIdentity struct {
 	// 扩展标识码,比如微信的openID
 	CodeExtend string `json:"code_extend,omitempty"`
 	// 状态,部分登陆方式需要验证通过才可启用
-	Status useridentity.Status `json:"status,omitempty"`
+	Status types.SimpleStatus `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserIdentityQuery when eager-loading is set.
 	Edges UserIdentityEdges `json:"edges"`
@@ -148,7 +149,7 @@ func (ui *UserIdentity) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				ui.Status = useridentity.Status(value.String)
+				ui.Status = types.SimpleStatus(value.String)
 			}
 		}
 	}

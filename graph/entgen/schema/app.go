@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // App holds the schema definition for the App entity.
@@ -51,7 +52,7 @@ func (App) Fields() []ent.Field {
 		field.Int32("refresh_token_validity").Optional().Comment("refresh_token有效期"),
 		field.String("logo").Optional().Comment("图标"),
 		field.String("comments").Optional().Comment("备注"),
-		field.Enum("status").Values("active", "inactive").Optional().Comment("状态"),
+		field.Enum("status").GoType(types.SimpleStatus("")).Default(types.SimpleStatusActive.String()).Optional().Comment("状态"),
 	}
 }
 
@@ -59,6 +60,12 @@ func (App) Fields() []ent.Field {
 func (App) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("menus", AppMenu.Type).Comment("菜单").Annotations(entgql.RelayConnection()),
-		edge.To("permissions", AppPermission.Type).Comment("权限").Annotations(entgql.RelayConnection()),
+		edge.To("actions", AppAction.Type).Comment("权限").Annotations(entgql.RelayConnection()),
+		edge.To("resources", AppRes.Type).Comment("资源").Annotations(entgql.RelayConnection()),
+		edge.To("roles", AppRole.Type).Comment("角色"),
+		edge.To("policies", AppPolicy.Type).Comment("策略"),
+		edge.From("organizations", Organization.Type).Ref("apps").Comment("使用该应用的组织").
+			Through("organization_app", OrganizationApp.Type).
+			Annotations(entgql.RelayConnection()),
 	}
 }

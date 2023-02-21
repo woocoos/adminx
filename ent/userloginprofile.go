@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userloginprofile"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserLoginProfile is the model entity for the UserLoginProfile schema.
@@ -44,7 +45,7 @@ type UserLoginProfile struct {
 	// 多因素验证密钥
 	MfaSecret string `json:"-"`
 	// 多因素验证状态
-	MfaStatus userloginprofile.MfaStatus `json:"mfa_status,omitempty"`
+	MfaStatus types.SimpleStatus `json:"mfa_status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserLoginProfileQuery when eager-loading is set.
 	Edges UserLoginProfileEdges `json:"edges"`
@@ -190,7 +191,7 @@ func (ulp *UserLoginProfile) assignValues(columns []string, values []any) error 
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field mfa_status", values[i])
 			} else if value.Valid {
-				ulp.MfaStatus = userloginprofile.MfaStatus(value.String)
+				ulp.MfaStatus = types.SimpleStatus(value.String)
 			}
 		}
 	}

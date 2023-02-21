@@ -1,4 +1,4 @@
-
+.DS_Store
 ### Go template
 go.work*
 .vscode

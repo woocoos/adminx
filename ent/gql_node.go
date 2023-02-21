@@ -15,9 +15,13 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
+	"github.com/woocoos/adminx/ent/apppolicy"
+	"github.com/woocoos/adminx/ent/appres"
+	"github.com/woocoos/adminx/ent/approle"
 	"github.com/woocoos/adminx/ent/organization"
+	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
 	"github.com/woocoos/adminx/ent/useridentity"
@@ -35,13 +39,25 @@ type Noder interface {
 func (n *App) IsNode() {}
 
 // IsNode implements the Node interface check for GQLGen.
+func (n *AppAction) IsNode() {}
+
+// IsNode implements the Node interface check for GQLGen.
 func (n *AppMenu) IsNode() {}
 
 // IsNode implements the Node interface check for GQLGen.
-func (n *AppPermission) IsNode() {}
+func (n *AppPolicy) IsNode() {}
+
+// IsNode implements the Node interface check for GQLGen.
+func (n *AppRes) IsNode() {}
+
+// IsNode implements the Node interface check for GQLGen.
+func (n *AppRole) IsNode() {}
 
 // IsNode implements the Node interface check for GQLGen.
 func (n *Organization) IsNode() {}
+
+// IsNode implements the Node interface check for GQLGen.
+func (n *Permission) IsNode() {}
 
 // IsNode implements the Node interface check for GQLGen.
 func (n *User) IsNode() {}
@@ -128,6 +144,18 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			return nil, err
 		}
 		return n, nil
+	case appaction.Table:
+		query := c.AppAction.Query().
+			Where(appaction.ID(id))
+		query, err := query.CollectFields(ctx, "AppAction")
+		if err != nil {
+			return nil, err
+		}
+		n, err := query.Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case appmenu.Table:
 		query := c.AppMenu.Query().
 			Where(appmenu.ID(id))
@@ -140,10 +168,34 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			return nil, err
 		}
 		return n, nil
-	case apppermission.Table:
-		query := c.AppPermission.Query().
-			Where(apppermission.ID(id))
-		query, err := query.CollectFields(ctx, "AppPermission")
+	case apppolicy.Table:
+		query := c.AppPolicy.Query().
+			Where(apppolicy.ID(id))
+		query, err := query.CollectFields(ctx, "AppPolicy")
+		if err != nil {
+			return nil, err
+		}
+		n, err := query.Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case appres.Table:
+		query := c.AppRes.Query().
+			Where(appres.ID(id))
+		query, err := query.CollectFields(ctx, "AppRes")
+		if err != nil {
+			return nil, err
+		}
+		n, err := query.Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case approle.Table:
+		query := c.AppRole.Query().
+			Where(approle.ID(id))
+		query, err := query.CollectFields(ctx, "AppRole")
 		if err != nil {
 			return nil, err
 		}
@@ -156,6 +208,18 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 		query := c.Organization.Query().
 			Where(organization.ID(id))
 		query, err := query.CollectFields(ctx, "Organization")
+		if err != nil {
+			return nil, err
+		}
+		n, err := query.Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case permission.Table:
+		query := c.Permission.Query().
+			Where(permission.ID(id))
+		query, err := query.CollectFields(ctx, "Permission")
 		if err != nil {
 			return nil, err
 		}
@@ -313,6 +377,22 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 				*noder = node
 			}
 		}
+	case appaction.Table:
+		query := c.AppAction.Query().
+			Where(appaction.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "AppAction")
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case appmenu.Table:
 		query := c.AppMenu.Query().
 			Where(appmenu.IDIn(ids...))
@@ -329,10 +409,42 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 				*noder = node
 			}
 		}
-	case apppermission.Table:
-		query := c.AppPermission.Query().
-			Where(apppermission.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "AppPermission")
+	case apppolicy.Table:
+		query := c.AppPolicy.Query().
+			Where(apppolicy.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "AppPolicy")
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case appres.Table:
+		query := c.AppRes.Query().
+			Where(appres.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "AppRes")
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case approle.Table:
+		query := c.AppRole.Query().
+			Where(approle.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "AppRole")
 		if err != nil {
 			return nil, err
 		}
@@ -349,6 +461,22 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		query := c.Organization.Query().
 			Where(organization.IDIn(ids...))
 		query, err := query.CollectFields(ctx, "Organization")
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case permission.Table:
+		query := c.Permission.Query().
+			Where(permission.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "Permission")
 		if err != nil {
 			return nil, err
 		}

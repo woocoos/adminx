@@ -1,2 +1,19 @@
 scalar GID
 
+enum PolicyEffect {
+    allow
+    deny
+}
+type PolicyRule {
+    effect: PolicyEffect!
+    actions: [String!]
+    resources: [String!]
+    conditions: [String!]
+}
+
+input PolicyRuleInput {
+    effect: PolicyEffect!
+    actions: [String!]
+    resources: [String!]
+    conditions: [String!]
+}

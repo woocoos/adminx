@@ -4,11 +4,12 @@ package ent
 
 import (
 	"github.com/woocoos/adminx/ent/app"
-	"github.com/woocoos/adminx/ent/organization"
-	"github.com/woocoos/adminx/ent/user"
+	"github.com/woocoos/adminx/ent/appaction"
+	"github.com/woocoos/adminx/ent/appmenu"
 	"github.com/woocoos/adminx/ent/useridentity"
 	"github.com/woocoos/adminx/ent/userloginprofile"
 	"github.com/woocoos/adminx/ent/userpassword"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // CreateAppInput represents a mutation input for creating apps.
@@ -25,9 +26,13 @@ type CreateAppInput struct {
 	RefreshTokenValidity *int32
 	Logo                 *string
 	Comments             *string
-	Status               *app.Status
+	Status               *types.SimpleStatus
 	MenuIDs              []int
-	PermissionIDs        []int
+	ActionIDs            []int
+	ResourceIDs          []int
+	RoleIDs              []int
+	PolicyIDs            []int
+	OrganizationIDs      []int
 }
 
 // Mutate applies the CreateAppInput on the AppMutation builder.
@@ -65,8 +70,20 @@ func (i *CreateAppInput) Mutate(m *AppMutation) {
 	if v := i.MenuIDs; len(v) > 0 {
 		m.AddMenuIDs(v...)
 	}
-	if v := i.PermissionIDs; len(v) > 0 {
-		m.AddPermissionIDs(v...)
+	if v := i.ActionIDs; len(v) > 0 {
+		m.AddActionIDs(v...)
+	}
+	if v := i.ResourceIDs; len(v) > 0 {
+		m.AddResourceIDs(v...)
+	}
+	if v := i.RoleIDs; len(v) > 0 {
+		m.AddRoleIDs(v...)
+	}
+	if v := i.PolicyIDs; len(v) > 0 {
+		m.AddPolicyIDs(v...)
+	}
+	if v := i.OrganizationIDs; len(v) > 0 {
+		m.AddOrganizationIDs(v...)
 	}
 }
 
@@ -78,7 +95,6 @@ func (c *AppCreate) SetInput(i CreateAppInput) *AppCreate {
 
 // UpdateAppInput represents a mutation input for updating apps.
 type UpdateAppInput struct {
-	ID                        *int
 	Name                      *string
 	Code                      *string
 	Kind                      *app.Kind
@@ -99,13 +115,25 @@ type UpdateAppInput struct {
 	ClearComments             bool
 	Comments                  *string
 	ClearStatus               bool
-	Status                    *app.Status
+	Status                    *types.SimpleStatus
 	ClearMenus                bool
 	AddMenuIDs                []int
 	RemoveMenuIDs             []int
-	ClearPermissions          bool
-	AddPermissionIDs          []int
-	RemovePermissionIDs       []int
+	ClearActions              bool
+	AddActionIDs              []int
+	RemoveActionIDs           []int
+	ClearResources            bool
+	AddResourceIDs            []int
+	RemoveResourceIDs         []int
+	ClearRoles                bool
+	AddRoleIDs                []int
+	RemoveRoleIDs             []int
+	ClearPolicies             bool
+	AddPolicyIDs              []int
+	RemovePolicyIDs           []int
+	ClearOrganizations        bool
+	AddOrganizationIDs        []int
+	RemoveOrganizationIDs     []int
 }
 
 // Mutate applies the UpdateAppInput on the AppMutation builder.
@@ -182,14 +210,50 @@ func (i *UpdateAppInput) Mutate(m *AppMutation) {
 	if v := i.RemoveMenuIDs; len(v) > 0 {
 		m.RemoveMenuIDs(v...)
 	}
-	if i.ClearPermissions {
-		m.ClearPermissions()
+	if i.ClearActions {
+		m.ClearActions()
 	}
-	if v := i.AddPermissionIDs; len(v) > 0 {
-		m.AddPermissionIDs(v...)
+	if v := i.AddActionIDs; len(v) > 0 {
+		m.AddActionIDs(v...)
 	}
-	if v := i.RemovePermissionIDs; len(v) > 0 {
-		m.RemovePermissionIDs(v...)
+	if v := i.RemoveActionIDs; len(v) > 0 {
+		m.RemoveActionIDs(v...)
+	}
+	if i.ClearResources {
+		m.ClearResources()
+	}
+	if v := i.AddResourceIDs; len(v) > 0 {
+		m.AddResourceIDs(v...)
+	}
+	if v := i.RemoveResourceIDs; len(v) > 0 {
+		m.RemoveResourceIDs(v...)
+	}
+	if i.ClearRoles {
+		m.ClearRoles()
+	}
+	if v := i.AddRoleIDs; len(v) > 0 {
+		m.AddRoleIDs(v...)
+	}
+	if v := i.RemoveRoleIDs; len(v) > 0 {
+		m.RemoveRoleIDs(v...)
+	}
+	if i.ClearPolicies {
+		m.ClearPolicies()
+	}
+	if v := i.AddPolicyIDs; len(v) > 0 {
+		m.AddPolicyIDs(v...)
+	}
+	if v := i.RemovePolicyIDs; len(v) > 0 {
+		m.RemovePolicyIDs(v...)
+	}
+	if i.ClearOrganizations {
+		m.ClearOrganizations()
+	}
+	if v := i.AddOrganizationIDs; len(v) > 0 {
+		m.AddOrganizationIDs(v...)
+	}
+	if v := i.RemoveOrganizationIDs; len(v) > 0 {
+		m.RemoveOrganizationIDs(v...)
 	}
 }
 
@@ -205,17 +269,487 @@ func (c *AppUpdateOne) SetInput(i UpdateAppInput) *AppUpdateOne {
 	return c
 }
 
+// CreateAppActionInput represents a mutation input for creating appactions.
+type CreateAppActionInput struct {
+	ID          *int
+	Name        string
+	Kind        appaction.Kind
+	Method      appaction.Method
+	Comments    *string
+	AppID       int
+	MenuIDs     []int
+	ResourceIDs []int
+}
+
+// Mutate applies the CreateAppActionInput on the AppActionMutation builder.
+func (i *CreateAppActionInput) Mutate(m *AppActionMutation) {
+	m.SetName(i.Name)
+	m.SetKind(i.Kind)
+	m.SetMethod(i.Method)
+	if v := i.Comments; v != nil {
+		m.SetComments(*v)
+	}
+	m.SetAppID(i.AppID)
+	if v := i.MenuIDs; len(v) > 0 {
+		m.AddMenuIDs(v...)
+	}
+	if v := i.ResourceIDs; len(v) > 0 {
+		m.AddResourceIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the CreateAppActionInput on the AppActionCreate builder.
+func (c *AppActionCreate) SetInput(i CreateAppActionInput) *AppActionCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateAppActionInput represents a mutation input for updating appactions.
+type UpdateAppActionInput struct {
+	Name              *string
+	Kind              *appaction.Kind
+	Method            *appaction.Method
+	ClearComments     bool
+	Comments          *string
+	ClearApp          bool
+	AppID             *int
+	ClearMenus        bool
+	AddMenuIDs        []int
+	RemoveMenuIDs     []int
+	ClearResources    bool
+	AddResourceIDs    []int
+	RemoveResourceIDs []int
+}
+
+// Mutate applies the UpdateAppActionInput on the AppActionMutation builder.
+func (i *UpdateAppActionInput) Mutate(m *AppActionMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Kind; v != nil {
+		m.SetKind(*v)
+	}
+	if v := i.Method; v != nil {
+		m.SetMethod(*v)
+	}
+	if i.ClearComments {
+		m.ClearComments()
+	}
+	if v := i.Comments; v != nil {
+		m.SetComments(*v)
+	}
+	if i.ClearApp {
+		m.ClearApp()
+	}
+	if v := i.AppID; v != nil {
+		m.SetAppID(*v)
+	}
+	if i.ClearMenus {
+		m.ClearMenus()
+	}
+	if v := i.AddMenuIDs; len(v) > 0 {
+		m.AddMenuIDs(v...)
+	}
+	if v := i.RemoveMenuIDs; len(v) > 0 {
+		m.RemoveMenuIDs(v...)
+	}
+	if i.ClearResources {
+		m.ClearResources()
+	}
+	if v := i.AddResourceIDs; len(v) > 0 {
+		m.AddResourceIDs(v...)
+	}
+	if v := i.RemoveResourceIDs; len(v) > 0 {
+		m.RemoveResourceIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the UpdateAppActionInput on the AppActionUpdate builder.
+func (c *AppActionUpdate) SetInput(i UpdateAppActionInput) *AppActionUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateAppActionInput on the AppActionUpdateOne builder.
+func (c *AppActionUpdateOne) SetInput(i UpdateAppActionInput) *AppActionUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// CreateAppMenuInput represents a mutation input for creating appmenus.
+type CreateAppMenuInput struct {
+	ID       *int
+	ParentID int
+	Kind     appmenu.Kind
+	Name     *string
+	Comments *string
+	AppID    int
+	ActionID *int
+}
+
+// Mutate applies the CreateAppMenuInput on the AppMenuMutation builder.
+func (i *CreateAppMenuInput) Mutate(m *AppMenuMutation) {
+	m.SetParentID(i.ParentID)
+	m.SetKind(i.Kind)
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Comments; v != nil {
+		m.SetComments(*v)
+	}
+	m.SetAppID(i.AppID)
+	if v := i.ActionID; v != nil {
+		m.SetActionID(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateAppMenuInput on the AppMenuCreate builder.
+func (c *AppMenuCreate) SetInput(i CreateAppMenuInput) *AppMenuCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateAppMenuInput represents a mutation input for updating appmenus.
+type UpdateAppMenuInput struct {
+	ParentID      *int
+	Kind          *appmenu.Kind
+	ClearName     bool
+	Name          *string
+	ClearComments bool
+	Comments      *string
+	ClearApp      bool
+	AppID         *int
+	ClearAction   bool
+	ActionID      *int
+}
+
+// Mutate applies the UpdateAppMenuInput on the AppMenuMutation builder.
+func (i *UpdateAppMenuInput) Mutate(m *AppMenuMutation) {
+	if v := i.ParentID; v != nil {
+		m.SetParentID(*v)
+	}
+	if v := i.Kind; v != nil {
+		m.SetKind(*v)
+	}
+	if i.ClearName {
+		m.ClearName()
+	}
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if i.ClearComments {
+		m.ClearComments()
+	}
+	if v := i.Comments; v != nil {
+		m.SetComments(*v)
+	}
+	if i.ClearApp {
+		m.ClearApp()
+	}
+	if v := i.AppID; v != nil {
+		m.SetAppID(*v)
+	}
+	if i.ClearAction {
+		m.ClearAction()
+	}
+	if v := i.ActionID; v != nil {
+		m.SetActionID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateAppMenuInput on the AppMenuUpdate builder.
+func (c *AppMenuUpdate) SetInput(i UpdateAppMenuInput) *AppMenuUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateAppMenuInput on the AppMenuUpdateOne builder.
+func (c *AppMenuUpdateOne) SetInput(i UpdateAppMenuInput) *AppMenuUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// CreateAppPolicyInput represents a mutation input for creating apppolicies.
+type CreateAppPolicyInput struct {
+	ID        *int
+	Name      string
+	Comments  string
+	Rules     []types.PolicyRule
+	Version   string
+	AutoGrant *bool
+	Status    *types.SimpleStatus
+	AppID     int
+	RoleIDs   []int
+}
+
+// Mutate applies the CreateAppPolicyInput on the AppPolicyMutation builder.
+func (i *CreateAppPolicyInput) Mutate(m *AppPolicyMutation) {
+	m.SetName(i.Name)
+	m.SetComments(i.Comments)
+	if v := i.Rules; v != nil {
+		m.SetRules(v)
+	}
+	m.SetVersion(i.Version)
+	if v := i.AutoGrant; v != nil {
+		m.SetAutoGrant(*v)
+	}
+	if v := i.Status; v != nil {
+		m.SetStatus(*v)
+	}
+	m.SetAppID(i.AppID)
+	if v := i.RoleIDs; len(v) > 0 {
+		m.AddRoleIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the CreateAppPolicyInput on the AppPolicyCreate builder.
+func (c *AppPolicyCreate) SetInput(i CreateAppPolicyInput) *AppPolicyCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateAppPolicyInput represents a mutation input for updating apppolicies.
+type UpdateAppPolicyInput struct {
+	Name          *string
+	Comments      *string
+	Rules         []types.PolicyRule
+	AppendRules   []types.PolicyRule
+	Version       *string
+	AutoGrant     *bool
+	ClearStatus   bool
+	Status        *types.SimpleStatus
+	ClearApp      bool
+	AppID         *int
+	ClearRoles    bool
+	AddRoleIDs    []int
+	RemoveRoleIDs []int
+}
+
+// Mutate applies the UpdateAppPolicyInput on the AppPolicyMutation builder.
+func (i *UpdateAppPolicyInput) Mutate(m *AppPolicyMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Comments; v != nil {
+		m.SetComments(*v)
+	}
+	if v := i.Rules; v != nil {
+		m.SetRules(v)
+	}
+	if i.AppendRules != nil {
+		m.AppendRules(i.Rules)
+	}
+	if v := i.Version; v != nil {
+		m.SetVersion(*v)
+	}
+	if v := i.AutoGrant; v != nil {
+		m.SetAutoGrant(*v)
+	}
+	if i.ClearStatus {
+		m.ClearStatus()
+	}
+	if v := i.Status; v != nil {
+		m.SetStatus(*v)
+	}
+	if i.ClearApp {
+		m.ClearApp()
+	}
+	if v := i.AppID; v != nil {
+		m.SetAppID(*v)
+	}
+	if i.ClearRoles {
+		m.ClearRoles()
+	}
+	if v := i.AddRoleIDs; len(v) > 0 {
+		m.AddRoleIDs(v...)
+	}
+	if v := i.RemoveRoleIDs; len(v) > 0 {
+		m.RemoveRoleIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the UpdateAppPolicyInput on the AppPolicyUpdate builder.
+func (c *AppPolicyUpdate) SetInput(i UpdateAppPolicyInput) *AppPolicyUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateAppPolicyInput on the AppPolicyUpdateOne builder.
+func (c *AppPolicyUpdateOne) SetInput(i UpdateAppPolicyInput) *AppPolicyUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// CreateAppResInput represents a mutation input for creating appresslice.
+type CreateAppResInput struct {
+	ID         *int
+	Name       string
+	TypeName   string
+	ArnPattern string
+	AppID      int
+}
+
+// Mutate applies the CreateAppResInput on the AppResMutation builder.
+func (i *CreateAppResInput) Mutate(m *AppResMutation) {
+	m.SetName(i.Name)
+	m.SetTypeName(i.TypeName)
+	m.SetArnPattern(i.ArnPattern)
+	m.SetAppID(i.AppID)
+}
+
+// SetInput applies the change-set in the CreateAppResInput on the AppResCreate builder.
+func (c *AppResCreate) SetInput(i CreateAppResInput) *AppResCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateAppResInput represents a mutation input for updating appresslice.
+type UpdateAppResInput struct {
+	Name       *string
+	TypeName   *string
+	ArnPattern *string
+	ClearApp   bool
+	AppID      *int
+}
+
+// Mutate applies the UpdateAppResInput on the AppResMutation builder.
+func (i *UpdateAppResInput) Mutate(m *AppResMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.TypeName; v != nil {
+		m.SetTypeName(*v)
+	}
+	if v := i.ArnPattern; v != nil {
+		m.SetArnPattern(*v)
+	}
+	if i.ClearApp {
+		m.ClearApp()
+	}
+	if v := i.AppID; v != nil {
+		m.SetAppID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateAppResInput on the AppResUpdate builder.
+func (c *AppResUpdate) SetInput(i UpdateAppResInput) *AppResUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateAppResInput on the AppResUpdateOne builder.
+func (c *AppResUpdateOne) SetInput(i UpdateAppResInput) *AppResUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// CreateAppRoleInput represents a mutation input for creating approles.
+type CreateAppRoleInput struct {
+	ID        *int
+	Name      string
+	Comments  *string
+	AutoGrant *bool
+	Editable  *bool
+	AppID     int
+	PolicyIDs []int
+}
+
+// Mutate applies the CreateAppRoleInput on the AppRoleMutation builder.
+func (i *CreateAppRoleInput) Mutate(m *AppRoleMutation) {
+	m.SetName(i.Name)
+	if v := i.Comments; v != nil {
+		m.SetComments(*v)
+	}
+	if v := i.AutoGrant; v != nil {
+		m.SetAutoGrant(*v)
+	}
+	if v := i.Editable; v != nil {
+		m.SetEditable(*v)
+	}
+	m.SetAppID(i.AppID)
+	if v := i.PolicyIDs; len(v) > 0 {
+		m.AddPolicyIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the CreateAppRoleInput on the AppRoleCreate builder.
+func (c *AppRoleCreate) SetInput(i CreateAppRoleInput) *AppRoleCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateAppRoleInput represents a mutation input for updating approles.
+type UpdateAppRoleInput struct {
+	Name            *string
+	ClearComments   bool
+	Comments        *string
+	AutoGrant       *bool
+	Editable        *bool
+	ClearApp        bool
+	AppID           *int
+	ClearPolicies   bool
+	AddPolicyIDs    []int
+	RemovePolicyIDs []int
+}
+
+// Mutate applies the UpdateAppRoleInput on the AppRoleMutation builder.
+func (i *UpdateAppRoleInput) Mutate(m *AppRoleMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if i.ClearComments {
+		m.ClearComments()
+	}
+	if v := i.Comments; v != nil {
+		m.SetComments(*v)
+	}
+	if v := i.AutoGrant; v != nil {
+		m.SetAutoGrant(*v)
+	}
+	if v := i.Editable; v != nil {
+		m.SetEditable(*v)
+	}
+	if i.ClearApp {
+		m.ClearApp()
+	}
+	if v := i.AppID; v != nil {
+		m.SetAppID(*v)
+	}
+	if i.ClearPolicies {
+		m.ClearPolicies()
+	}
+	if v := i.AddPolicyIDs; len(v) > 0 {
+		m.AddPolicyIDs(v...)
+	}
+	if v := i.RemovePolicyIDs; len(v) > 0 {
+		m.RemovePolicyIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the UpdateAppRoleInput on the AppRoleUpdate builder.
+func (c *AppRoleUpdate) SetInput(i UpdateAppRoleInput) *AppRoleUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateAppRoleInput on the AppRoleUpdateOne builder.
+func (c *AppRoleUpdateOne) SetInput(i UpdateAppRoleInput) *AppRoleUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreateOrganizationInput represents a mutation input for creating organizations.
 type CreateOrganizationInput struct {
 	ID          *int
 	Domain      *string
 	Name        string
 	Profile     *string
-	Status      *organization.Status
+	Status      *types.SimpleStatus
 	CountryCode *string
 	Timezone    *string
 	ParentID    int
 	OwnerID     *int
+	AppIDs      []int
 }
 
 // Mutate applies the CreateOrganizationInput on the OrganizationMutation builder.
@@ -240,6 +774,9 @@ func (i *CreateOrganizationInput) Mutate(m *OrganizationMutation) {
 	if v := i.OwnerID; v != nil {
 		m.SetOwnerID(*v)
 	}
+	if v := i.AppIDs; len(v) > 0 {
+		m.AddAppIDs(v...)
+	}
 }
 
 // SetInput applies the change-set in the CreateOrganizationInput on the OrganizationCreate builder.
@@ -250,14 +787,13 @@ func (c *OrganizationCreate) SetInput(i CreateOrganizationInput) *OrganizationCr
 
 // UpdateOrganizationInput represents a mutation input for updating organizations.
 type UpdateOrganizationInput struct {
-	ID               *int
 	ClearDomain      bool
 	Domain           *string
 	Name             *string
 	ClearProfile     bool
 	Profile          *string
 	ClearStatus      bool
-	Status           *organization.Status
+	Status           *types.SimpleStatus
 	ClearCountryCode bool
 	CountryCode      *string
 	ClearTimezone    bool
@@ -266,6 +802,9 @@ type UpdateOrganizationInput struct {
 	ParentID         *int
 	ClearOwner       bool
 	OwnerID          *int
+	ClearApps        bool
+	AddAppIDs        []int
+	RemoveAppIDs     []int
 }
 
 // Mutate applies the UpdateOrganizationInput on the OrganizationMutation builder.
@@ -315,6 +854,15 @@ func (i *UpdateOrganizationInput) Mutate(m *OrganizationMutation) {
 	if v := i.OwnerID; v != nil {
 		m.SetOwnerID(*v)
 	}
+	if i.ClearApps {
+		m.ClearApps()
+	}
+	if v := i.AddAppIDs; len(v) > 0 {
+		m.AddAppIDs(v...)
+	}
+	if v := i.RemoveAppIDs; len(v) > 0 {
+		m.RemoveAppIDs(v...)
+	}
 }
 
 // SetInput applies the change-set in the UpdateOrganizationInput on the OrganizationUpdate builder.
@@ -329,12 +877,89 @@ func (c *OrganizationUpdateOne) SetInput(i UpdateOrganizationInput) *Organizatio
 	return c
 }
 
+// CreateOrganizationPolicyInput represents a mutation input for creating organizationpolicies.
+type CreateOrganizationPolicyInput struct {
+	ID          *int
+	OrgID       int
+	AppPolicyID *int
+	Name        string
+	Comments    string
+	Rules       []types.PolicyRule
+}
+
+// Mutate applies the CreateOrganizationPolicyInput on the OrganizationPolicyMutation builder.
+func (i *CreateOrganizationPolicyInput) Mutate(m *OrganizationPolicyMutation) {
+	m.SetOrgID(i.OrgID)
+	if v := i.AppPolicyID; v != nil {
+		m.SetAppPolicyID(*v)
+	}
+	m.SetName(i.Name)
+	m.SetComments(i.Comments)
+	if v := i.Rules; v != nil {
+		m.SetRules(v)
+	}
+}
+
+// SetInput applies the change-set in the CreateOrganizationPolicyInput on the OrganizationPolicyCreate builder.
+func (c *OrganizationPolicyCreate) SetInput(i CreateOrganizationPolicyInput) *OrganizationPolicyCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateOrganizationPolicyInput represents a mutation input for updating organizationpolicies.
+type UpdateOrganizationPolicyInput struct {
+	OrgID            *int
+	ClearAppPolicyID bool
+	AppPolicyID      *int
+	Name             *string
+	Comments         *string
+	Rules            []types.PolicyRule
+	AppendRules      []types.PolicyRule
+}
+
+// Mutate applies the UpdateOrganizationPolicyInput on the OrganizationPolicyMutation builder.
+func (i *UpdateOrganizationPolicyInput) Mutate(m *OrganizationPolicyMutation) {
+	if v := i.OrgID; v != nil {
+		m.SetOrgID(*v)
+	}
+	if i.ClearAppPolicyID {
+		m.ClearAppPolicyID()
+	}
+	if v := i.AppPolicyID; v != nil {
+		m.SetAppPolicyID(*v)
+	}
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Comments; v != nil {
+		m.SetComments(*v)
+	}
+	if v := i.Rules; v != nil {
+		m.SetRules(v)
+	}
+	if i.AppendRules != nil {
+		m.AppendRules(i.Rules)
+	}
+}
+
+// SetInput applies the change-set in the UpdateOrganizationPolicyInput on the OrganizationPolicyUpdate builder.
+func (c *OrganizationPolicyUpdate) SetInput(i UpdateOrganizationPolicyInput) *OrganizationPolicyUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateOrganizationPolicyInput on the OrganizationPolicyUpdateOne builder.
+func (c *OrganizationPolicyUpdateOne) SetInput(i UpdateOrganizationPolicyInput) *OrganizationPolicyUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreateUserInput represents a mutation input for creating users.
 type CreateUserInput struct {
 	ID             *int
 	PrincipalName  string
 	DisplayName    string
-	Status         *user.Status
+	Status         *types.SimpleStatus
 	Comments       *string
 	IdentityIDs    []int
 	LoginProfileID *int
@@ -374,7 +999,6 @@ func (c *UserCreate) SetInput(i CreateUserInput) *UserCreate {
 
 // UpdateUserInput represents a mutation input for updating users.
 type UpdateUserInput struct {
-	ID                *int
 	PrincipalName     *string
 	DisplayName       *string
 	ClearComments     bool
@@ -459,7 +1083,7 @@ type CreateUserIdentityInput struct {
 	Kind       useridentity.Kind
 	Code       *string
 	CodeExtend *string
-	Status     *useridentity.Status
+	Status     *types.SimpleStatus
 	UserID     *int
 }
 
@@ -488,14 +1112,13 @@ func (c *UserIdentityCreate) SetInput(i CreateUserIdentityInput) *UserIdentityCr
 
 // UpdateUserIdentityInput represents a mutation input for updating useridentities.
 type UpdateUserIdentityInput struct {
-	ID              *int
 	Kind            *useridentity.Kind
 	ClearCode       bool
 	Code            *string
 	ClearCodeExtend bool
 	CodeExtend      *string
 	ClearStatus     bool
-	Status          *useridentity.Status
+	Status          *types.SimpleStatus
 }
 
 // Mutate applies the UpdateUserIdentityInput on the UserIdentityMutation builder.
@@ -544,7 +1167,7 @@ type CreateUserLoginProfileInput struct {
 	VerifyDevice  bool
 	MfaEnabled    *bool
 	MfaSecret     *string
-	MfaStatus     *userloginprofile.MfaStatus
+	MfaStatus     *types.SimpleStatus
 	UserID        *int
 }
 
@@ -580,7 +1203,6 @@ func (c *UserLoginProfileCreate) SetInput(i CreateUserLoginProfileInput) *UserLo
 
 // UpdateUserLoginProfileInput represents a mutation input for updating userloginprofiles.
 type UpdateUserLoginProfileInput struct {
-	ID                 *int
 	ClearCanLogin      bool
 	CanLogin           *bool
 	SetKind            *userloginprofile.SetKind
@@ -592,7 +1214,7 @@ type UpdateUserLoginProfileInput struct {
 	ClearMfaSecret     bool
 	MfaSecret          *string
 	ClearMfaStatus     bool
-	MfaStatus          *userloginprofile.MfaStatus
+	MfaStatus          *types.SimpleStatus
 }
 
 // Mutate applies the UpdateUserLoginProfileInput on the UserLoginProfileMutation builder.
@@ -652,7 +1274,7 @@ type CreateUserPasswordInput struct {
 	ID       *int
 	Scene    *userpassword.Scene
 	Password *string
-	Status   *userpassword.Status
+	Status   *types.SimpleStatus
 	Memo     *string
 	UserID   *int
 }
@@ -684,13 +1306,12 @@ func (c *UserPasswordCreate) SetInput(i CreateUserPasswordInput) *UserPasswordCr
 
 // UpdateUserPasswordInput represents a mutation input for updating userpasswords.
 type UpdateUserPasswordInput struct {
-	ID            *int
 	ClearScene    bool
 	Scene         *userpassword.Scene
 	ClearPassword bool
 	Password      *string
 	ClearStatus   bool
-	Status        *userpassword.Status
+	Status        *types.SimpleStatus
 	ClearMemo     bool
 	Memo          *string
 }

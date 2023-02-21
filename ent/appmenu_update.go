@@ -12,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
 	"github.com/woocoos/adminx/ent/predicate"
 )
 
@@ -60,6 +60,14 @@ func (amu *AppMenuUpdate) ClearUpdatedBy() *AppMenuUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (amu *AppMenuUpdate) SetUpdatedAt(t time.Time) *AppMenuUpdate {
 	amu.mutation.SetUpdatedAt(t)
+	return amu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (amu *AppMenuUpdate) SetNillableUpdatedAt(t *time.Time) *AppMenuUpdate {
+	if t != nil {
+		amu.SetUpdatedAt(*t)
+	}
 	return amu
 }
 
@@ -114,23 +122,23 @@ func (amu *AppMenuUpdate) ClearName() *AppMenuUpdate {
 	return amu
 }
 
-// SetPermissionID sets the "permission_id" field.
-func (amu *AppMenuUpdate) SetPermissionID(i int) *AppMenuUpdate {
-	amu.mutation.SetPermissionID(i)
+// SetActionID sets the "action_id" field.
+func (amu *AppMenuUpdate) SetActionID(i int) *AppMenuUpdate {
+	amu.mutation.SetActionID(i)
 	return amu
 }
 
-// SetNillablePermissionID sets the "permission_id" field if the given value is not nil.
-func (amu *AppMenuUpdate) SetNillablePermissionID(i *int) *AppMenuUpdate {
+// SetNillableActionID sets the "action_id" field if the given value is not nil.
+func (amu *AppMenuUpdate) SetNillableActionID(i *int) *AppMenuUpdate {
 	if i != nil {
-		amu.SetPermissionID(*i)
+		amu.SetActionID(*i)
 	}
 	return amu
 }
 
-// ClearPermissionID clears the value of the "permission_id" field.
-func (amu *AppMenuUpdate) ClearPermissionID() *AppMenuUpdate {
-	amu.mutation.ClearPermissionID()
+// ClearActionID clears the value of the "action_id" field.
+func (amu *AppMenuUpdate) ClearActionID() *AppMenuUpdate {
+	amu.mutation.ClearActionID()
 	return amu
 }
 
@@ -186,9 +194,9 @@ func (amu *AppMenuUpdate) SetApp(a *App) *AppMenuUpdate {
 	return amu.SetAppID(a.ID)
 }
 
-// SetPermission sets the "permission" edge to the AppPermission entity.
-func (amu *AppMenuUpdate) SetPermission(a *AppPermission) *AppMenuUpdate {
-	return amu.SetPermissionID(a.ID)
+// SetAction sets the "action" edge to the AppAction entity.
+func (amu *AppMenuUpdate) SetAction(a *AppAction) *AppMenuUpdate {
+	return amu.SetActionID(a.ID)
 }
 
 // Mutation returns the AppMenuMutation object of the builder.
@@ -202,17 +210,14 @@ func (amu *AppMenuUpdate) ClearApp() *AppMenuUpdate {
 	return amu
 }
 
-// ClearPermission clears the "permission" edge to the AppPermission entity.
-func (amu *AppMenuUpdate) ClearPermission() *AppMenuUpdate {
-	amu.mutation.ClearPermission()
+// ClearAction clears the "action" edge to the AppAction entity.
+func (amu *AppMenuUpdate) ClearAction() *AppMenuUpdate {
+	amu.mutation.ClearAction()
 	return amu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (amu *AppMenuUpdate) Save(ctx context.Context) (int, error) {
-	if err := amu.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, AppMenuMutation](ctx, amu.sqlSave, amu.mutation, amu.hooks)
 }
 
@@ -236,18 +241,6 @@ func (amu *AppMenuUpdate) ExecX(ctx context.Context) {
 	if err := amu.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (amu *AppMenuUpdate) defaults() error {
-	if _, ok := amu.mutation.UpdatedAt(); !ok && !amu.mutation.UpdatedAtCleared() {
-		if appmenu.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized appmenu.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := appmenu.UpdateDefaultUpdatedAt()
-		amu.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -360,33 +353,33 @@ func (amu *AppMenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if amu.mutation.PermissionCleared() {
+	if amu.mutation.ActionCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   appmenu.PermissionTable,
-			Columns: []string{appmenu.PermissionColumn},
+			Table:   appmenu.ActionTable,
+			Columns: []string{appmenu.ActionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := amu.mutation.PermissionIDs(); len(nodes) > 0 {
+	if nodes := amu.mutation.ActionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   appmenu.PermissionTable,
-			Columns: []string{appmenu.PermissionColumn},
+			Table:   appmenu.ActionTable,
+			Columns: []string{appmenu.ActionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
@@ -448,6 +441,14 @@ func (amuo *AppMenuUpdateOne) SetUpdatedAt(t time.Time) *AppMenuUpdateOne {
 	return amuo
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (amuo *AppMenuUpdateOne) SetNillableUpdatedAt(t *time.Time) *AppMenuUpdateOne {
+	if t != nil {
+		amuo.SetUpdatedAt(*t)
+	}
+	return amuo
+}
+
 // ClearUpdatedAt clears the value of the "updated_at" field.
 func (amuo *AppMenuUpdateOne) ClearUpdatedAt() *AppMenuUpdateOne {
 	amuo.mutation.ClearUpdatedAt()
@@ -499,23 +500,23 @@ func (amuo *AppMenuUpdateOne) ClearName() *AppMenuUpdateOne {
 	return amuo
 }
 
-// SetPermissionID sets the "permission_id" field.
-func (amuo *AppMenuUpdateOne) SetPermissionID(i int) *AppMenuUpdateOne {
-	amuo.mutation.SetPermissionID(i)
+// SetActionID sets the "action_id" field.
+func (amuo *AppMenuUpdateOne) SetActionID(i int) *AppMenuUpdateOne {
+	amuo.mutation.SetActionID(i)
 	return amuo
 }
 
-// SetNillablePermissionID sets the "permission_id" field if the given value is not nil.
-func (amuo *AppMenuUpdateOne) SetNillablePermissionID(i *int) *AppMenuUpdateOne {
+// SetNillableActionID sets the "action_id" field if the given value is not nil.
+func (amuo *AppMenuUpdateOne) SetNillableActionID(i *int) *AppMenuUpdateOne {
 	if i != nil {
-		amuo.SetPermissionID(*i)
+		amuo.SetActionID(*i)
 	}
 	return amuo
 }
 
-// ClearPermissionID clears the value of the "permission_id" field.
-func (amuo *AppMenuUpdateOne) ClearPermissionID() *AppMenuUpdateOne {
-	amuo.mutation.ClearPermissionID()
+// ClearActionID clears the value of the "action_id" field.
+func (amuo *AppMenuUpdateOne) ClearActionID() *AppMenuUpdateOne {
+	amuo.mutation.ClearActionID()
 	return amuo
 }
 
@@ -571,9 +572,9 @@ func (amuo *AppMenuUpdateOne) SetApp(a *App) *AppMenuUpdateOne {
 	return amuo.SetAppID(a.ID)
 }
 
-// SetPermission sets the "permission" edge to the AppPermission entity.
-func (amuo *AppMenuUpdateOne) SetPermission(a *AppPermission) *AppMenuUpdateOne {
-	return amuo.SetPermissionID(a.ID)
+// SetAction sets the "action" edge to the AppAction entity.
+func (amuo *AppMenuUpdateOne) SetAction(a *AppAction) *AppMenuUpdateOne {
+	return amuo.SetActionID(a.ID)
 }
 
 // Mutation returns the AppMenuMutation object of the builder.
@@ -587,9 +588,9 @@ func (amuo *AppMenuUpdateOne) ClearApp() *AppMenuUpdateOne {
 	return amuo
 }
 
-// ClearPermission clears the "permission" edge to the AppPermission entity.
-func (amuo *AppMenuUpdateOne) ClearPermission() *AppMenuUpdateOne {
-	amuo.mutation.ClearPermission()
+// ClearAction clears the "action" edge to the AppAction entity.
+func (amuo *AppMenuUpdateOne) ClearAction() *AppMenuUpdateOne {
+	amuo.mutation.ClearAction()
 	return amuo
 }
 
@@ -608,9 +609,6 @@ func (amuo *AppMenuUpdateOne) Select(field string, fields ...string) *AppMenuUpd
 
 // Save executes the query and returns the updated AppMenu entity.
 func (amuo *AppMenuUpdateOne) Save(ctx context.Context) (*AppMenu, error) {
-	if err := amuo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*AppMenu, AppMenuMutation](ctx, amuo.sqlSave, amuo.mutation, amuo.hooks)
 }
 
@@ -634,18 +632,6 @@ func (amuo *AppMenuUpdateOne) ExecX(ctx context.Context) {
 	if err := amuo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (amuo *AppMenuUpdateOne) defaults() error {
-	if _, ok := amuo.mutation.UpdatedAt(); !ok && !amuo.mutation.UpdatedAtCleared() {
-		if appmenu.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized appmenu.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := appmenu.UpdateDefaultUpdatedAt()
-		amuo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -775,33 +761,33 @@ func (amuo *AppMenuUpdateOne) sqlSave(ctx context.Context) (_node *AppMenu, err 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if amuo.mutation.PermissionCleared() {
+	if amuo.mutation.ActionCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   appmenu.PermissionTable,
-			Columns: []string{appmenu.PermissionColumn},
+			Table:   appmenu.ActionTable,
+			Columns: []string{appmenu.ActionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := amuo.mutation.PermissionIDs(); len(nodes) > 0 {
+	if nodes := amuo.mutation.ActionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   appmenu.PermissionTable,
-			Columns: []string{appmenu.PermissionColumn},
+			Table:   appmenu.ActionTable,
+			Columns: []string{appmenu.ActionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}

@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/predicate"
 	"github.com/woocoos/adminx/ent/userpassword"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserPasswordUpdate is the builder for updating UserPassword entities.
@@ -58,6 +59,14 @@ func (upu *UserPasswordUpdate) ClearUpdatedBy() *UserPasswordUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (upu *UserPasswordUpdate) SetUpdatedAt(t time.Time) *UserPasswordUpdate {
 	upu.mutation.SetUpdatedAt(t)
+	return upu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (upu *UserPasswordUpdate) SetNillableUpdatedAt(t *time.Time) *UserPasswordUpdate {
+	if t != nil {
+		upu.SetUpdatedAt(*t)
+	}
 	return upu
 }
 
@@ -114,15 +123,15 @@ func (upu *UserPasswordUpdate) SetSalt(s string) *UserPasswordUpdate {
 }
 
 // SetStatus sets the "status" field.
-func (upu *UserPasswordUpdate) SetStatus(u userpassword.Status) *UserPasswordUpdate {
-	upu.mutation.SetStatus(u)
+func (upu *UserPasswordUpdate) SetStatus(ts types.SimpleStatus) *UserPasswordUpdate {
+	upu.mutation.SetStatus(ts)
 	return upu
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (upu *UserPasswordUpdate) SetNillableStatus(u *userpassword.Status) *UserPasswordUpdate {
-	if u != nil {
-		upu.SetStatus(*u)
+func (upu *UserPasswordUpdate) SetNillableStatus(ts *types.SimpleStatus) *UserPasswordUpdate {
+	if ts != nil {
+		upu.SetStatus(*ts)
 	}
 	return upu
 }
@@ -160,9 +169,6 @@ func (upu *UserPasswordUpdate) Mutation() *UserPasswordMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (upu *UserPasswordUpdate) Save(ctx context.Context) (int, error) {
-	if err := upu.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, UserPasswordMutation](ctx, upu.sqlSave, upu.mutation, upu.hooks)
 }
 
@@ -186,18 +192,6 @@ func (upu *UserPasswordUpdate) ExecX(ctx context.Context) {
 	if err := upu.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (upu *UserPasswordUpdate) defaults() error {
-	if _, ok := upu.mutation.UpdatedAt(); !ok && !upu.mutation.UpdatedAtCleared() {
-		if userpassword.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userpassword.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userpassword.UpdateDefaultUpdatedAt()
-		upu.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -327,6 +321,14 @@ func (upuo *UserPasswordUpdateOne) SetUpdatedAt(t time.Time) *UserPasswordUpdate
 	return upuo
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (upuo *UserPasswordUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserPasswordUpdateOne {
+	if t != nil {
+		upuo.SetUpdatedAt(*t)
+	}
+	return upuo
+}
+
 // ClearUpdatedAt clears the value of the "updated_at" field.
 func (upuo *UserPasswordUpdateOne) ClearUpdatedAt() *UserPasswordUpdateOne {
 	upuo.mutation.ClearUpdatedAt()
@@ -380,15 +382,15 @@ func (upuo *UserPasswordUpdateOne) SetSalt(s string) *UserPasswordUpdateOne {
 }
 
 // SetStatus sets the "status" field.
-func (upuo *UserPasswordUpdateOne) SetStatus(u userpassword.Status) *UserPasswordUpdateOne {
-	upuo.mutation.SetStatus(u)
+func (upuo *UserPasswordUpdateOne) SetStatus(ts types.SimpleStatus) *UserPasswordUpdateOne {
+	upuo.mutation.SetStatus(ts)
 	return upuo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (upuo *UserPasswordUpdateOne) SetNillableStatus(u *userpassword.Status) *UserPasswordUpdateOne {
-	if u != nil {
-		upuo.SetStatus(*u)
+func (upuo *UserPasswordUpdateOne) SetNillableStatus(ts *types.SimpleStatus) *UserPasswordUpdateOne {
+	if ts != nil {
+		upuo.SetStatus(*ts)
 	}
 	return upuo
 }
@@ -439,9 +441,6 @@ func (upuo *UserPasswordUpdateOne) Select(field string, fields ...string) *UserP
 
 // Save executes the query and returns the updated UserPassword entity.
 func (upuo *UserPasswordUpdateOne) Save(ctx context.Context) (*UserPassword, error) {
-	if err := upuo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*UserPassword, UserPasswordMutation](ctx, upuo.sqlSave, upuo.mutation, upuo.hooks)
 }
 
@@ -465,18 +464,6 @@ func (upuo *UserPasswordUpdateOne) ExecX(ctx context.Context) {
 	if err := upuo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (upuo *UserPasswordUpdateOne) defaults() error {
-	if _, ok := upuo.mutation.UpdatedAt(); !ok && !upuo.mutation.UpdatedAtCleared() {
-		if userpassword.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userpassword.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userpassword.UpdateDefaultUpdatedAt()
-		upuo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

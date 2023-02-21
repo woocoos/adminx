@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
 )
 
 // AppMenu is the model entity for the AppMenu schema.
@@ -34,8 +34,8 @@ type AppMenu struct {
 	Kind appmenu.Kind `json:"kind,omitempty"`
 	// 菜单名称
 	Name string `json:"name,omitempty"`
-	// 权限ID
-	PermissionID *int `json:"permission_id,omitempty"`
+	// 操作ID
+	ActionID *int `json:"action_id,omitempty"`
 	// 备注
 	Comments string `json:"comments,omitempty"`
 	// DisplaySort holds the value of the "display_sort" field.
@@ -50,7 +50,7 @@ type AppMenuEdges struct {
 	// App holds the value of the app edge.
 	App *App `json:"app,omitempty"`
 	// 需要权限控制时对应的权限
-	Permission *AppPermission `json:"permission,omitempty"`
+	Action *AppAction `json:"action,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -71,17 +71,17 @@ func (e AppMenuEdges) AppOrErr() (*App, error) {
 	return nil, &NotLoadedError{edge: "app"}
 }
 
-// PermissionOrErr returns the Permission value or an error if the edge
+// ActionOrErr returns the Action value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AppMenuEdges) PermissionOrErr() (*AppPermission, error) {
+func (e AppMenuEdges) ActionOrErr() (*AppAction, error) {
 	if e.loadedTypes[1] {
-		if e.Permission == nil {
+		if e.Action == nil {
 			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: apppermission.Label}
+			return nil, &NotFoundError{label: appaction.Label}
 		}
-		return e.Permission, nil
+		return e.Action, nil
 	}
-	return nil, &NotLoadedError{edge: "permission"}
+	return nil, &NotLoadedError{edge: "action"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -89,7 +89,7 @@ func (*AppMenu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case appmenu.FieldID, appmenu.FieldCreatedBy, appmenu.FieldUpdatedBy, appmenu.FieldAppID, appmenu.FieldParentID, appmenu.FieldPermissionID, appmenu.FieldDisplaySort:
+		case appmenu.FieldID, appmenu.FieldCreatedBy, appmenu.FieldUpdatedBy, appmenu.FieldAppID, appmenu.FieldParentID, appmenu.FieldActionID, appmenu.FieldDisplaySort:
 			values[i] = new(sql.NullInt64)
 		case appmenu.FieldKind, appmenu.FieldName, appmenu.FieldComments:
 			values[i] = new(sql.NullString)
@@ -164,12 +164,12 @@ func (am *AppMenu) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				am.Name = value.String
 			}
-		case appmenu.FieldPermissionID:
+		case appmenu.FieldActionID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field permission_id", values[i])
+				return fmt.Errorf("unexpected type %T for field action_id", values[i])
 			} else if value.Valid {
-				am.PermissionID = new(int)
-				*am.PermissionID = int(value.Int64)
+				am.ActionID = new(int)
+				*am.ActionID = int(value.Int64)
 			}
 		case appmenu.FieldComments:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -193,9 +193,9 @@ func (am *AppMenu) QueryApp() *AppQuery {
 	return NewAppMenuClient(am.config).QueryApp(am)
 }
 
-// QueryPermission queries the "permission" edge of the AppMenu entity.
-func (am *AppMenu) QueryPermission() *AppPermissionQuery {
-	return NewAppMenuClient(am.config).QueryPermission(am)
+// QueryAction queries the "action" edge of the AppMenu entity.
+func (am *AppMenu) QueryAction() *AppActionQuery {
+	return NewAppMenuClient(am.config).QueryAction(am)
 }
 
 // Update returns a builder for updating this AppMenu.
@@ -245,8 +245,8 @@ func (am *AppMenu) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(am.Name)
 	builder.WriteString(", ")
-	if v := am.PermissionID; v != nil {
-		builder.WriteString("permission_id=")
+	if v := am.ActionID; v != nil {
+		builder.WriteString("action_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

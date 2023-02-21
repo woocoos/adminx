@@ -94,6 +94,33 @@ func (f TraverseApp) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.AppQuery", q)
 }
 
+// The AppActionFunc type is an adapter to allow the use of ordinary function as a Querier.
+type AppActionFunc func(context.Context, *ent.AppActionQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f AppActionFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.AppActionQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.AppActionQuery", q)
+}
+
+// The TraverseAppAction type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseAppAction func(context.Context, *ent.AppActionQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseAppAction) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseAppAction) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AppActionQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.AppActionQuery", q)
+}
+
 // The AppMenuFunc type is an adapter to allow the use of ordinary function as a Querier.
 type AppMenuFunc func(context.Context, *ent.AppMenuQuery) (ent.Value, error)
 
@@ -121,31 +148,112 @@ func (f TraverseAppMenu) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.AppMenuQuery", q)
 }
 
-// The AppPermissionFunc type is an adapter to allow the use of ordinary function as a Querier.
-type AppPermissionFunc func(context.Context, *ent.AppPermissionQuery) (ent.Value, error)
+// The AppPolicyFunc type is an adapter to allow the use of ordinary function as a Querier.
+type AppPolicyFunc func(context.Context, *ent.AppPolicyQuery) (ent.Value, error)
 
 // Query calls f(ctx, q).
-func (f AppPermissionFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
-	if q, ok := q.(*ent.AppPermissionQuery); ok {
+func (f AppPolicyFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.AppPolicyQuery); ok {
 		return f(ctx, q)
 	}
-	return nil, fmt.Errorf("unexpected query type %T. expect *ent.AppPermissionQuery", q)
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.AppPolicyQuery", q)
 }
 
-// The TraverseAppPermission type is an adapter to allow the use of ordinary function as Traverser.
-type TraverseAppPermission func(context.Context, *ent.AppPermissionQuery) error
+// The TraverseAppPolicy type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseAppPolicy func(context.Context, *ent.AppPolicyQuery) error
 
 // Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
-func (f TraverseAppPermission) Intercept(next ent.Querier) ent.Querier {
+func (f TraverseAppPolicy) Intercept(next ent.Querier) ent.Querier {
 	return next
 }
 
 // Traverse calls f(ctx, q).
-func (f TraverseAppPermission) Traverse(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.AppPermissionQuery); ok {
+func (f TraverseAppPolicy) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AppPolicyQuery); ok {
 		return f(ctx, q)
 	}
-	return fmt.Errorf("unexpected query type %T. expect *ent.AppPermissionQuery", q)
+	return fmt.Errorf("unexpected query type %T. expect *ent.AppPolicyQuery", q)
+}
+
+// The AppResFunc type is an adapter to allow the use of ordinary function as a Querier.
+type AppResFunc func(context.Context, *ent.AppResQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f AppResFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.AppResQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.AppResQuery", q)
+}
+
+// The TraverseAppRes type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseAppRes func(context.Context, *ent.AppResQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseAppRes) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseAppRes) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AppResQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.AppResQuery", q)
+}
+
+// The AppRoleFunc type is an adapter to allow the use of ordinary function as a Querier.
+type AppRoleFunc func(context.Context, *ent.AppRoleQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f AppRoleFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.AppRoleQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.AppRoleQuery", q)
+}
+
+// The TraverseAppRole type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseAppRole func(context.Context, *ent.AppRoleQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseAppRole) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseAppRole) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AppRoleQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.AppRoleQuery", q)
+}
+
+// The AppRolePolicyFunc type is an adapter to allow the use of ordinary function as a Querier.
+type AppRolePolicyFunc func(context.Context, *ent.AppRolePolicyQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f AppRolePolicyFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.AppRolePolicyQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.AppRolePolicyQuery", q)
+}
+
+// The TraverseAppRolePolicy type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseAppRolePolicy func(context.Context, *ent.AppRolePolicyQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseAppRolePolicy) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseAppRolePolicy) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AppRolePolicyQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.AppRolePolicyQuery", q)
 }
 
 // The OrganizationFunc type is an adapter to allow the use of ordinary function as a Querier.
@@ -175,6 +283,87 @@ func (f TraverseOrganization) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.OrganizationQuery", q)
 }
 
+// The OrganizationAppFunc type is an adapter to allow the use of ordinary function as a Querier.
+type OrganizationAppFunc func(context.Context, *ent.OrganizationAppQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f OrganizationAppFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.OrganizationAppQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.OrganizationAppQuery", q)
+}
+
+// The TraverseOrganizationApp type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseOrganizationApp func(context.Context, *ent.OrganizationAppQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseOrganizationApp) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseOrganizationApp) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OrganizationAppQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.OrganizationAppQuery", q)
+}
+
+// The OrganizationPolicyFunc type is an adapter to allow the use of ordinary function as a Querier.
+type OrganizationPolicyFunc func(context.Context, *ent.OrganizationPolicyQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f OrganizationPolicyFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.OrganizationPolicyQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.OrganizationPolicyQuery", q)
+}
+
+// The TraverseOrganizationPolicy type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseOrganizationPolicy func(context.Context, *ent.OrganizationPolicyQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseOrganizationPolicy) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseOrganizationPolicy) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OrganizationPolicyQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.OrganizationPolicyQuery", q)
+}
+
+// The OrganizationRoleFunc type is an adapter to allow the use of ordinary function as a Querier.
+type OrganizationRoleFunc func(context.Context, *ent.OrganizationRoleQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f OrganizationRoleFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.OrganizationRoleQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.OrganizationRoleQuery", q)
+}
+
+// The TraverseOrganizationRole type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseOrganizationRole func(context.Context, *ent.OrganizationRoleQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseOrganizationRole) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseOrganizationRole) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OrganizationRoleQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.OrganizationRoleQuery", q)
+}
+
 // The OrganizationUserFunc type is an adapter to allow the use of ordinary function as a Querier.
 type OrganizationUserFunc func(context.Context, *ent.OrganizationUserQuery) (ent.Value, error)
 
@@ -200,6 +389,33 @@ func (f TraverseOrganizationUser) Traverse(ctx context.Context, q ent.Query) err
 		return f(ctx, q)
 	}
 	return fmt.Errorf("unexpected query type %T. expect *ent.OrganizationUserQuery", q)
+}
+
+// The PermissionFunc type is an adapter to allow the use of ordinary function as a Querier.
+type PermissionFunc func(context.Context, *ent.PermissionQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f PermissionFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.PermissionQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.PermissionQuery", q)
+}
+
+// The TraversePermission type is an adapter to allow the use of ordinary function as Traverser.
+type TraversePermission func(context.Context, *ent.PermissionQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraversePermission) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraversePermission) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PermissionQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.PermissionQuery", q)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary function as a Querier.
@@ -342,14 +558,30 @@ func NewQuery(q ent.Query) (Query, error) {
 	switch q := q.(type) {
 	case *ent.AppQuery:
 		return &query[*ent.AppQuery, predicate.App]{typ: ent.TypeApp, tq: q}, nil
+	case *ent.AppActionQuery:
+		return &query[*ent.AppActionQuery, predicate.AppAction]{typ: ent.TypeAppAction, tq: q}, nil
 	case *ent.AppMenuQuery:
 		return &query[*ent.AppMenuQuery, predicate.AppMenu]{typ: ent.TypeAppMenu, tq: q}, nil
-	case *ent.AppPermissionQuery:
-		return &query[*ent.AppPermissionQuery, predicate.AppPermission]{typ: ent.TypeAppPermission, tq: q}, nil
+	case *ent.AppPolicyQuery:
+		return &query[*ent.AppPolicyQuery, predicate.AppPolicy]{typ: ent.TypeAppPolicy, tq: q}, nil
+	case *ent.AppResQuery:
+		return &query[*ent.AppResQuery, predicate.AppRes]{typ: ent.TypeAppRes, tq: q}, nil
+	case *ent.AppRoleQuery:
+		return &query[*ent.AppRoleQuery, predicate.AppRole]{typ: ent.TypeAppRole, tq: q}, nil
+	case *ent.AppRolePolicyQuery:
+		return &query[*ent.AppRolePolicyQuery, predicate.AppRolePolicy]{typ: ent.TypeAppRolePolicy, tq: q}, nil
 	case *ent.OrganizationQuery:
 		return &query[*ent.OrganizationQuery, predicate.Organization]{typ: ent.TypeOrganization, tq: q}, nil
+	case *ent.OrganizationAppQuery:
+		return &query[*ent.OrganizationAppQuery, predicate.OrganizationApp]{typ: ent.TypeOrganizationApp, tq: q}, nil
+	case *ent.OrganizationPolicyQuery:
+		return &query[*ent.OrganizationPolicyQuery, predicate.OrganizationPolicy]{typ: ent.TypeOrganizationPolicy, tq: q}, nil
+	case *ent.OrganizationRoleQuery:
+		return &query[*ent.OrganizationRoleQuery, predicate.OrganizationRole]{typ: ent.TypeOrganizationRole, tq: q}, nil
 	case *ent.OrganizationUserQuery:
 		return &query[*ent.OrganizationUserQuery, predicate.OrganizationUser]{typ: ent.TypeOrganizationUser, tq: q}, nil
+	case *ent.PermissionQuery:
+		return &query[*ent.PermissionQuery, predicate.Permission]{typ: ent.TypePermission, tq: q}, nil
 	case *ent.UserQuery:
 		return &query[*ent.UserQuery, predicate.User]{typ: ent.TypeUser, tq: q}, nil
 	case *ent.UserDeviceQuery:

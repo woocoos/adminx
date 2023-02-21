@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"github.com/99designs/gqlgen/graphql"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 const (
@@ -92,13 +94,9 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/woocoos/adminx/ent/runtime"
 var (
-	Hooks [2]ent.Hook
+	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt func() time.Time
-	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
-	UpdateDefaultUpdatedAt func() time.Time
 	// MfaSecretValidator is a validator for the "mfa_secret" field. It is called by the builders before save.
 	MfaSecretValidator func(string) error
 )
@@ -127,23 +125,10 @@ func SetKindValidator(sk SetKind) error {
 	}
 }
 
-// MfaStatus defines the type for the "mfa_status" enum field.
-type MfaStatus string
-
-// MfaStatus values.
-const (
-	MfaStatusEnable   MfaStatus = "enable"
-	MfaStatusInactive MfaStatus = "inactive"
-)
-
-func (ms MfaStatus) String() string {
-	return string(ms)
-}
-
 // MfaStatusValidator is a validator for the "mfa_status" field enum values. It is called by the builders before save.
-func MfaStatusValidator(ms MfaStatus) error {
-	switch ms {
-	case MfaStatusEnable, MfaStatusInactive:
+func MfaStatusValidator(ms types.SimpleStatus) error {
+	switch ms.String() {
+	case "active", "inactive", "processing":
 		return nil
 	default:
 		return fmt.Errorf("userloginprofile: invalid enum value for mfa_status field: %q", ms)
@@ -168,20 +153,9 @@ func (e *SetKind) UnmarshalGQL(val interface{}) error {
 	return nil
 }
 
-// MarshalGQL implements graphql.Marshaler interface.
-func (e MfaStatus) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *MfaStatus) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = MfaStatus(str)
-	if err := MfaStatusValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid MfaStatus", str)
-	}
-	return nil
-}
+var (
+	// types.SimpleStatus must implement graphql.Marshaler.
+	_ graphql.Marshaler = (*types.SimpleStatus)(nil)
+	// types.SimpleStatus must implement graphql.Unmarshaler.
+	_ graphql.Unmarshaler = (*types.SimpleStatus)(nil)
+)

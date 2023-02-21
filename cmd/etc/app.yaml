@@ -27,6 +27,8 @@ web:
             - rest-authz:
       - graphql:
           basePath: "/graphql"
+          # 用于权限判断
+          appCode: "adm"
           middlewares:
 #            - otel:
             - accessLog:

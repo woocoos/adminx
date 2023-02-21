@@ -6,9 +6,14 @@ import (
 	"time"
 
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
+	"github.com/woocoos/adminx/ent/apppolicy"
+	"github.com/woocoos/adminx/ent/appres"
+	"github.com/woocoos/adminx/ent/approle"
+	"github.com/woocoos/adminx/ent/approlepolicy"
 	"github.com/woocoos/adminx/ent/organization"
+	"github.com/woocoos/adminx/ent/organizationapp"
 	"github.com/woocoos/adminx/ent/organizationuser"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
@@ -25,7 +30,6 @@ func init() {
 	appMixin := schema.App{}.Mixin()
 	appMixinHooks1 := appMixin[1].Hooks()
 	app.Hooks[0] = appMixinHooks1[0]
-	app.Hooks[1] = appMixinHooks1[1]
 	appMixinFields0 := appMixin[0].Fields()
 	_ = appMixinFields0
 	appMixinFields1 := appMixin[1].Fields()
@@ -36,12 +40,6 @@ func init() {
 	appDescCreatedAt := appMixinFields1[1].Descriptor()
 	// app.DefaultCreatedAt holds the default value on creation for the created_at field.
 	app.DefaultCreatedAt = appDescCreatedAt.Default.(func() time.Time)
-	// appDescUpdatedAt is the schema descriptor for updated_at field.
-	appDescUpdatedAt := appMixinFields1[3].Descriptor()
-	// app.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	app.DefaultUpdatedAt = appDescUpdatedAt.Default.(func() time.Time)
-	// app.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	app.UpdateDefaultUpdatedAt = appDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// appDescName is the schema descriptor for name field.
 	appDescName := appFields[0].Descriptor()
 	// app.NameValidator is a validator for the "name" field. It is called by the builders before save.
@@ -66,12 +64,34 @@ func init() {
 	appDescID := appMixinFields0[0].Descriptor()
 	// app.DefaultID holds the default value on creation for the id field.
 	app.DefaultID = appDescID.Default.(func() int)
+	appactionMixin := schema.AppAction{}.Mixin()
+	appactionMixinHooks1 := appactionMixin[1].Hooks()
+	appactionHooks := schema.AppAction{}.Hooks()
+	appaction.Hooks[0] = appactionMixinHooks1[0]
+	appaction.Hooks[1] = appactionHooks[0]
+	appactionMixinFields0 := appactionMixin[0].Fields()
+	_ = appactionMixinFields0
+	appactionMixinFields1 := appactionMixin[1].Fields()
+	_ = appactionMixinFields1
+	appactionFields := schema.AppAction{}.Fields()
+	_ = appactionFields
+	// appactionDescCreatedAt is the schema descriptor for created_at field.
+	appactionDescCreatedAt := appactionMixinFields1[1].Descriptor()
+	// appaction.DefaultCreatedAt holds the default value on creation for the created_at field.
+	appaction.DefaultCreatedAt = appactionDescCreatedAt.Default.(func() time.Time)
+	// appactionDescName is the schema descriptor for name field.
+	appactionDescName := appactionFields[1].Descriptor()
+	// appaction.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	appaction.NameValidator = appactionDescName.Validators[0].(func(string) error)
+	// appactionDescID is the schema descriptor for id field.
+	appactionDescID := appactionMixinFields0[0].Descriptor()
+	// appaction.DefaultID holds the default value on creation for the id field.
+	appaction.DefaultID = appactionDescID.Default.(func() int)
 	appmenuMixin := schema.AppMenu{}.Mixin()
 	appmenuMixinHooks1 := appmenuMixin[1].Hooks()
 	appmenuHooks := schema.AppMenu{}.Hooks()
 	appmenu.Hooks[0] = appmenuMixinHooks1[0]
-	appmenu.Hooks[1] = appmenuMixinHooks1[1]
-	appmenu.Hooks[2] = appmenuHooks[0]
+	appmenu.Hooks[1] = appmenuHooks[0]
 	appmenuMixinFields0 := appmenuMixin[0].Fields()
 	_ = appmenuMixinFields0
 	appmenuMixinFields1 := appmenuMixin[1].Fields()
@@ -82,12 +102,6 @@ func init() {
 	appmenuDescCreatedAt := appmenuMixinFields1[1].Descriptor()
 	// appmenu.DefaultCreatedAt holds the default value on creation for the created_at field.
 	appmenu.DefaultCreatedAt = appmenuDescCreatedAt.Default.(func() time.Time)
-	// appmenuDescUpdatedAt is the schema descriptor for updated_at field.
-	appmenuDescUpdatedAt := appmenuMixinFields1[3].Descriptor()
-	// appmenu.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	appmenu.DefaultUpdatedAt = appmenuDescUpdatedAt.Default.(func() time.Time)
-	// appmenu.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	appmenu.UpdateDefaultUpdatedAt = appmenuDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// appmenuDescName is the schema descriptor for name field.
 	appmenuDescName := appmenuFields[3].Descriptor()
 	// appmenu.NameValidator is a validator for the "name" field. It is called by the builders before save.
@@ -96,46 +110,89 @@ func init() {
 	appmenuDescID := appmenuMixinFields0[0].Descriptor()
 	// appmenu.DefaultID holds the default value on creation for the id field.
 	appmenu.DefaultID = appmenuDescID.Default.(func() int)
-	apppermissionMixin := schema.AppPermission{}.Mixin()
-	apppermissionMixinHooks1 := apppermissionMixin[1].Hooks()
-	apppermissionHooks := schema.AppPermission{}.Hooks()
-	apppermission.Hooks[0] = apppermissionMixinHooks1[0]
-	apppermission.Hooks[1] = apppermissionMixinHooks1[1]
-	apppermission.Hooks[2] = apppermissionHooks[0]
-	apppermissionMixinFields0 := apppermissionMixin[0].Fields()
-	_ = apppermissionMixinFields0
-	apppermissionMixinFields1 := apppermissionMixin[1].Fields()
-	_ = apppermissionMixinFields1
-	apppermissionFields := schema.AppPermission{}.Fields()
-	_ = apppermissionFields
-	// apppermissionDescCreatedAt is the schema descriptor for created_at field.
-	apppermissionDescCreatedAt := apppermissionMixinFields1[1].Descriptor()
-	// apppermission.DefaultCreatedAt holds the default value on creation for the created_at field.
-	apppermission.DefaultCreatedAt = apppermissionDescCreatedAt.Default.(func() time.Time)
-	// apppermissionDescUpdatedAt is the schema descriptor for updated_at field.
-	apppermissionDescUpdatedAt := apppermissionMixinFields1[3].Descriptor()
-	// apppermission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	apppermission.DefaultUpdatedAt = apppermissionDescUpdatedAt.Default.(func() time.Time)
-	// apppermission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	apppermission.UpdateDefaultUpdatedAt = apppermissionDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// apppermissionDescName is the schema descriptor for name field.
-	apppermissionDescName := apppermissionFields[1].Descriptor()
-	// apppermission.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	apppermission.NameValidator = apppermissionDescName.Validators[0].(func(string) error)
-	// apppermissionDescID is the schema descriptor for id field.
-	apppermissionDescID := apppermissionMixinFields0[0].Descriptor()
-	// apppermission.DefaultID holds the default value on creation for the id field.
-	apppermission.DefaultID = apppermissionDescID.Default.(func() int)
+	apppolicyMixin := schema.AppPolicy{}.Mixin()
+	apppolicyMixinHooks1 := apppolicyMixin[1].Hooks()
+	apppolicy.Hooks[0] = apppolicyMixinHooks1[0]
+	apppolicyMixinFields0 := apppolicyMixin[0].Fields()
+	_ = apppolicyMixinFields0
+	apppolicyMixinFields1 := apppolicyMixin[1].Fields()
+	_ = apppolicyMixinFields1
+	apppolicyFields := schema.AppPolicy{}.Fields()
+	_ = apppolicyFields
+	// apppolicyDescCreatedAt is the schema descriptor for created_at field.
+	apppolicyDescCreatedAt := apppolicyMixinFields1[1].Descriptor()
+	// apppolicy.DefaultCreatedAt holds the default value on creation for the created_at field.
+	apppolicy.DefaultCreatedAt = apppolicyDescCreatedAt.Default.(func() time.Time)
+	// apppolicyDescAutoGrant is the schema descriptor for auto_grant field.
+	apppolicyDescAutoGrant := apppolicyFields[5].Descriptor()
+	// apppolicy.DefaultAutoGrant holds the default value on creation for the auto_grant field.
+	apppolicy.DefaultAutoGrant = apppolicyDescAutoGrant.Default.(bool)
+	// apppolicyDescID is the schema descriptor for id field.
+	apppolicyDescID := apppolicyMixinFields0[0].Descriptor()
+	// apppolicy.DefaultID holds the default value on creation for the id field.
+	apppolicy.DefaultID = apppolicyDescID.Default.(func() int)
+	appresMixin := schema.AppRes{}.Mixin()
+	appresMixinHooks1 := appresMixin[1].Hooks()
+	appres.Hooks[0] = appresMixinHooks1[0]
+	appresMixinFields0 := appresMixin[0].Fields()
+	_ = appresMixinFields0
+	appresMixinFields1 := appresMixin[1].Fields()
+	_ = appresMixinFields1
+	appresFields := schema.AppRes{}.Fields()
+	_ = appresFields
+	// appresDescCreatedAt is the schema descriptor for created_at field.
+	appresDescCreatedAt := appresMixinFields1[1].Descriptor()
+	// appres.DefaultCreatedAt holds the default value on creation for the created_at field.
+	appres.DefaultCreatedAt = appresDescCreatedAt.Default.(func() time.Time)
+	// appresDescID is the schema descriptor for id field.
+	appresDescID := appresMixinFields0[0].Descriptor()
+	// appres.DefaultID holds the default value on creation for the id field.
+	appres.DefaultID = appresDescID.Default.(func() int)
+	approleMixin := schema.AppRole{}.Mixin()
+	approleMixinHooks1 := approleMixin[1].Hooks()
+	approle.Hooks[0] = approleMixinHooks1[0]
+	approleMixinFields0 := approleMixin[0].Fields()
+	_ = approleMixinFields0
+	approleMixinFields1 := approleMixin[1].Fields()
+	_ = approleMixinFields1
+	approleFields := schema.AppRole{}.Fields()
+	_ = approleFields
+	// approleDescCreatedAt is the schema descriptor for created_at field.
+	approleDescCreatedAt := approleMixinFields1[1].Descriptor()
+	// approle.DefaultCreatedAt holds the default value on creation for the created_at field.
+	approle.DefaultCreatedAt = approleDescCreatedAt.Default.(func() time.Time)
+	// approleDescAutoGrant is the schema descriptor for auto_grant field.
+	approleDescAutoGrant := approleFields[3].Descriptor()
+	// approle.DefaultAutoGrant holds the default value on creation for the auto_grant field.
+	approle.DefaultAutoGrant = approleDescAutoGrant.Default.(bool)
+	// approleDescEditable is the schema descriptor for editable field.
+	approleDescEditable := approleFields[4].Descriptor()
+	// approle.DefaultEditable holds the default value on creation for the editable field.
+	approle.DefaultEditable = approleDescEditable.Default.(bool)
+	// approleDescID is the schema descriptor for id field.
+	approleDescID := approleMixinFields0[0].Descriptor()
+	// approle.DefaultID holds the default value on creation for the id field.
+	approle.DefaultID = approleDescID.Default.(func() int)
+	approlepolicyMixin := schema.AppRolePolicy{}.Mixin()
+	approlepolicyMixinHooks0 := approlepolicyMixin[0].Hooks()
+	approlepolicy.Hooks[0] = approlepolicyMixinHooks0[0]
+	approlepolicyMixinFields0 := approlepolicyMixin[0].Fields()
+	_ = approlepolicyMixinFields0
+	approlepolicyFields := schema.AppRolePolicy{}.Fields()
+	_ = approlepolicyFields
+	// approlepolicyDescCreatedAt is the schema descriptor for created_at field.
+	approlepolicyDescCreatedAt := approlepolicyMixinFields0[1].Descriptor()
+	// approlepolicy.DefaultCreatedAt holds the default value on creation for the created_at field.
+	approlepolicy.DefaultCreatedAt = approlepolicyDescCreatedAt.Default.(func() time.Time)
 	organizationMixin := schema.Organization{}.Mixin()
 	organizationMixinHooks1 := organizationMixin[1].Hooks()
 	organizationMixinHooks2 := organizationMixin[2].Hooks()
 	organizationHooks := schema.Organization{}.Hooks()
 	organization.Hooks[0] = organizationMixinHooks1[0]
-	organization.Hooks[1] = organizationMixinHooks1[1]
-	organization.Hooks[2] = organizationMixinHooks2[0]
-	organization.Hooks[3] = organizationHooks[0]
-	organization.Hooks[4] = organizationHooks[1]
-	organization.Hooks[5] = organizationHooks[2]
+	organization.Hooks[1] = organizationMixinHooks2[0]
+	organization.Hooks[2] = organizationHooks[0]
+	organization.Hooks[3] = organizationHooks[1]
+	organization.Hooks[4] = organizationHooks[2]
 	organizationMixinInters2 := organizationMixin[2].Interceptors()
 	organization.Interceptors[0] = organizationMixinInters2[0]
 	organizationMixinFields0 := organizationMixin[0].Fields()
@@ -148,12 +205,6 @@ func init() {
 	organizationDescCreatedAt := organizationMixinFields1[1].Descriptor()
 	// organization.DefaultCreatedAt holds the default value on creation for the created_at field.
 	organization.DefaultCreatedAt = organizationDescCreatedAt.Default.(func() time.Time)
-	// organizationDescUpdatedAt is the schema descriptor for updated_at field.
-	organizationDescUpdatedAt := organizationMixinFields1[3].Descriptor()
-	// organization.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	organization.DefaultUpdatedAt = organizationDescUpdatedAt.Default.(func() time.Time)
-	// organization.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	organization.UpdateDefaultUpdatedAt = organizationDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// organizationDescParentID is the schema descriptor for parent_id field.
 	organizationDescParentID := organizationFields[2].Descriptor()
 	// organization.DefaultParentID holds the default value on creation for the parent_id field.
@@ -182,10 +233,20 @@ func init() {
 	organizationDescID := organizationMixinFields0[0].Descriptor()
 	// organization.DefaultID holds the default value on creation for the id field.
 	organization.DefaultID = organizationDescID.Default.(func() int)
+	organizationappMixin := schema.OrganizationApp{}.Mixin()
+	organizationappMixinHooks0 := organizationappMixin[0].Hooks()
+	organizationapp.Hooks[0] = organizationappMixinHooks0[0]
+	organizationappMixinFields0 := organizationappMixin[0].Fields()
+	_ = organizationappMixinFields0
+	organizationappFields := schema.OrganizationApp{}.Fields()
+	_ = organizationappFields
+	// organizationappDescCreatedAt is the schema descriptor for created_at field.
+	organizationappDescCreatedAt := organizationappMixinFields0[1].Descriptor()
+	// organizationapp.DefaultCreatedAt holds the default value on creation for the created_at field.
+	organizationapp.DefaultCreatedAt = organizationappDescCreatedAt.Default.(func() time.Time)
 	organizationuserMixin := schema.OrganizationUser{}.Mixin()
 	organizationuserMixinHooks1 := organizationuserMixin[1].Hooks()
 	organizationuser.Hooks[0] = organizationuserMixinHooks1[0]
-	organizationuser.Hooks[1] = organizationuserMixinHooks1[1]
 	organizationuserMixinFields1 := organizationuserMixin[1].Fields()
 	_ = organizationuserMixinFields1
 	organizationuserFields := schema.OrganizationUser{}.Fields()
@@ -194,18 +255,11 @@ func init() {
 	organizationuserDescCreatedAt := organizationuserMixinFields1[1].Descriptor()
 	// organizationuser.DefaultCreatedAt holds the default value on creation for the created_at field.
 	organizationuser.DefaultCreatedAt = organizationuserDescCreatedAt.Default.(func() time.Time)
-	// organizationuserDescUpdatedAt is the schema descriptor for updated_at field.
-	organizationuserDescUpdatedAt := organizationuserMixinFields1[3].Descriptor()
-	// organizationuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	organizationuser.DefaultUpdatedAt = organizationuserDescUpdatedAt.Default.(func() time.Time)
-	// organizationuser.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	organizationuser.UpdateDefaultUpdatedAt = organizationuserDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userMixin := schema.User{}.Mixin()
 	userMixinHooks1 := userMixin[1].Hooks()
 	userMixinHooks2 := userMixin[2].Hooks()
 	user.Hooks[0] = userMixinHooks1[0]
-	user.Hooks[1] = userMixinHooks1[1]
-	user.Hooks[2] = userMixinHooks2[0]
+	user.Hooks[1] = userMixinHooks2[0]
 	userMixinInters2 := userMixin[2].Interceptors()
 	user.Interceptors[0] = userMixinInters2[0]
 	userMixinFields0 := userMixin[0].Fields()
@@ -218,12 +272,6 @@ func init() {
 	userDescCreatedAt := userMixinFields1[1].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
-	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userMixinFields1[3].Descriptor()
-	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
-	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userDescRegisterIP is the schema descriptor for register_ip field.
 	userDescRegisterIP := userFields[4].Descriptor()
 	// user.RegisterIPValidator is a validator for the "register_ip" field. It is called by the builders before save.
@@ -235,7 +283,6 @@ func init() {
 	userdeviceMixin := schema.UserDevice{}.Mixin()
 	userdeviceMixinHooks1 := userdeviceMixin[1].Hooks()
 	userdevice.Hooks[0] = userdeviceMixinHooks1[0]
-	userdevice.Hooks[1] = userdeviceMixinHooks1[1]
 	userdeviceMixinFields1 := userdeviceMixin[1].Fields()
 	_ = userdeviceMixinFields1
 	userdeviceFields := schema.UserDevice{}.Fields()
@@ -244,12 +291,6 @@ func init() {
 	userdeviceDescCreatedAt := userdeviceMixinFields1[1].Descriptor()
 	// userdevice.DefaultCreatedAt holds the default value on creation for the created_at field.
 	userdevice.DefaultCreatedAt = userdeviceDescCreatedAt.Default.(func() time.Time)
-	// userdeviceDescUpdatedAt is the schema descriptor for updated_at field.
-	userdeviceDescUpdatedAt := userdeviceMixinFields1[3].Descriptor()
-	// userdevice.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	userdevice.DefaultUpdatedAt = userdeviceDescUpdatedAt.Default.(func() time.Time)
-	// userdevice.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	userdevice.UpdateDefaultUpdatedAt = userdeviceDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userdeviceDescDeviceUID is the schema descriptor for device_uid field.
 	userdeviceDescDeviceUID := userdeviceFields[1].Descriptor()
 	// userdevice.DeviceUIDValidator is a validator for the "device_uid" field. It is called by the builders before save.
@@ -277,7 +318,6 @@ func init() {
 	useridentityMixin := schema.UserIdentity{}.Mixin()
 	useridentityMixinHooks1 := useridentityMixin[1].Hooks()
 	useridentity.Hooks[0] = useridentityMixinHooks1[0]
-	useridentity.Hooks[1] = useridentityMixinHooks1[1]
 	useridentityMixinFields1 := useridentityMixin[1].Fields()
 	_ = useridentityMixinFields1
 	useridentityFields := schema.UserIdentity{}.Fields()
@@ -286,16 +326,9 @@ func init() {
 	useridentityDescCreatedAt := useridentityMixinFields1[1].Descriptor()
 	// useridentity.DefaultCreatedAt holds the default value on creation for the created_at field.
 	useridentity.DefaultCreatedAt = useridentityDescCreatedAt.Default.(func() time.Time)
-	// useridentityDescUpdatedAt is the schema descriptor for updated_at field.
-	useridentityDescUpdatedAt := useridentityMixinFields1[3].Descriptor()
-	// useridentity.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	useridentity.DefaultUpdatedAt = useridentityDescUpdatedAt.Default.(func() time.Time)
-	// useridentity.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	useridentity.UpdateDefaultUpdatedAt = useridentityDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userloginprofileMixin := schema.UserLoginProfile{}.Mixin()
 	userloginprofileMixinHooks1 := userloginprofileMixin[1].Hooks()
 	userloginprofile.Hooks[0] = userloginprofileMixinHooks1[0]
-	userloginprofile.Hooks[1] = userloginprofileMixinHooks1[1]
 	userloginprofileMixinFields1 := userloginprofileMixin[1].Fields()
 	_ = userloginprofileMixinFields1
 	userloginprofileFields := schema.UserLoginProfile{}.Fields()
@@ -304,12 +337,6 @@ func init() {
 	userloginprofileDescCreatedAt := userloginprofileMixinFields1[1].Descriptor()
 	// userloginprofile.DefaultCreatedAt holds the default value on creation for the created_at field.
 	userloginprofile.DefaultCreatedAt = userloginprofileDescCreatedAt.Default.(func() time.Time)
-	// userloginprofileDescUpdatedAt is the schema descriptor for updated_at field.
-	userloginprofileDescUpdatedAt := userloginprofileMixinFields1[3].Descriptor()
-	// userloginprofile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	userloginprofile.DefaultUpdatedAt = userloginprofileDescUpdatedAt.Default.(func() time.Time)
-	// userloginprofile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	userloginprofile.UpdateDefaultUpdatedAt = userloginprofileDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userloginprofileDescMfaSecret is the schema descriptor for mfa_secret field.
 	userloginprofileDescMfaSecret := userloginprofileFields[8].Descriptor()
 	// userloginprofile.MfaSecretValidator is a validator for the "mfa_secret" field. It is called by the builders before save.
@@ -317,7 +344,6 @@ func init() {
 	userpasswordMixin := schema.UserPassword{}.Mixin()
 	userpasswordMixinHooks1 := userpasswordMixin[1].Hooks()
 	userpassword.Hooks[0] = userpasswordMixinHooks1[0]
-	userpassword.Hooks[1] = userpasswordMixinHooks1[1]
 	userpasswordMixinFields1 := userpasswordMixin[1].Fields()
 	_ = userpasswordMixinFields1
 	userpasswordFields := schema.UserPassword{}.Fields()
@@ -326,12 +352,6 @@ func init() {
 	userpasswordDescCreatedAt := userpasswordMixinFields1[1].Descriptor()
 	// userpassword.DefaultCreatedAt holds the default value on creation for the created_at field.
 	userpassword.DefaultCreatedAt = userpasswordDescCreatedAt.Default.(func() time.Time)
-	// userpasswordDescUpdatedAt is the schema descriptor for updated_at field.
-	userpasswordDescUpdatedAt := userpasswordMixinFields1[3].Descriptor()
-	// userpassword.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	userpassword.DefaultUpdatedAt = userpasswordDescUpdatedAt.Default.(func() time.Time)
-	// userpassword.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	userpassword.UpdateDefaultUpdatedAt = userpasswordDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userpasswordDescSalt is the schema descriptor for salt field.
 	userpasswordDescSalt := userpasswordFields[3].Descriptor()
 	// userpassword.SaltValidator is a validator for the "salt" field. It is called by the builders before save.

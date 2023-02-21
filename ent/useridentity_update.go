@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/predicate"
 	"github.com/woocoos/adminx/ent/useridentity"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserIdentityUpdate is the builder for updating UserIdentity entities.
@@ -58,6 +59,14 @@ func (uiu *UserIdentityUpdate) ClearUpdatedBy() *UserIdentityUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (uiu *UserIdentityUpdate) SetUpdatedAt(t time.Time) *UserIdentityUpdate {
 	uiu.mutation.SetUpdatedAt(t)
+	return uiu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (uiu *UserIdentityUpdate) SetNillableUpdatedAt(t *time.Time) *UserIdentityUpdate {
+	if t != nil {
+		uiu.SetUpdatedAt(*t)
+	}
 	return uiu
 }
 
@@ -114,15 +123,15 @@ func (uiu *UserIdentityUpdate) ClearCodeExtend() *UserIdentityUpdate {
 }
 
 // SetStatus sets the "status" field.
-func (uiu *UserIdentityUpdate) SetStatus(u useridentity.Status) *UserIdentityUpdate {
-	uiu.mutation.SetStatus(u)
+func (uiu *UserIdentityUpdate) SetStatus(ts types.SimpleStatus) *UserIdentityUpdate {
+	uiu.mutation.SetStatus(ts)
 	return uiu
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (uiu *UserIdentityUpdate) SetNillableStatus(u *useridentity.Status) *UserIdentityUpdate {
-	if u != nil {
-		uiu.SetStatus(*u)
+func (uiu *UserIdentityUpdate) SetNillableStatus(ts *types.SimpleStatus) *UserIdentityUpdate {
+	if ts != nil {
+		uiu.SetStatus(*ts)
 	}
 	return uiu
 }
@@ -140,9 +149,6 @@ func (uiu *UserIdentityUpdate) Mutation() *UserIdentityMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uiu *UserIdentityUpdate) Save(ctx context.Context) (int, error) {
-	if err := uiu.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, UserIdentityMutation](ctx, uiu.sqlSave, uiu.mutation, uiu.hooks)
 }
 
@@ -166,18 +172,6 @@ func (uiu *UserIdentityUpdate) ExecX(ctx context.Context) {
 	if err := uiu.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (uiu *UserIdentityUpdate) defaults() error {
-	if _, ok := uiu.mutation.UpdatedAt(); !ok && !uiu.mutation.UpdatedAtCleared() {
-		if useridentity.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized useridentity.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := useridentity.UpdateDefaultUpdatedAt()
-		uiu.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -296,6 +290,14 @@ func (uiuo *UserIdentityUpdateOne) SetUpdatedAt(t time.Time) *UserIdentityUpdate
 	return uiuo
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (uiuo *UserIdentityUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserIdentityUpdateOne {
+	if t != nil {
+		uiuo.SetUpdatedAt(*t)
+	}
+	return uiuo
+}
+
 // ClearUpdatedAt clears the value of the "updated_at" field.
 func (uiuo *UserIdentityUpdateOne) ClearUpdatedAt() *UserIdentityUpdateOne {
 	uiuo.mutation.ClearUpdatedAt()
@@ -349,15 +351,15 @@ func (uiuo *UserIdentityUpdateOne) ClearCodeExtend() *UserIdentityUpdateOne {
 }
 
 // SetStatus sets the "status" field.
-func (uiuo *UserIdentityUpdateOne) SetStatus(u useridentity.Status) *UserIdentityUpdateOne {
-	uiuo.mutation.SetStatus(u)
+func (uiuo *UserIdentityUpdateOne) SetStatus(ts types.SimpleStatus) *UserIdentityUpdateOne {
+	uiuo.mutation.SetStatus(ts)
 	return uiuo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (uiuo *UserIdentityUpdateOne) SetNillableStatus(u *useridentity.Status) *UserIdentityUpdateOne {
-	if u != nil {
-		uiuo.SetStatus(*u)
+func (uiuo *UserIdentityUpdateOne) SetNillableStatus(ts *types.SimpleStatus) *UserIdentityUpdateOne {
+	if ts != nil {
+		uiuo.SetStatus(*ts)
 	}
 	return uiuo
 }
@@ -388,9 +390,6 @@ func (uiuo *UserIdentityUpdateOne) Select(field string, fields ...string) *UserI
 
 // Save executes the query and returns the updated UserIdentity entity.
 func (uiuo *UserIdentityUpdateOne) Save(ctx context.Context) (*UserIdentity, error) {
-	if err := uiuo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*UserIdentity, UserIdentityMutation](ctx, uiuo.sqlSave, uiuo.mutation, uiuo.hooks)
 }
 
@@ -414,18 +413,6 @@ func (uiuo *UserIdentityUpdateOne) ExecX(ctx context.Context) {
 	if err := uiuo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (uiuo *UserIdentityUpdateOne) defaults() error {
-	if _, ok := uiuo.mutation.UpdatedAt(); !ok && !uiuo.mutation.UpdatedAtCleared() {
-		if useridentity.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized useridentity.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := useridentity.UpdateDefaultUpdatedAt()
-		uiuo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

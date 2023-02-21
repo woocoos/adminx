@@ -19,6 +19,7 @@ func (AppMenu) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{Table: "app_menu"},
 		entgql.RelayConnection(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }
 
@@ -36,7 +37,7 @@ func (AppMenu) Fields() []ent.Field {
 		field.Int("parent_id").Comment("父级ID"),
 		field.Enum("kind").Values("dir", "menu").Comment("目录,菜单项"),
 		field.String("name").MaxLen(100).Optional().Comment("菜单名称"),
-		field.Int("permission_id").Optional().Nillable().Comment("权限ID"),
+		field.Int("action_id").Optional().Nillable().Comment("操作ID"),
 		field.String("comments").Optional().Comment("备注").
 			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.Int32("display_sort").Optional().
@@ -48,7 +49,7 @@ func (AppMenu) Fields() []ent.Field {
 func (AppMenu) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("app", App.Type).Ref("menus").Unique().Required().Field("app_id"),
-		edge.From("permission", AppPermission.Type).Ref("menus").Unique().Field("permission_id").
+		edge.From("action", AppAction.Type).Ref("menus").Unique().Field("action_id").
 			Comment("需要权限控制时对应的权限"),
 	}
 }

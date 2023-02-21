@@ -8,6 +8,7 @@ import (
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/useridentity"
+	"github.com/woocoos/adminx/graph/entgen/types"
 	"github.com/woocoos/adminx/graph/model"
 	"github.com/woocoos/adminx/security"
 	"strings"
@@ -31,7 +32,7 @@ func (s *Service) EnableOrganization(ctx context.Context, input model.EnableDire
 	}
 	bulk := make([]*ent.OrganizationCreate, 1)
 	bulk[0] = s.Client.Organization.Create().SetOwnerID(uid).SetName(input.Name).SetDomain(input.Domain).
-		SetKind(organization.KindRoot).SetStatus(organization.StatusActive)
+		SetKind(organization.KindRoot).SetStatus(types.SimpleStatusActive)
 	os, err := s.Client.Organization.CreateBulk(bulk...).Save(ctx)
 	return os[0], err
 }
@@ -94,14 +95,14 @@ func (s *Service) CreateOrganizationAccount(ctx context.Context, input model.Cre
 	return s.Client.User.Create().SetInput(ent.CreateUserInput{
 		PrincipalName: input.PrincipalName,
 		DisplayName:   input.DisplayName,
-	}).SetUserType(user.UserTypeAccount).SetCreationType(user.CreationTypeManual).SetStatus(user.StatusInactive).Save(ctx)
+	}).SetUserType(user.UserTypeAccount).SetCreationType(user.CreationTypeManual).SetStatus(types.SimpleStatusInactive).Save(ctx)
 }
 
 // CreateOrganizationUser 创建组织目录用户
 //
 // TODO 新用户需要激活,如在国内,用户往往需要绑定手机或邮箱,然后通过邮件或短信激活.
 func (s *Service) CreateOrganizationUser(ctx context.Context, orgId int, input ent.CreateUserInput) (*ent.User, error) {
-	_, err := s.Client.Organization.Query().Where(organization.ID(orgId), organization.StatusEQ(organization.StatusActive)).Only(ctx)
+	_, err := s.Client.Organization.Query().Where(organization.ID(orgId), organization.StatusEQ(types.SimpleStatusActive)).Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("organization not exists or inactive")
 	}
@@ -115,7 +116,7 @@ func (s *Service) CreateOrganizationUser(ctx context.Context, orgId int, input e
 		return nil, err
 	}
 	_, err = client.UserIdentity.Create().SetUserID(us.ID).SetCode(input.PrincipalName).SetKind(useridentity.KindName).
-		SetStatus(useridentity.StatusActive).Save(ctx)
+		SetStatus(types.SimpleStatusActive).Save(ctx)
 	if err != nil {
 		return nil, err
 	}

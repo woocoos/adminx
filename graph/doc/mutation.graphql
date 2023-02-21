@@ -4,25 +4,41 @@ type Mutation {
     """创建组织目录"""
     createOrganization(input: CreateOrganizationInput!): Organization
     """更新组织目录"""
-    updateOrganization(id:ID!,input: UpdateOrganizationInput!): Organization
+    updateOrganization(orgID:ID!,input: UpdateOrganizationInput!): Organization
     """删除组织目录"""
-    deleteOrganization(id:ID!): Boolean!
+    deleteOrganization(orgID:ID!): Boolean!
     """创建组织成员(管理账户)"""
     createOrganizationAccount(input: CreateOrganizationAccountInput!): User
     """创建组织用户"""
-    createOrganizationUser(id:ID!,input: CreateUserInput!): User
+    createOrganizationUser(orgID:ID!,input: CreateUserInput!): User
     """更新用户"""
-    updateUser(id:ID!,input: UpdateUserInput!): User
+    updateUser(userID:ID!,input: UpdateUserInput!): User
     """创建应用"""
     createApp(input: CreateAppInput!): App
     """更新应用"""
-    updateApp(id:ID!,input: UpdateAppInput!): App
+    updateApp(appID:ID!,input: UpdateAppInput!): App
     """删除应用"""
-    deleteApp(id:ID!): Boolean!
-    """分配应用"""
+    deleteApp(appID:ID!): Boolean!
+    """创建应用操作"""
+    createAppActions(input: [CreateAppActionInput!]): Boolean!
+    """创建应用菜单"""
+    createAppMenus(input: [CreateAppMenuInput!]): Boolean!
+    """创建应用策略模板"""
+    createAppPolicies(input: [CreateAppPolicyInput!]): Boolean!
+    """更新应用菜单"""
+    updateAppMenu(input: UpdateAppMenuInput!): AppMenu
+    """创建应用角色"""
+    createAppRole(input: CreateAppRoleInput!): AppRole
+    """更新应用角色"""
+    updateAppRole(input: UpdateAppRoleInput!): AppRole
+    """分配应用,将自动分配应用下的所有资源"""
     assignOrganizationApp(orgID:ID!,appID:ID!): Boolean!
     """取消分配应用"""
     revokeOrganizationApp(orgID:ID!,appID:ID!): Boolean!
+    """分配应用策略到组织"""
+    assignOrganizationAppPolicy(orgID:ID!,policyID:ID!): Boolean!
+    """取消分配到组织应用策略"""
+    revokeOrganizationAppPolicy(orgID:ID!,policyID:ID!): Boolean!
 }
 
 input EnableDirectoryInput {

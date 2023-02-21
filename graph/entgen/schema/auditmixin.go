@@ -6,8 +6,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+	"fmt"
 	"github.com/tsingsun/woocoo/pkg/security"
-	"github.com/woocoos/adminx/ent/hook"
 	"strconv"
 	"time"
 )
@@ -18,59 +18,56 @@ type AuditMixin struct {
 
 func (e AuditMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("created_by").Immutable().SchemaType(SnowFlakeID{}.SchemaType()).Immutable().
+		field.Int("created_by").Immutable().
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput)),
 		field.Time("created_at").Immutable().Default(time.Now).Immutable().
 			Annotations(entgql.OrderField("createdAt"), entgql.Skip(entgql.SkipMutationCreateInput)),
-		field.Int("updated_by").Optional().SchemaType(SnowFlakeID{}.SchemaType()).
+		field.Int("updated_by").Optional().
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
-		field.Time("updated_at").Optional().Default(time.Now).UpdateDefault(time.Now).
+		field.Time("updated_at").Optional().
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
 	}
 }
 
 func (AuditMixin) Hooks() []ent.Hook {
 	return []ent.Hook{
-		onUpdateHook(),
-		onCreateHook(),
+		AuditHook,
 	}
 }
 
-func onUpdateHook() ent.Hook {
-	type setter interface {
-		SetUpdatedBy(int)
-	}
-	return hook.On(func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			updatedBy, ok := m.Field("updated_by")
-			if ok {
-				s, ok := m.(setter)
-				if ok && (updatedBy == 0 || updatedBy == nil) {
-					up := security.GenericIdentityFromContext(ctx)
-					uid, _ := strconv.Atoi(up.Name())
-					s.SetUpdatedBy(uid)
-				}
-			}
-			return next.Mutate(ctx, m)
-		})
-	}, ent.OpUpdateOne|ent.OpUpdate)
-}
-
-func onCreateHook() ent.Hook {
-	type setter interface {
-		SetUpdatedBy(int)
+func AuditHook(next ent.Mutator) ent.Mutator {
+	type AuditLogger interface {
+		SetCreatedAt(time.Time)
+		CreatedAt() (value time.Time, exists bool)
 		SetCreatedBy(int)
+		CreatedBy() (id int, exists bool)
+		SetUpdatedAt(time.Time)
+		UpdatedAt() (value time.Time, exists bool)
+		SetUpdatedBy(int)
+		UpdatedBy() (id int, exists bool)
 	}
-	return hook.On(func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			s, ok := m.(setter)
-			if ok {
-				up := security.GenericIdentityFromContext(ctx)
-				uid, _ := strconv.Atoi(up.Name())
-				s.SetUpdatedBy(uid)
-				s.SetCreatedBy(uid)
+	return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+		ml, ok := m.(AuditLogger)
+		if !ok {
+			return nil, fmt.Errorf("unexpected audit-log call from mutation type %T", m)
+		}
+		up := security.GenericIdentityFromContext(ctx)
+		uid, err := strconv.Atoi(up.Name())
+		if err != nil {
+			return nil, fmt.Errorf("unexpected identity %w", err)
+		}
+		switch op := m.Op(); {
+		case op.Is(ent.OpCreate):
+			ml.SetCreatedAt(time.Now())
+			if _, exists := ml.CreatedBy(); !exists {
+				ml.SetCreatedBy(uid)
 			}
-			return next.Mutate(ctx, m)
-		})
-	}, ent.OpCreate)
+		case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+			ml.SetUpdatedAt(time.Now())
+			if _, exists := ml.UpdatedBy(); !exists {
+				ml.SetUpdatedBy(uid)
+			}
+		}
+		return next.Mutate(ctx, m)
+	})
 }

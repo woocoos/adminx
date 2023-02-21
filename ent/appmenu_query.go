@@ -11,22 +11,22 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
 	"github.com/woocoos/adminx/ent/predicate"
 )
 
 // AppMenuQuery is the builder for querying AppMenu entities.
 type AppMenuQuery struct {
 	config
-	ctx            *QueryContext
-	order          []OrderFunc
-	inters         []Interceptor
-	predicates     []predicate.AppMenu
-	withApp        *AppQuery
-	withPermission *AppPermissionQuery
-	modifiers      []func(*sql.Selector)
-	loadTotal      []func(context.Context, []*AppMenu) error
+	ctx        *QueryContext
+	order      []OrderFunc
+	inters     []Interceptor
+	predicates []predicate.AppMenu
+	withApp    *AppQuery
+	withAction *AppActionQuery
+	modifiers  []func(*sql.Selector)
+	loadTotal  []func(context.Context, []*AppMenu) error
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -85,9 +85,9 @@ func (amq *AppMenuQuery) QueryApp() *AppQuery {
 	return query
 }
 
-// QueryPermission chains the current query on the "permission" edge.
-func (amq *AppMenuQuery) QueryPermission() *AppPermissionQuery {
-	query := (&AppPermissionClient{config: amq.config}).Query()
+// QueryAction chains the current query on the "action" edge.
+func (amq *AppMenuQuery) QueryAction() *AppActionQuery {
+	query := (&AppActionClient{config: amq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := amq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -98,8 +98,8 @@ func (amq *AppMenuQuery) QueryPermission() *AppPermissionQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(appmenu.Table, appmenu.FieldID, selector),
-			sqlgraph.To(apppermission.Table, apppermission.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, appmenu.PermissionTable, appmenu.PermissionColumn),
+			sqlgraph.To(appaction.Table, appaction.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, appmenu.ActionTable, appmenu.ActionColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(amq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,13 +294,13 @@ func (amq *AppMenuQuery) Clone() *AppMenuQuery {
 		return nil
 	}
 	return &AppMenuQuery{
-		config:         amq.config,
-		ctx:            amq.ctx.Clone(),
-		order:          append([]OrderFunc{}, amq.order...),
-		inters:         append([]Interceptor{}, amq.inters...),
-		predicates:     append([]predicate.AppMenu{}, amq.predicates...),
-		withApp:        amq.withApp.Clone(),
-		withPermission: amq.withPermission.Clone(),
+		config:     amq.config,
+		ctx:        amq.ctx.Clone(),
+		order:      append([]OrderFunc{}, amq.order...),
+		inters:     append([]Interceptor{}, amq.inters...),
+		predicates: append([]predicate.AppMenu{}, amq.predicates...),
+		withApp:    amq.withApp.Clone(),
+		withAction: amq.withAction.Clone(),
 		// clone intermediate query.
 		sql:  amq.sql.Clone(),
 		path: amq.path,
@@ -318,14 +318,14 @@ func (amq *AppMenuQuery) WithApp(opts ...func(*AppQuery)) *AppMenuQuery {
 	return amq
 }
 
-// WithPermission tells the query-builder to eager-load the nodes that are connected to
-// the "permission" edge. The optional arguments are used to configure the query builder of the edge.
-func (amq *AppMenuQuery) WithPermission(opts ...func(*AppPermissionQuery)) *AppMenuQuery {
-	query := (&AppPermissionClient{config: amq.config}).Query()
+// WithAction tells the query-builder to eager-load the nodes that are connected to
+// the "action" edge. The optional arguments are used to configure the query builder of the edge.
+func (amq *AppMenuQuery) WithAction(opts ...func(*AppActionQuery)) *AppMenuQuery {
+	query := (&AppActionClient{config: amq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	amq.withPermission = query
+	amq.withAction = query
 	return amq
 }
 
@@ -409,7 +409,7 @@ func (amq *AppMenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*App
 		_spec       = amq.querySpec()
 		loadedTypes = [2]bool{
 			amq.withApp != nil,
-			amq.withPermission != nil,
+			amq.withAction != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -439,9 +439,9 @@ func (amq *AppMenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*App
 			return nil, err
 		}
 	}
-	if query := amq.withPermission; query != nil {
-		if err := amq.loadPermission(ctx, query, nodes, nil,
-			func(n *AppMenu, e *AppPermission) { n.Edges.Permission = e }); err != nil {
+	if query := amq.withAction; query != nil {
+		if err := amq.loadAction(ctx, query, nodes, nil,
+			func(n *AppMenu, e *AppAction) { n.Edges.Action = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -482,14 +482,14 @@ func (amq *AppMenuQuery) loadApp(ctx context.Context, query *AppQuery, nodes []*
 	}
 	return nil
 }
-func (amq *AppMenuQuery) loadPermission(ctx context.Context, query *AppPermissionQuery, nodes []*AppMenu, init func(*AppMenu), assign func(*AppMenu, *AppPermission)) error {
+func (amq *AppMenuQuery) loadAction(ctx context.Context, query *AppActionQuery, nodes []*AppMenu, init func(*AppMenu), assign func(*AppMenu, *AppAction)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*AppMenu)
 	for i := range nodes {
-		if nodes[i].PermissionID == nil {
+		if nodes[i].ActionID == nil {
 			continue
 		}
-		fk := *nodes[i].PermissionID
+		fk := *nodes[i].ActionID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -498,7 +498,7 @@ func (amq *AppMenuQuery) loadPermission(ctx context.Context, query *AppPermissio
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(apppermission.IDIn(ids...))
+	query.Where(appaction.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -506,7 +506,7 @@ func (amq *AppMenuQuery) loadPermission(ctx context.Context, query *AppPermissio
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "permission_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "action_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

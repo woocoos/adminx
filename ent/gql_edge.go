@@ -29,25 +29,123 @@ func (a *App) Menus(
 	return a.QueryMenus().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (a *App) Permissions(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppPermissionOrder, where *AppPermissionWhereInput,
-) (*AppPermissionConnection, error) {
-	opts := []AppPermissionPaginateOption{
-		WithAppPermissionOrder(orderBy),
-		WithAppPermissionFilter(where.Filter),
+func (a *App) Actions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppActionOrder, where *AppActionWhereInput,
+) (*AppActionConnection, error) {
+	opts := []AppActionPaginateOption{
+		WithAppActionOrder(orderBy),
+		WithAppActionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[1][alias]
-	if nodes, err := a.NamedPermissions(alias); err == nil || hasTotalCount {
-		pager, err := newAppPermissionPager(opts)
+	if nodes, err := a.NamedActions(alias); err == nil || hasTotalCount {
+		pager, err := newAppActionPager(opts)
 		if err != nil {
 			return nil, err
 		}
-		conn := &AppPermissionConnection{Edges: []*AppPermissionEdge{}, TotalCount: totalCount}
+		conn := &AppActionConnection{Edges: []*AppActionEdge{}, TotalCount: totalCount}
 		conn.build(nodes, pager, after, first, before, last)
 		return conn, nil
 	}
-	return a.QueryPermissions().Paginate(ctx, after, first, before, last, opts...)
+	return a.QueryActions().Paginate(ctx, after, first, before, last, opts...)
+}
+
+func (a *App) Resources(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppResOrder, where *AppResWhereInput,
+) (*AppResConnection, error) {
+	opts := []AppResPaginateOption{
+		WithAppResOrder(orderBy),
+		WithAppResFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[2][alias]
+	if nodes, err := a.NamedResources(alias); err == nil || hasTotalCount {
+		pager, err := newAppResPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AppResConnection{Edges: []*AppResEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryResources().Paginate(ctx, after, first, before, last, opts...)
+}
+
+func (a *App) Roles(ctx context.Context) (result []*AppRole, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = a.NamedRoles(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = a.Edges.RolesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = a.QueryRoles().All(ctx)
+	}
+	return result, err
+}
+
+func (a *App) Policies(ctx context.Context) (result []*AppPolicy, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = a.NamedPolicies(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = a.Edges.PoliciesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = a.QueryPolicies().All(ctx)
+	}
+	return result, err
+}
+
+func (a *App) Organizations(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *OrganizationOrder, where *OrganizationWhereInput,
+) (*OrganizationConnection, error) {
+	opts := []OrganizationPaginateOption{
+		WithOrganizationOrder(orderBy),
+		WithOrganizationFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[5][alias]
+	if nodes, err := a.NamedOrganizations(alias); err == nil || hasTotalCount {
+		pager, err := newOrganizationPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &OrganizationConnection{Edges: []*OrganizationEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryOrganizations().Paginate(ctx, after, first, before, last, opts...)
+}
+
+func (aa *AppAction) App(ctx context.Context) (*App, error) {
+	result, err := aa.Edges.AppOrErr()
+	if IsNotLoaded(err) {
+		result, err = aa.QueryApp().Only(ctx)
+	}
+	return result, err
+}
+
+func (aa *AppAction) Menus(ctx context.Context) (result []*AppMenu, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = aa.NamedMenus(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = aa.Edges.MenusOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = aa.QueryMenus().All(ctx)
+	}
+	return result, err
+}
+
+func (aa *AppAction) Resources(ctx context.Context) (result []*AppRes, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = aa.NamedResources(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = aa.Edges.ResourcesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = aa.QueryResources().All(ctx)
+	}
+	return result, err
 }
 
 func (am *AppMenu) App(ctx context.Context) (*App, error) {
@@ -58,15 +156,15 @@ func (am *AppMenu) App(ctx context.Context) (*App, error) {
 	return result, err
 }
 
-func (am *AppMenu) Permission(ctx context.Context) (*AppPermission, error) {
-	result, err := am.Edges.PermissionOrErr()
+func (am *AppMenu) Action(ctx context.Context) (*AppAction, error) {
+	result, err := am.Edges.ActionOrErr()
 	if IsNotLoaded(err) {
-		result, err = am.QueryPermission().Only(ctx)
+		result, err = am.QueryAction().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }
 
-func (ap *AppPermission) App(ctx context.Context) (*App, error) {
+func (ap *AppPolicy) App(ctx context.Context) (*App, error) {
 	result, err := ap.Edges.AppOrErr()
 	if IsNotLoaded(err) {
 		result, err = ap.QueryApp().Only(ctx)
@@ -74,14 +172,42 @@ func (ap *AppPermission) App(ctx context.Context) (*App, error) {
 	return result, err
 }
 
-func (ap *AppPermission) Menus(ctx context.Context) (result []*AppMenu, err error) {
+func (ap *AppPolicy) Roles(ctx context.Context) (result []*AppRole, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = ap.NamedMenus(graphql.GetFieldContext(ctx).Field.Alias)
+		result, err = ap.NamedRoles(graphql.GetFieldContext(ctx).Field.Alias)
 	} else {
-		result, err = ap.Edges.MenusOrErr()
+		result, err = ap.Edges.RolesOrErr()
 	}
 	if IsNotLoaded(err) {
-		result, err = ap.QueryMenus().All(ctx)
+		result, err = ap.QueryRoles().All(ctx)
+	}
+	return result, err
+}
+
+func (ar *AppRes) App(ctx context.Context) (*App, error) {
+	result, err := ar.Edges.AppOrErr()
+	if IsNotLoaded(err) {
+		result, err = ar.QueryApp().Only(ctx)
+	}
+	return result, err
+}
+
+func (ar *AppRole) App(ctx context.Context) (*App, error) {
+	result, err := ar.Edges.AppOrErr()
+	if IsNotLoaded(err) {
+		result, err = ar.QueryApp().Only(ctx)
+	}
+	return result, err
+}
+
+func (ar *AppRole) Policies(ctx context.Context) (result []*AppPolicy, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = ar.NamedPolicies(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = ar.Edges.PoliciesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = ar.QueryPolicies().All(ctx)
 	}
 	return result, err
 }
@@ -104,6 +230,55 @@ func (o *Organization) Children(ctx context.Context) (result []*Organization, er
 		result, err = o.QueryChildren().All(ctx)
 	}
 	return result, err
+}
+
+func (o *Organization) Permissions(ctx context.Context) (result []*Permission, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = o.NamedPermissions(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = o.Edges.PermissionsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = o.QueryPermissions().All(ctx)
+	}
+	return result, err
+}
+
+func (o *Organization) Apps(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppOrder, where *AppWhereInput,
+) (*AppConnection, error) {
+	opts := []AppPaginateOption{
+		WithAppOrder(orderBy),
+		WithAppFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := o.Edges.totalCount[3][alias]
+	if nodes, err := o.NamedApps(alias); err == nil || hasTotalCount {
+		pager, err := newAppPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AppConnection{Edges: []*AppEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return o.QueryApps().Paginate(ctx, after, first, before, last, opts...)
+}
+
+func (pe *Permission) Organization(ctx context.Context) (*Organization, error) {
+	result, err := pe.Edges.OrganizationOrErr()
+	if IsNotLoaded(err) {
+		result, err = pe.QueryOrganization().Only(ctx)
+	}
+	return result, err
+}
+
+func (pe *Permission) User(ctx context.Context) (*User, error) {
+	result, err := pe.Edges.UserOrErr()
+	if IsNotLoaded(err) {
+		result, err = pe.QueryUser().Only(ctx)
+	}
+	return result, MaskNotFound(err)
 }
 
 func (u *User) Identities(ctx context.Context) (result []*UserIdentity, err error) {

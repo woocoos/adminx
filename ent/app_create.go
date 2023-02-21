@@ -11,8 +11,13 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
+	"github.com/woocoos/adminx/ent/apppolicy"
+	"github.com/woocoos/adminx/ent/appres"
+	"github.com/woocoos/adminx/ent/approle"
+	"github.com/woocoos/adminx/ent/organization"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // AppCreate is the builder for creating a App entity.
@@ -201,15 +206,15 @@ func (ac *AppCreate) SetNillableComments(s *string) *AppCreate {
 }
 
 // SetStatus sets the "status" field.
-func (ac *AppCreate) SetStatus(a app.Status) *AppCreate {
-	ac.mutation.SetStatus(a)
+func (ac *AppCreate) SetStatus(ts types.SimpleStatus) *AppCreate {
+	ac.mutation.SetStatus(ts)
 	return ac
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (ac *AppCreate) SetNillableStatus(a *app.Status) *AppCreate {
-	if a != nil {
-		ac.SetStatus(*a)
+func (ac *AppCreate) SetNillableStatus(ts *types.SimpleStatus) *AppCreate {
+	if ts != nil {
+		ac.SetStatus(*ts)
 	}
 	return ac
 }
@@ -243,19 +248,79 @@ func (ac *AppCreate) AddMenus(a ...*AppMenu) *AppCreate {
 	return ac.AddMenuIDs(ids...)
 }
 
-// AddPermissionIDs adds the "permissions" edge to the AppPermission entity by IDs.
-func (ac *AppCreate) AddPermissionIDs(ids ...int) *AppCreate {
-	ac.mutation.AddPermissionIDs(ids...)
+// AddActionIDs adds the "actions" edge to the AppAction entity by IDs.
+func (ac *AppCreate) AddActionIDs(ids ...int) *AppCreate {
+	ac.mutation.AddActionIDs(ids...)
 	return ac
 }
 
-// AddPermissions adds the "permissions" edges to the AppPermission entity.
-func (ac *AppCreate) AddPermissions(a ...*AppPermission) *AppCreate {
+// AddActions adds the "actions" edges to the AppAction entity.
+func (ac *AppCreate) AddActions(a ...*AppAction) *AppCreate {
 	ids := make([]int, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return ac.AddPermissionIDs(ids...)
+	return ac.AddActionIDs(ids...)
+}
+
+// AddResourceIDs adds the "resources" edge to the AppRes entity by IDs.
+func (ac *AppCreate) AddResourceIDs(ids ...int) *AppCreate {
+	ac.mutation.AddResourceIDs(ids...)
+	return ac
+}
+
+// AddResources adds the "resources" edges to the AppRes entity.
+func (ac *AppCreate) AddResources(a ...*AppRes) *AppCreate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddResourceIDs(ids...)
+}
+
+// AddRoleIDs adds the "roles" edge to the AppRole entity by IDs.
+func (ac *AppCreate) AddRoleIDs(ids ...int) *AppCreate {
+	ac.mutation.AddRoleIDs(ids...)
+	return ac
+}
+
+// AddRoles adds the "roles" edges to the AppRole entity.
+func (ac *AppCreate) AddRoles(a ...*AppRole) *AppCreate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddRoleIDs(ids...)
+}
+
+// AddPolicyIDs adds the "policies" edge to the AppPolicy entity by IDs.
+func (ac *AppCreate) AddPolicyIDs(ids ...int) *AppCreate {
+	ac.mutation.AddPolicyIDs(ids...)
+	return ac
+}
+
+// AddPolicies adds the "policies" edges to the AppPolicy entity.
+func (ac *AppCreate) AddPolicies(a ...*AppPolicy) *AppCreate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddPolicyIDs(ids...)
+}
+
+// AddOrganizationIDs adds the "organizations" edge to the Organization entity by IDs.
+func (ac *AppCreate) AddOrganizationIDs(ids ...int) *AppCreate {
+	ac.mutation.AddOrganizationIDs(ids...)
+	return ac
+}
+
+// AddOrganizations adds the "organizations" edges to the Organization entity.
+func (ac *AppCreate) AddOrganizations(o ...*Organization) *AppCreate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ac.AddOrganizationIDs(ids...)
 }
 
 // Mutation returns the AppMutation object of the builder.
@@ -302,12 +367,9 @@ func (ac *AppCreate) defaults() error {
 		v := app.DefaultCreatedAt()
 		ac.mutation.SetCreatedAt(v)
 	}
-	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		if app.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized app.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := app.DefaultUpdatedAt()
-		ac.mutation.SetUpdatedAt(v)
+	if _, ok := ac.mutation.Status(); !ok {
+		v := app.DefaultStatus
+		ac.mutation.SetStatus(v)
 	}
 	if _, ok := ac.mutation.ID(); !ok {
 		if app.DefaultID == nil {
@@ -486,23 +548,103 @@ func (ac *AppCreate) createSpec() (*App, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.PermissionsIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.ActionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   app.PermissionsTable,
-			Columns: []string{app.PermissionsColumn},
+			Table:   app.ActionsTable,
+			Columns: []string{app.ActionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.ResourcesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.ResourcesTable,
+			Columns: []string{app.ResourcesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: appres.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.RolesTable,
+			Columns: []string{app.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approle.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.PoliciesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   app.PoliciesTable,
+			Columns: []string{app.PoliciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: apppolicy.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.OrganizationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   app.OrganizationsTable,
+			Columns: app.OrganizationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: ac.config, mutation: newOrganizationAppMutation(ac.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

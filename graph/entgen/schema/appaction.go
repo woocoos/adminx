@@ -10,60 +10,63 @@ import (
 	"entgo.io/ent/schema/field"
 	"fmt"
 	gen "github.com/woocoos/adminx/ent"
-	"github.com/woocoos/adminx/ent/apppermission"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/hook"
 	"regexp"
 )
 
-// AppPermission holds the schema definition for the AppPermission entity.
-type AppPermission struct {
+// AppAction holds the schema definition for the AppAction entity.
+type AppAction struct {
 	ent.Schema
 }
 
-func (AppPermission) Annotations() []schema.Annotation {
+func (AppAction) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "app_permission"},
+		entsql.Annotation{Table: "app_action"},
 		entgql.RelayConnection(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }
 
-func (AppPermission) Mixin() []ent.Mixin {
+func (AppAction) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		SnowFlakeID{},
 		AuditMixin{},
 	}
 }
 
-// Fields of the AppPermission.
-func (AppPermission) Fields() []ent.Field {
+// Fields of the AppAction.
+func (AppAction) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("app_id").Comment("所属应用"),
-		field.String("name").Optional().Comment("名称").
+		field.String("name").Comment("名称").
 			Match(regexp.MustCompile("[a-z/]+$")),
-		field.Enum("kind").Values("read", "write", "list").Optional().Comment("读,写,列表"),
+		field.Enum("kind").Values("restful", "graphql", "rpc").Comment("restful,graphql,rpc"),
+		field.Enum("method").Values("read", "write", "list").Comment("操作方法:读,写,列表"),
 		field.String("comments").Optional().Comment("备注").
 			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 	}
 }
 
-// Edges of the AppPermission.
-func (AppPermission) Edges() []ent.Edge {
+// Edges of the AppAction.
+func (AppAction) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("app", App.Type).Ref("permissions").Unique().Required().Field("app_id"),
+		edge.From("app", App.Type).Ref("actions").Unique().Required().Field("app_id"),
 		edge.To("menus", AppMenu.Type).Comment("被引用的菜单项"),
+		edge.To("resources", AppRes.Type).Comment("引用的资源"),
 	}
 }
 
-func (AppPermission) Hooks() []ent.Hook {
+func (AppAction) Hooks() []ent.Hook {
 	// app name unique
 	return []ent.Hook{
 		hook.On(func(next ent.Mutator) ent.Mutator {
-			return hook.AppPermissionFunc(func(ctx context.Context, m *gen.AppPermissionMutation) (gen.Value, error) {
+			return hook.AppActionFunc(func(ctx context.Context, m *gen.AppActionMutation) (gen.Value, error) {
 				if m.Op() == ent.OpCreate {
 					appid, _ := m.AppID()
 					n, _ := m.Name()
-					exists, err := m.Client().AppPermission.Query().
-						Where(apppermission.AppID(appid), apppermission.Name(n)).Exist(ctx)
+					exists, err := m.Client().AppAction.Query().
+						Where(appaction.AppID(appid), appaction.Name(n)).Exist(ctx)
 					if err != nil {
 						return nil, err
 					}
@@ -73,8 +76,8 @@ func (AppPermission) Hooks() []ent.Hook {
 				} else if m.Op() == ent.OpUpdateOne || m.Op() == ent.OpUpdate {
 					appid, _ := m.AppID()
 					n, _ := m.Name()
-					c, err := m.Client().AppPermission.Query().
-						Where(apppermission.AppID(appid), apppermission.Name(n)).Count(ctx)
+					c, err := m.Client().AppAction.Query().
+						Where(appaction.AppID(appid), appaction.Name(n)).Count(ctx)
 					if err != nil {
 						return nil, err
 					}

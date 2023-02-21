@@ -12,11 +12,13 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/organizationuser"
+	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
 	"github.com/woocoos/adminx/ent/useridentity"
 	"github.com/woocoos/adminx/ent/userloginprofile"
 	"github.com/woocoos/adminx/ent/userpassword"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -119,15 +121,15 @@ func (uc *UserCreate) SetRegisterIP(s string) *UserCreate {
 }
 
 // SetStatus sets the "status" field.
-func (uc *UserCreate) SetStatus(u user.Status) *UserCreate {
-	uc.mutation.SetStatus(u)
+func (uc *UserCreate) SetStatus(ts types.SimpleStatus) *UserCreate {
+	uc.mutation.SetStatus(ts)
 	return uc
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (uc *UserCreate) SetNillableStatus(u *user.Status) *UserCreate {
-	if u != nil {
-		uc.SetStatus(*u)
+func (uc *UserCreate) SetNillableStatus(ts *types.SimpleStatus) *UserCreate {
+	if ts != nil {
+		uc.SetStatus(*ts)
 	}
 	return uc
 }
@@ -239,6 +241,21 @@ func (uc *UserCreate) AddOrganizations(o ...*Organization) *UserCreate {
 	return uc.AddOrganizationIDs(ids...)
 }
 
+// AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
+func (uc *UserCreate) AddPermissionIDs(ids ...int) *UserCreate {
+	uc.mutation.AddPermissionIDs(ids...)
+	return uc
+}
+
+// AddPermissions adds the "permissions" edges to the Permission entity.
+func (uc *UserCreate) AddPermissions(p ...*Permission) *UserCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uc.AddPermissionIDs(ids...)
+}
+
 // AddOrganizationUserIDs adds the "organization_user" edge to the OrganizationUser entity by IDs.
 func (uc *UserCreate) AddOrganizationUserIDs(ids ...int) *UserCreate {
 	uc.mutation.AddOrganizationUserIDs(ids...)
@@ -297,13 +314,6 @@ func (uc *UserCreate) defaults() error {
 		}
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
-	}
-	if _, ok := uc.mutation.UpdatedAt(); !ok {
-		if user.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized user.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := user.DefaultUpdatedAt()
-		uc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := uc.mutation.ID(); !ok {
 		if user.DefaultID == nil {
@@ -535,6 +545,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.PermissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.PermissionsTable,
+			Columns: []string{user.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := uc.mutation.OrganizationUserIDs(); len(nodes) > 0 {

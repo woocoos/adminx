@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/organization"
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -111,17 +112,17 @@ func (a *AppQuery) collectField(ctx context.Context, op *graphql.OperationContex
 			a.WithNamedMenus(alias, func(wq *AppMenuQuery) {
 				*wq = *query
 			})
-		case "permissions":
+		case "actions":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&AppPermissionClient{config: a.config}).Query()
+				query = (&AppActionClient{config: a.config}).Query()
 			)
-			args := newAppPermissionPaginateArgs(fieldArgs(ctx, new(AppPermissionWhereInput), path...))
+			args := newAppActionPaginateArgs(fieldArgs(ctx, new(AppActionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
-			pager, err := newAppPermissionPager(args.opts)
+			pager, err := newAppActionPager(args.opts)
 			if err != nil {
 				return fmt.Errorf("create new pager in path %q: %w", path, err)
 			}
@@ -143,9 +144,9 @@ func (a *AppQuery) collectField(ctx context.Context, op *graphql.OperationContex
 							Count  int `sql:"count"`
 						}
 						query.Where(func(s *sql.Selector) {
-							s.Where(sql.InValues(app.PermissionsColumn, ids...))
+							s.Where(sql.InValues(app.ActionsColumn, ids...))
 						})
-						if err := query.GroupBy(app.PermissionsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+						if err := query.GroupBy(app.ActionsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
 							return err
 						}
 						m := make(map[int]int, len(v))
@@ -164,7 +165,7 @@ func (a *AppQuery) collectField(ctx context.Context, op *graphql.OperationContex
 				} else {
 					a.loadTotal = append(a.loadTotal, func(_ context.Context, nodes []*App) error {
 						for i := range nodes {
-							n := len(nodes[i].Edges.Permissions)
+							n := len(nodes[i].Edges.Actions)
 							if nodes[i].Edges.totalCount[1] == nil {
 								nodes[i].Edges.totalCount[1] = make(map[string]int)
 							}
@@ -180,7 +181,7 @@ func (a *AppQuery) collectField(ctx context.Context, op *graphql.OperationContex
 
 			query = pager.applyCursors(query, args.after, args.before)
 			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(app.PermissionsColumn, limit, pager.orderExpr(args.last != nil))
+				modify := limitRows(app.ActionsColumn, limit, pager.orderExpr(args.last != nil))
 				query.modifiers = append(query.modifiers, modify)
 			} else {
 				query = pager.applyOrder(query, args.last != nil)
@@ -191,7 +192,201 @@ func (a *AppQuery) collectField(ctx context.Context, op *graphql.OperationContex
 					return err
 				}
 			}
-			a.WithNamedPermissions(alias, func(wq *AppPermissionQuery) {
+			a.WithNamedActions(alias, func(wq *AppActionQuery) {
+				*wq = *query
+			})
+		case "resources":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppResClient{config: a.config}).Query()
+			)
+			args := newAppResPaginateArgs(fieldArgs(ctx, new(AppResWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newAppResPager(args.opts)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					a.loadTotal = append(a.loadTotal, func(ctx context.Context, nodes []*App) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"app_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							s.Where(sql.InValues(app.ResourcesColumn, ids...))
+						})
+						if err := query.GroupBy(app.ResourcesColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[2][alias] = n
+						}
+						return nil
+					})
+				} else {
+					a.loadTotal = append(a.loadTotal, func(_ context.Context, nodes []*App) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.Resources)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[2][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+
+			query = pager.applyCursors(query, args.after, args.before)
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				modify := limitRows(app.ResourcesColumn, limit, pager.orderExpr(args.last != nil))
+				query.modifiers = append(query.modifiers, modify)
+			} else {
+				query = pager.applyOrder(query, args.last != nil)
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
+					return err
+				}
+			}
+			a.WithNamedResources(alias, func(wq *AppResQuery) {
+				*wq = *query
+			})
+		case "roles":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppRoleClient{config: a.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			a.WithNamedRoles(alias, func(wq *AppRoleQuery) {
+				*wq = *query
+			})
+		case "policies":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppPolicyClient{config: a.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			a.WithNamedPolicies(alias, func(wq *AppPolicyQuery) {
+				*wq = *query
+			})
+		case "organizations":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&OrganizationClient{config: a.config}).Query()
+			)
+			args := newOrganizationPaginateArgs(fieldArgs(ctx, new(OrganizationWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newOrganizationPager(args.opts)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					a.loadTotal = append(a.loadTotal, func(ctx context.Context, nodes []*App) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"app_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							joinT := sql.Table(app.OrganizationsTable)
+							s.Join(joinT).On(s.C(organization.FieldID), joinT.C(app.OrganizationsPrimaryKey[0]))
+							s.Where(sql.InValues(joinT.C(app.OrganizationsPrimaryKey[1]), ids...))
+							s.Select(joinT.C(app.OrganizationsPrimaryKey[1]), sql.Count("*"))
+							s.GroupBy(joinT.C(app.OrganizationsPrimaryKey[1]))
+						})
+						if err := query.Select().Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[5] == nil {
+								nodes[i].Edges.totalCount[5] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[5][alias] = n
+						}
+						return nil
+					})
+				} else {
+					a.loadTotal = append(a.loadTotal, func(_ context.Context, nodes []*App) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.Organizations)
+							if nodes[i].Edges.totalCount[5] == nil {
+								nodes[i].Edges.totalCount[5] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[5][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+
+			query = pager.applyCursors(query, args.after, args.before)
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				modify := limitRows(app.OrganizationsPrimaryKey[1], limit, pager.orderExpr(args.last != nil))
+				query.modifiers = append(query.modifiers, modify)
+			} else {
+				query = pager.applyOrder(query, args.last != nil)
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
+					return err
+				}
+			}
+			a.WithNamedOrganizations(alias, func(wq *OrganizationQuery) {
 				*wq = *query
 			})
 		}
@@ -251,6 +446,112 @@ func newAppPaginateArgs(rv map[string]interface{}) *appPaginateArgs {
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (aa *AppActionQuery) CollectFields(ctx context.Context, satisfies ...string) (*AppActionQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return aa, nil
+	}
+	if err := aa.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return aa, nil
+}
+
+func (aa *AppActionQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "app":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppClient{config: aa.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			aa.withApp = query
+		case "menus":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppMenuClient{config: aa.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			aa.WithNamedMenus(alias, func(wq *AppMenuQuery) {
+				*wq = *query
+			})
+		case "resources":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppResClient{config: aa.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			aa.WithNamedResources(alias, func(wq *AppResQuery) {
+				*wq = *query
+			})
+		}
+	}
+	return nil
+}
+
+type appactionPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []AppActionPaginateOption
+}
+
+func newAppActionPaginateArgs(rv map[string]interface{}) *appactionPaginateArgs {
+	args := &appactionPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &AppActionOrder{Field: &AppActionOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithAppActionOrder(order))
+			}
+		case *AppActionOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithAppActionOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*AppActionWhereInput); ok {
+		args.opts = append(args.opts, WithAppActionFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (am *AppMenuQuery) CollectFields(ctx context.Context, satisfies ...string) (*AppMenuQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
@@ -276,16 +577,16 @@ func (am *AppMenuQuery) collectField(ctx context.Context, op *graphql.OperationC
 				return err
 			}
 			am.withApp = query
-		case "permission":
+		case "action":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&AppPermissionClient{config: am.config}).Query()
+				query = (&AppActionClient{config: am.config}).Query()
 			)
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
-			am.withPermission = query
+			am.withAction = query
 		}
 	}
 	return nil
@@ -343,7 +644,7 @@ func newAppMenuPaginateArgs(rv map[string]interface{}) *appmenuPaginateArgs {
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (ap *AppPermissionQuery) CollectFields(ctx context.Context, satisfies ...string) (*AppPermissionQuery, error) {
+func (ap *AppPolicyQuery) CollectFields(ctx context.Context, satisfies ...string) (*AppPolicyQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
 		return ap, nil
@@ -354,7 +655,7 @@ func (ap *AppPermissionQuery) CollectFields(ctx context.Context, satisfies ...st
 	return ap, nil
 }
 
-func (ap *AppPermissionQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+func (ap *AppPolicyQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
@@ -368,16 +669,16 @@ func (ap *AppPermissionQuery) collectField(ctx context.Context, op *graphql.Oper
 				return err
 			}
 			ap.withApp = query
-		case "menus":
+		case "roles":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&AppMenuClient{config: ap.config}).Query()
+				query = (&AppRoleClient{config: ap.config}).Query()
 			)
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
-			ap.WithNamedMenus(alias, func(wq *AppMenuQuery) {
+			ap.WithNamedRoles(alias, func(wq *AppRoleQuery) {
 				*wq = *query
 			})
 		}
@@ -385,14 +686,14 @@ func (ap *AppPermissionQuery) collectField(ctx context.Context, op *graphql.Oper
 	return nil
 }
 
-type apppermissionPaginateArgs struct {
+type apppolicyPaginateArgs struct {
 	first, last   *int
 	after, before *Cursor
-	opts          []AppPermissionPaginateOption
+	opts          []AppPolicyPaginateOption
 }
 
-func newAppPermissionPaginateArgs(rv map[string]interface{}) *apppermissionPaginateArgs {
-	args := &apppermissionPaginateArgs{}
+func newAppPolicyPaginateArgs(rv map[string]interface{}) *apppolicyPaginateArgs {
+	args := &apppolicyPaginateArgs{}
 	if rv == nil {
 		return args
 	}
@@ -413,7 +714,7 @@ func newAppPermissionPaginateArgs(rv map[string]interface{}) *apppermissionPagin
 		case map[string]interface{}:
 			var (
 				err1, err2 error
-				order      = &AppPermissionOrder{Field: &AppPermissionOrderField{}}
+				order      = &AppPolicyOrder{Field: &AppPolicyOrderField{}}
 			)
 			if d, ok := v[directionField]; ok {
 				err1 = order.Direction.UnmarshalGQL(d)
@@ -422,16 +723,192 @@ func newAppPermissionPaginateArgs(rv map[string]interface{}) *apppermissionPagin
 				err2 = order.Field.UnmarshalGQL(f)
 			}
 			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithAppPermissionOrder(order))
+				args.opts = append(args.opts, WithAppPolicyOrder(order))
 			}
-		case *AppPermissionOrder:
+		case *AppPolicyOrder:
 			if v != nil {
-				args.opts = append(args.opts, WithAppPermissionOrder(v))
+				args.opts = append(args.opts, WithAppPolicyOrder(v))
 			}
 		}
 	}
-	if v, ok := rv[whereField].(*AppPermissionWhereInput); ok {
-		args.opts = append(args.opts, WithAppPermissionFilter(v.Filter))
+	if v, ok := rv[whereField].(*AppPolicyWhereInput); ok {
+		args.opts = append(args.opts, WithAppPolicyFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (ar *AppResQuery) CollectFields(ctx context.Context, satisfies ...string) (*AppResQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return ar, nil
+	}
+	if err := ar.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return ar, nil
+}
+
+func (ar *AppResQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "app":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppClient{config: ar.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			ar.withApp = query
+		}
+	}
+	return nil
+}
+
+type appresPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []AppResPaginateOption
+}
+
+func newAppResPaginateArgs(rv map[string]interface{}) *appresPaginateArgs {
+	args := &appresPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &AppResOrder{Field: &AppResOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithAppResOrder(order))
+			}
+		case *AppResOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithAppResOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*AppResWhereInput); ok {
+		args.opts = append(args.opts, WithAppResFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (ar *AppRoleQuery) CollectFields(ctx context.Context, satisfies ...string) (*AppRoleQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return ar, nil
+	}
+	if err := ar.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return ar, nil
+}
+
+func (ar *AppRoleQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "app":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppClient{config: ar.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			ar.withApp = query
+		case "policies":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppPolicyClient{config: ar.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			ar.WithNamedPolicies(alias, func(wq *AppPolicyQuery) {
+				*wq = *query
+			})
+		}
+	}
+	return nil
+}
+
+type approlePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []AppRolePaginateOption
+}
+
+func newAppRolePaginateArgs(rv map[string]interface{}) *approlePaginateArgs {
+	args := &approlePaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &AppRoleOrder{Field: &AppRoleOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithAppRoleOrder(order))
+			}
+		case *AppRoleOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithAppRoleOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*AppRoleWhereInput); ok {
+		args.opts = append(args.opts, WithAppRoleFilter(v.Filter))
 	}
 	return args
 }
@@ -472,6 +949,105 @@ func (o *OrganizationQuery) collectField(ctx context.Context, op *graphql.Operat
 				return err
 			}
 			o.WithNamedChildren(alias, func(wq *OrganizationQuery) {
+				*wq = *query
+			})
+		case "permissions":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&PermissionClient{config: o.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			o.WithNamedPermissions(alias, func(wq *PermissionQuery) {
+				*wq = *query
+			})
+		case "apps":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AppClient{config: o.config}).Query()
+			)
+			args := newAppPaginateArgs(fieldArgs(ctx, new(AppWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newAppPager(args.opts)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					o.loadTotal = append(o.loadTotal, func(ctx context.Context, nodes []*Organization) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"org_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							joinT := sql.Table(organization.AppsTable)
+							s.Join(joinT).On(s.C(app.FieldID), joinT.C(organization.AppsPrimaryKey[1]))
+							s.Where(sql.InValues(joinT.C(organization.AppsPrimaryKey[0]), ids...))
+							s.Select(joinT.C(organization.AppsPrimaryKey[0]), sql.Count("*"))
+							s.GroupBy(joinT.C(organization.AppsPrimaryKey[0]))
+						})
+						if err := query.Select().Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[3] == nil {
+								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[3][alias] = n
+						}
+						return nil
+					})
+				} else {
+					o.loadTotal = append(o.loadTotal, func(_ context.Context, nodes []*Organization) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.Apps)
+							if nodes[i].Edges.totalCount[3] == nil {
+								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[3][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+
+			query = pager.applyCursors(query, args.after, args.before)
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				modify := limitRows(organization.AppsPrimaryKey[0], limit, pager.orderExpr(args.last != nil))
+				query.modifiers = append(query.modifiers, modify)
+			} else {
+				query = pager.applyOrder(query, args.last != nil)
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
+					return err
+				}
+			}
+			o.WithNamedApps(alias, func(wq *AppQuery) {
 				*wq = *query
 			})
 		}
@@ -526,6 +1102,76 @@ func newOrganizationPaginateArgs(rv map[string]interface{}) *organizationPaginat
 	}
 	if v, ok := rv[whereField].(*OrganizationWhereInput); ok {
 		args.opts = append(args.opts, WithOrganizationFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (pe *PermissionQuery) CollectFields(ctx context.Context, satisfies ...string) (*PermissionQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return pe, nil
+	}
+	if err := pe.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return pe, nil
+}
+
+func (pe *PermissionQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "organization":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&OrganizationClient{config: pe.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			pe.withOrganization = query
+		case "user":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&UserClient{config: pe.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			pe.withUser = query
+		}
+	}
+	return nil
+}
+
+type permissionPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []PermissionPaginateOption
+}
+
+func newPermissionPaginateArgs(rv map[string]interface{}) *permissionPaginateArgs {
+	args := &permissionPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*PermissionWhereInput); ok {
+		args.opts = append(args.opts, WithPermissionFilter(v.Filter))
 	}
 	return args
 }

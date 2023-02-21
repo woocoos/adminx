@@ -13,12 +13,14 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/organizationuser"
+	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/predicate"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
 	"github.com/woocoos/adminx/ent/useridentity"
 	"github.com/woocoos/adminx/ent/userloginprofile"
 	"github.com/woocoos/adminx/ent/userpassword"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -64,6 +66,14 @@ func (uu *UserUpdate) ClearUpdatedBy() *UserUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetUpdatedAt(t)
+	return uu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableUpdatedAt(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetUpdatedAt(*t)
+	}
 	return uu
 }
 
@@ -124,15 +134,15 @@ func (uu *UserUpdate) SetRegisterIP(s string) *UserUpdate {
 }
 
 // SetStatus sets the "status" field.
-func (uu *UserUpdate) SetStatus(u user.Status) *UserUpdate {
-	uu.mutation.SetStatus(u)
+func (uu *UserUpdate) SetStatus(ts types.SimpleStatus) *UserUpdate {
+	uu.mutation.SetStatus(ts)
 	return uu
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableStatus(u *user.Status) *UserUpdate {
-	if u != nil {
-		uu.SetStatus(*u)
+func (uu *UserUpdate) SetNillableStatus(ts *types.SimpleStatus) *UserUpdate {
+	if ts != nil {
+		uu.SetStatus(*ts)
 	}
 	return uu
 }
@@ -240,6 +250,21 @@ func (uu *UserUpdate) AddOrganizations(o ...*Organization) *UserUpdate {
 		ids[i] = o[i].ID
 	}
 	return uu.AddOrganizationIDs(ids...)
+}
+
+// AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
+func (uu *UserUpdate) AddPermissionIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddPermissionIDs(ids...)
+	return uu
+}
+
+// AddPermissions adds the "permissions" edges to the Permission entity.
+func (uu *UserUpdate) AddPermissions(p ...*Permission) *UserUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddPermissionIDs(ids...)
 }
 
 // AddOrganizationUserIDs adds the "organization_user" edge to the OrganizationUser entity by IDs.
@@ -352,6 +377,27 @@ func (uu *UserUpdate) RemoveOrganizations(o ...*Organization) *UserUpdate {
 	return uu.RemoveOrganizationIDs(ids...)
 }
 
+// ClearPermissions clears all "permissions" edges to the Permission entity.
+func (uu *UserUpdate) ClearPermissions() *UserUpdate {
+	uu.mutation.ClearPermissions()
+	return uu
+}
+
+// RemovePermissionIDs removes the "permissions" edge to Permission entities by IDs.
+func (uu *UserUpdate) RemovePermissionIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemovePermissionIDs(ids...)
+	return uu
+}
+
+// RemovePermissions removes "permissions" edges to Permission entities.
+func (uu *UserUpdate) RemovePermissions(p ...*Permission) *UserUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemovePermissionIDs(ids...)
+}
+
 // ClearOrganizationUser clears all "organization_user" edges to the OrganizationUser entity.
 func (uu *UserUpdate) ClearOrganizationUser() *UserUpdate {
 	uu.mutation.ClearOrganizationUser()
@@ -375,9 +421,6 @@ func (uu *UserUpdate) RemoveOrganizationUser(o ...*OrganizationUser) *UserUpdate
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
-	if err := uu.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, UserMutation](ctx, uu.sqlSave, uu.mutation, uu.hooks)
 }
 
@@ -401,18 +444,6 @@ func (uu *UserUpdate) ExecX(ctx context.Context) {
 	if err := uu.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (uu *UserUpdate) defaults() error {
-	if _, ok := uu.mutation.UpdatedAt(); !ok && !uu.mutation.UpdatedAtCleared() {
-		if user.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized user.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := user.UpdateDefaultUpdatedAt()
-		uu.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -763,6 +794,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.PermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.PermissionsTable,
+			Columns: []string{user.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedPermissionsIDs(); len(nodes) > 0 && !uu.mutation.PermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.PermissionsTable,
+			Columns: []string{user.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.PermissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.PermissionsTable,
+			Columns: []string{user.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if uu.mutation.OrganizationUserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -870,6 +955,14 @@ func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetUpdatedAt(*t)
+	}
+	return uuo
+}
+
 // ClearUpdatedAt clears the value of the "updated_at" field.
 func (uuo *UserUpdateOne) ClearUpdatedAt() *UserUpdateOne {
 	uuo.mutation.ClearUpdatedAt()
@@ -927,15 +1020,15 @@ func (uuo *UserUpdateOne) SetRegisterIP(s string) *UserUpdateOne {
 }
 
 // SetStatus sets the "status" field.
-func (uuo *UserUpdateOne) SetStatus(u user.Status) *UserUpdateOne {
-	uuo.mutation.SetStatus(u)
+func (uuo *UserUpdateOne) SetStatus(ts types.SimpleStatus) *UserUpdateOne {
+	uuo.mutation.SetStatus(ts)
 	return uuo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableStatus(u *user.Status) *UserUpdateOne {
-	if u != nil {
-		uuo.SetStatus(*u)
+func (uuo *UserUpdateOne) SetNillableStatus(ts *types.SimpleStatus) *UserUpdateOne {
+	if ts != nil {
+		uuo.SetStatus(*ts)
 	}
 	return uuo
 }
@@ -1043,6 +1136,21 @@ func (uuo *UserUpdateOne) AddOrganizations(o ...*Organization) *UserUpdateOne {
 		ids[i] = o[i].ID
 	}
 	return uuo.AddOrganizationIDs(ids...)
+}
+
+// AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
+func (uuo *UserUpdateOne) AddPermissionIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddPermissionIDs(ids...)
+	return uuo
+}
+
+// AddPermissions adds the "permissions" edges to the Permission entity.
+func (uuo *UserUpdateOne) AddPermissions(p ...*Permission) *UserUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddPermissionIDs(ids...)
 }
 
 // AddOrganizationUserIDs adds the "organization_user" edge to the OrganizationUser entity by IDs.
@@ -1155,6 +1263,27 @@ func (uuo *UserUpdateOne) RemoveOrganizations(o ...*Organization) *UserUpdateOne
 	return uuo.RemoveOrganizationIDs(ids...)
 }
 
+// ClearPermissions clears all "permissions" edges to the Permission entity.
+func (uuo *UserUpdateOne) ClearPermissions() *UserUpdateOne {
+	uuo.mutation.ClearPermissions()
+	return uuo
+}
+
+// RemovePermissionIDs removes the "permissions" edge to Permission entities by IDs.
+func (uuo *UserUpdateOne) RemovePermissionIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemovePermissionIDs(ids...)
+	return uuo
+}
+
+// RemovePermissions removes "permissions" edges to Permission entities.
+func (uuo *UserUpdateOne) RemovePermissions(p ...*Permission) *UserUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemovePermissionIDs(ids...)
+}
+
 // ClearOrganizationUser clears all "organization_user" edges to the OrganizationUser entity.
 func (uuo *UserUpdateOne) ClearOrganizationUser() *UserUpdateOne {
 	uuo.mutation.ClearOrganizationUser()
@@ -1191,9 +1320,6 @@ func (uuo *UserUpdateOne) Select(field string, fields ...string) *UserUpdateOne 
 
 // Save executes the query and returns the updated User entity.
 func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
-	if err := uuo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*User, UserMutation](ctx, uuo.sqlSave, uuo.mutation, uuo.hooks)
 }
 
@@ -1217,18 +1343,6 @@ func (uuo *UserUpdateOne) ExecX(ctx context.Context) {
 	if err := uuo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (uuo *UserUpdateOne) defaults() error {
-	if _, ok := uuo.mutation.UpdatedAt(); !ok && !uuo.mutation.UpdatedAtCleared() {
-		if user.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized user.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := user.UpdateDefaultUpdatedAt()
-		uuo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -1594,6 +1708,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.PermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.PermissionsTable,
+			Columns: []string{user.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedPermissionsIDs(); len(nodes) > 0 && !uuo.mutation.PermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.PermissionsTable,
+			Columns: []string{user.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.PermissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.PermissionsTable,
+			Columns: []string{user.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uuo.mutation.OrganizationUserCleared() {

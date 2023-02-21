@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/predicate"
 	"github.com/woocoos/adminx/ent/userloginprofile"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserLoginProfileUpdate is the builder for updating UserLoginProfile entities.
@@ -58,6 +59,14 @@ func (ulpu *UserLoginProfileUpdate) ClearUpdatedBy() *UserLoginProfileUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (ulpu *UserLoginProfileUpdate) SetUpdatedAt(t time.Time) *UserLoginProfileUpdate {
 	ulpu.mutation.SetUpdatedAt(t)
+	return ulpu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ulpu *UserLoginProfileUpdate) SetNillableUpdatedAt(t *time.Time) *UserLoginProfileUpdate {
+	if t != nil {
+		ulpu.SetUpdatedAt(*t)
+	}
 	return ulpu
 }
 
@@ -200,15 +209,15 @@ func (ulpu *UserLoginProfileUpdate) ClearMfaSecret() *UserLoginProfileUpdate {
 }
 
 // SetMfaStatus sets the "mfa_status" field.
-func (ulpu *UserLoginProfileUpdate) SetMfaStatus(us userloginprofile.MfaStatus) *UserLoginProfileUpdate {
-	ulpu.mutation.SetMfaStatus(us)
+func (ulpu *UserLoginProfileUpdate) SetMfaStatus(ts types.SimpleStatus) *UserLoginProfileUpdate {
+	ulpu.mutation.SetMfaStatus(ts)
 	return ulpu
 }
 
 // SetNillableMfaStatus sets the "mfa_status" field if the given value is not nil.
-func (ulpu *UserLoginProfileUpdate) SetNillableMfaStatus(us *userloginprofile.MfaStatus) *UserLoginProfileUpdate {
-	if us != nil {
-		ulpu.SetMfaStatus(*us)
+func (ulpu *UserLoginProfileUpdate) SetNillableMfaStatus(ts *types.SimpleStatus) *UserLoginProfileUpdate {
+	if ts != nil {
+		ulpu.SetMfaStatus(*ts)
 	}
 	return ulpu
 }
@@ -226,9 +235,6 @@ func (ulpu *UserLoginProfileUpdate) Mutation() *UserLoginProfileMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ulpu *UserLoginProfileUpdate) Save(ctx context.Context) (int, error) {
-	if err := ulpu.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, UserLoginProfileMutation](ctx, ulpu.sqlSave, ulpu.mutation, ulpu.hooks)
 }
 
@@ -252,18 +258,6 @@ func (ulpu *UserLoginProfileUpdate) ExecX(ctx context.Context) {
 	if err := ulpu.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (ulpu *UserLoginProfileUpdate) defaults() error {
-	if _, ok := ulpu.mutation.UpdatedAt(); !ok && !ulpu.mutation.UpdatedAtCleared() {
-		if userloginprofile.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userloginprofile.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userloginprofile.UpdateDefaultUpdatedAt()
-		ulpu.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -414,6 +408,14 @@ func (ulpuo *UserLoginProfileUpdateOne) SetUpdatedAt(t time.Time) *UserLoginProf
 	return ulpuo
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ulpuo *UserLoginProfileUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserLoginProfileUpdateOne {
+	if t != nil {
+		ulpuo.SetUpdatedAt(*t)
+	}
+	return ulpuo
+}
+
 // ClearUpdatedAt clears the value of the "updated_at" field.
 func (ulpuo *UserLoginProfileUpdateOne) ClearUpdatedAt() *UserLoginProfileUpdateOne {
 	ulpuo.mutation.ClearUpdatedAt()
@@ -553,15 +555,15 @@ func (ulpuo *UserLoginProfileUpdateOne) ClearMfaSecret() *UserLoginProfileUpdate
 }
 
 // SetMfaStatus sets the "mfa_status" field.
-func (ulpuo *UserLoginProfileUpdateOne) SetMfaStatus(us userloginprofile.MfaStatus) *UserLoginProfileUpdateOne {
-	ulpuo.mutation.SetMfaStatus(us)
+func (ulpuo *UserLoginProfileUpdateOne) SetMfaStatus(ts types.SimpleStatus) *UserLoginProfileUpdateOne {
+	ulpuo.mutation.SetMfaStatus(ts)
 	return ulpuo
 }
 
 // SetNillableMfaStatus sets the "mfa_status" field if the given value is not nil.
-func (ulpuo *UserLoginProfileUpdateOne) SetNillableMfaStatus(us *userloginprofile.MfaStatus) *UserLoginProfileUpdateOne {
-	if us != nil {
-		ulpuo.SetMfaStatus(*us)
+func (ulpuo *UserLoginProfileUpdateOne) SetNillableMfaStatus(ts *types.SimpleStatus) *UserLoginProfileUpdateOne {
+	if ts != nil {
+		ulpuo.SetMfaStatus(*ts)
 	}
 	return ulpuo
 }
@@ -592,9 +594,6 @@ func (ulpuo *UserLoginProfileUpdateOne) Select(field string, fields ...string) *
 
 // Save executes the query and returns the updated UserLoginProfile entity.
 func (ulpuo *UserLoginProfileUpdateOne) Save(ctx context.Context) (*UserLoginProfile, error) {
-	if err := ulpuo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*UserLoginProfile, UserLoginProfileMutation](ctx, ulpuo.sqlSave, ulpuo.mutation, ulpuo.hooks)
 }
 
@@ -618,18 +617,6 @@ func (ulpuo *UserLoginProfileUpdateOne) ExecX(ctx context.Context) {
 	if err := ulpuo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (ulpuo *UserLoginProfileUpdateOne) defaults() error {
-	if _, ok := ulpuo.mutation.UpdatedAt(); !ok && !ulpuo.mutation.UpdatedAtCleared() {
-		if userloginprofile.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized userloginprofile.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := userloginprofile.UpdateDefaultUpdatedAt()
-		ulpuo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

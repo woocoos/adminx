@@ -11,10 +11,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/woocoos/adminx/ent/app"
 	"github.com/woocoos/adminx/ent/organization"
+	"github.com/woocoos/adminx/ent/organizationrole"
 	"github.com/woocoos/adminx/ent/organizationuser"
+	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/predicate"
 	"github.com/woocoos/adminx/ent/user"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // OrganizationUpdate is the builder for updating Organization entities.
@@ -60,6 +64,14 @@ func (ou *OrganizationUpdate) ClearUpdatedBy() *OrganizationUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (ou *OrganizationUpdate) SetUpdatedAt(t time.Time) *OrganizationUpdate {
 	ou.mutation.SetUpdatedAt(t)
+	return ou
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ou *OrganizationUpdate) SetNillableUpdatedAt(t *time.Time) *OrganizationUpdate {
+	if t != nil {
+		ou.SetUpdatedAt(*t)
+	}
 	return ou
 }
 
@@ -210,15 +222,15 @@ func (ou *OrganizationUpdate) ClearProfile() *OrganizationUpdate {
 }
 
 // SetStatus sets the "status" field.
-func (ou *OrganizationUpdate) SetStatus(o organization.Status) *OrganizationUpdate {
-	ou.mutation.SetStatus(o)
+func (ou *OrganizationUpdate) SetStatus(ts types.SimpleStatus) *OrganizationUpdate {
+	ou.mutation.SetStatus(ts)
 	return ou
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (ou *OrganizationUpdate) SetNillableStatus(o *organization.Status) *OrganizationUpdate {
-	if o != nil {
-		ou.SetStatus(*o)
+func (ou *OrganizationUpdate) SetNillableStatus(ts *types.SimpleStatus) *OrganizationUpdate {
+	if ts != nil {
+		ou.SetStatus(*ts)
 	}
 	return ou
 }
@@ -356,6 +368,51 @@ func (ou *OrganizationUpdate) AddUsers(u ...*User) *OrganizationUpdate {
 	return ou.AddUserIDs(ids...)
 }
 
+// AddRolesAndGroupIDs adds the "rolesAndGroups" edge to the OrganizationRole entity by IDs.
+func (ou *OrganizationUpdate) AddRolesAndGroupIDs(ids ...int) *OrganizationUpdate {
+	ou.mutation.AddRolesAndGroupIDs(ids...)
+	return ou
+}
+
+// AddRolesAndGroups adds the "rolesAndGroups" edges to the OrganizationRole entity.
+func (ou *OrganizationUpdate) AddRolesAndGroups(o ...*OrganizationRole) *OrganizationUpdate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ou.AddRolesAndGroupIDs(ids...)
+}
+
+// AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
+func (ou *OrganizationUpdate) AddPermissionIDs(ids ...int) *OrganizationUpdate {
+	ou.mutation.AddPermissionIDs(ids...)
+	return ou
+}
+
+// AddPermissions adds the "permissions" edges to the Permission entity.
+func (ou *OrganizationUpdate) AddPermissions(p ...*Permission) *OrganizationUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ou.AddPermissionIDs(ids...)
+}
+
+// AddAppIDs adds the "apps" edge to the App entity by IDs.
+func (ou *OrganizationUpdate) AddAppIDs(ids ...int) *OrganizationUpdate {
+	ou.mutation.AddAppIDs(ids...)
+	return ou
+}
+
+// AddApps adds the "apps" edges to the App entity.
+func (ou *OrganizationUpdate) AddApps(a ...*App) *OrganizationUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ou.AddAppIDs(ids...)
+}
+
 // AddOrganizationUserIDs adds the "organization_user" edge to the OrganizationUser entity by IDs.
 func (ou *OrganizationUpdate) AddOrganizationUserIDs(ids ...int) *OrganizationUpdate {
 	ou.mutation.AddOrganizationUserIDs(ids...)
@@ -430,6 +487,69 @@ func (ou *OrganizationUpdate) RemoveUsers(u ...*User) *OrganizationUpdate {
 	return ou.RemoveUserIDs(ids...)
 }
 
+// ClearRolesAndGroups clears all "rolesAndGroups" edges to the OrganizationRole entity.
+func (ou *OrganizationUpdate) ClearRolesAndGroups() *OrganizationUpdate {
+	ou.mutation.ClearRolesAndGroups()
+	return ou
+}
+
+// RemoveRolesAndGroupIDs removes the "rolesAndGroups" edge to OrganizationRole entities by IDs.
+func (ou *OrganizationUpdate) RemoveRolesAndGroupIDs(ids ...int) *OrganizationUpdate {
+	ou.mutation.RemoveRolesAndGroupIDs(ids...)
+	return ou
+}
+
+// RemoveRolesAndGroups removes "rolesAndGroups" edges to OrganizationRole entities.
+func (ou *OrganizationUpdate) RemoveRolesAndGroups(o ...*OrganizationRole) *OrganizationUpdate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ou.RemoveRolesAndGroupIDs(ids...)
+}
+
+// ClearPermissions clears all "permissions" edges to the Permission entity.
+func (ou *OrganizationUpdate) ClearPermissions() *OrganizationUpdate {
+	ou.mutation.ClearPermissions()
+	return ou
+}
+
+// RemovePermissionIDs removes the "permissions" edge to Permission entities by IDs.
+func (ou *OrganizationUpdate) RemovePermissionIDs(ids ...int) *OrganizationUpdate {
+	ou.mutation.RemovePermissionIDs(ids...)
+	return ou
+}
+
+// RemovePermissions removes "permissions" edges to Permission entities.
+func (ou *OrganizationUpdate) RemovePermissions(p ...*Permission) *OrganizationUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ou.RemovePermissionIDs(ids...)
+}
+
+// ClearApps clears all "apps" edges to the App entity.
+func (ou *OrganizationUpdate) ClearApps() *OrganizationUpdate {
+	ou.mutation.ClearApps()
+	return ou
+}
+
+// RemoveAppIDs removes the "apps" edge to App entities by IDs.
+func (ou *OrganizationUpdate) RemoveAppIDs(ids ...int) *OrganizationUpdate {
+	ou.mutation.RemoveAppIDs(ids...)
+	return ou
+}
+
+// RemoveApps removes "apps" edges to App entities.
+func (ou *OrganizationUpdate) RemoveApps(a ...*App) *OrganizationUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ou.RemoveAppIDs(ids...)
+}
+
 // ClearOrganizationUser clears all "organization_user" edges to the OrganizationUser entity.
 func (ou *OrganizationUpdate) ClearOrganizationUser() *OrganizationUpdate {
 	ou.mutation.ClearOrganizationUser()
@@ -453,9 +573,6 @@ func (ou *OrganizationUpdate) RemoveOrganizationUser(o ...*OrganizationUser) *Or
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ou *OrganizationUpdate) Save(ctx context.Context) (int, error) {
-	if err := ou.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks[int, OrganizationMutation](ctx, ou.sqlSave, ou.mutation, ou.hooks)
 }
 
@@ -479,18 +596,6 @@ func (ou *OrganizationUpdate) ExecX(ctx context.Context) {
 	if err := ou.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (ou *OrganizationUpdate) defaults() error {
-	if _, ok := ou.mutation.UpdatedAt(); !ok && !ou.mutation.UpdatedAtCleared() {
-		if organization.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized organization.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := organization.UpdateDefaultUpdatedAt()
-		ou.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -819,6 +924,180 @@ func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ou.mutation.RolesAndGroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.RolesAndGroupsTable,
+			Columns: []string{organization.RolesAndGroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organizationrole.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.RemovedRolesAndGroupsIDs(); len(nodes) > 0 && !ou.mutation.RolesAndGroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.RolesAndGroupsTable,
+			Columns: []string{organization.RolesAndGroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organizationrole.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.RolesAndGroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.RolesAndGroupsTable,
+			Columns: []string{organization.RolesAndGroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organizationrole.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ou.mutation.PermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.PermissionsTable,
+			Columns: []string{organization.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.RemovedPermissionsIDs(); len(nodes) > 0 && !ou.mutation.PermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.PermissionsTable,
+			Columns: []string{organization.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.PermissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.PermissionsTable,
+			Columns: []string{organization.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ou.mutation.AppsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   organization.AppsTable,
+			Columns: organization.AppsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: app.FieldID,
+				},
+			},
+		}
+		createE := &OrganizationAppCreate{config: ou.config, mutation: newOrganizationAppMutation(ou.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.RemovedAppsIDs(); len(nodes) > 0 && !ou.mutation.AppsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   organization.AppsTable,
+			Columns: organization.AppsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: app.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: ou.config, mutation: newOrganizationAppMutation(ou.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.AppsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   organization.AppsTable,
+			Columns: organization.AppsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: app.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: ou.config, mutation: newOrganizationAppMutation(ou.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ou.mutation.OrganizationUserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -923,6 +1202,14 @@ func (ouo *OrganizationUpdateOne) ClearUpdatedBy() *OrganizationUpdateOne {
 // SetUpdatedAt sets the "updated_at" field.
 func (ouo *OrganizationUpdateOne) SetUpdatedAt(t time.Time) *OrganizationUpdateOne {
 	ouo.mutation.SetUpdatedAt(t)
+	return ouo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ouo *OrganizationUpdateOne) SetNillableUpdatedAt(t *time.Time) *OrganizationUpdateOne {
+	if t != nil {
+		ouo.SetUpdatedAt(*t)
+	}
 	return ouo
 }
 
@@ -1073,15 +1360,15 @@ func (ouo *OrganizationUpdateOne) ClearProfile() *OrganizationUpdateOne {
 }
 
 // SetStatus sets the "status" field.
-func (ouo *OrganizationUpdateOne) SetStatus(o organization.Status) *OrganizationUpdateOne {
-	ouo.mutation.SetStatus(o)
+func (ouo *OrganizationUpdateOne) SetStatus(ts types.SimpleStatus) *OrganizationUpdateOne {
+	ouo.mutation.SetStatus(ts)
 	return ouo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (ouo *OrganizationUpdateOne) SetNillableStatus(o *organization.Status) *OrganizationUpdateOne {
-	if o != nil {
-		ouo.SetStatus(*o)
+func (ouo *OrganizationUpdateOne) SetNillableStatus(ts *types.SimpleStatus) *OrganizationUpdateOne {
+	if ts != nil {
+		ouo.SetStatus(*ts)
 	}
 	return ouo
 }
@@ -1219,6 +1506,51 @@ func (ouo *OrganizationUpdateOne) AddUsers(u ...*User) *OrganizationUpdateOne {
 	return ouo.AddUserIDs(ids...)
 }
 
+// AddRolesAndGroupIDs adds the "rolesAndGroups" edge to the OrganizationRole entity by IDs.
+func (ouo *OrganizationUpdateOne) AddRolesAndGroupIDs(ids ...int) *OrganizationUpdateOne {
+	ouo.mutation.AddRolesAndGroupIDs(ids...)
+	return ouo
+}
+
+// AddRolesAndGroups adds the "rolesAndGroups" edges to the OrganizationRole entity.
+func (ouo *OrganizationUpdateOne) AddRolesAndGroups(o ...*OrganizationRole) *OrganizationUpdateOne {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ouo.AddRolesAndGroupIDs(ids...)
+}
+
+// AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
+func (ouo *OrganizationUpdateOne) AddPermissionIDs(ids ...int) *OrganizationUpdateOne {
+	ouo.mutation.AddPermissionIDs(ids...)
+	return ouo
+}
+
+// AddPermissions adds the "permissions" edges to the Permission entity.
+func (ouo *OrganizationUpdateOne) AddPermissions(p ...*Permission) *OrganizationUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ouo.AddPermissionIDs(ids...)
+}
+
+// AddAppIDs adds the "apps" edge to the App entity by IDs.
+func (ouo *OrganizationUpdateOne) AddAppIDs(ids ...int) *OrganizationUpdateOne {
+	ouo.mutation.AddAppIDs(ids...)
+	return ouo
+}
+
+// AddApps adds the "apps" edges to the App entity.
+func (ouo *OrganizationUpdateOne) AddApps(a ...*App) *OrganizationUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ouo.AddAppIDs(ids...)
+}
+
 // AddOrganizationUserIDs adds the "organization_user" edge to the OrganizationUser entity by IDs.
 func (ouo *OrganizationUpdateOne) AddOrganizationUserIDs(ids ...int) *OrganizationUpdateOne {
 	ouo.mutation.AddOrganizationUserIDs(ids...)
@@ -1293,6 +1625,69 @@ func (ouo *OrganizationUpdateOne) RemoveUsers(u ...*User) *OrganizationUpdateOne
 	return ouo.RemoveUserIDs(ids...)
 }
 
+// ClearRolesAndGroups clears all "rolesAndGroups" edges to the OrganizationRole entity.
+func (ouo *OrganizationUpdateOne) ClearRolesAndGroups() *OrganizationUpdateOne {
+	ouo.mutation.ClearRolesAndGroups()
+	return ouo
+}
+
+// RemoveRolesAndGroupIDs removes the "rolesAndGroups" edge to OrganizationRole entities by IDs.
+func (ouo *OrganizationUpdateOne) RemoveRolesAndGroupIDs(ids ...int) *OrganizationUpdateOne {
+	ouo.mutation.RemoveRolesAndGroupIDs(ids...)
+	return ouo
+}
+
+// RemoveRolesAndGroups removes "rolesAndGroups" edges to OrganizationRole entities.
+func (ouo *OrganizationUpdateOne) RemoveRolesAndGroups(o ...*OrganizationRole) *OrganizationUpdateOne {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ouo.RemoveRolesAndGroupIDs(ids...)
+}
+
+// ClearPermissions clears all "permissions" edges to the Permission entity.
+func (ouo *OrganizationUpdateOne) ClearPermissions() *OrganizationUpdateOne {
+	ouo.mutation.ClearPermissions()
+	return ouo
+}
+
+// RemovePermissionIDs removes the "permissions" edge to Permission entities by IDs.
+func (ouo *OrganizationUpdateOne) RemovePermissionIDs(ids ...int) *OrganizationUpdateOne {
+	ouo.mutation.RemovePermissionIDs(ids...)
+	return ouo
+}
+
+// RemovePermissions removes "permissions" edges to Permission entities.
+func (ouo *OrganizationUpdateOne) RemovePermissions(p ...*Permission) *OrganizationUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ouo.RemovePermissionIDs(ids...)
+}
+
+// ClearApps clears all "apps" edges to the App entity.
+func (ouo *OrganizationUpdateOne) ClearApps() *OrganizationUpdateOne {
+	ouo.mutation.ClearApps()
+	return ouo
+}
+
+// RemoveAppIDs removes the "apps" edge to App entities by IDs.
+func (ouo *OrganizationUpdateOne) RemoveAppIDs(ids ...int) *OrganizationUpdateOne {
+	ouo.mutation.RemoveAppIDs(ids...)
+	return ouo
+}
+
+// RemoveApps removes "apps" edges to App entities.
+func (ouo *OrganizationUpdateOne) RemoveApps(a ...*App) *OrganizationUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ouo.RemoveAppIDs(ids...)
+}
+
 // ClearOrganizationUser clears all "organization_user" edges to the OrganizationUser entity.
 func (ouo *OrganizationUpdateOne) ClearOrganizationUser() *OrganizationUpdateOne {
 	ouo.mutation.ClearOrganizationUser()
@@ -1329,9 +1724,6 @@ func (ouo *OrganizationUpdateOne) Select(field string, fields ...string) *Organi
 
 // Save executes the query and returns the updated Organization entity.
 func (ouo *OrganizationUpdateOne) Save(ctx context.Context) (*Organization, error) {
-	if err := ouo.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks[*Organization, OrganizationMutation](ctx, ouo.sqlSave, ouo.mutation, ouo.hooks)
 }
 
@@ -1355,18 +1747,6 @@ func (ouo *OrganizationUpdateOne) ExecX(ctx context.Context) {
 	if err := ouo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (ouo *OrganizationUpdateOne) defaults() error {
-	if _, ok := ouo.mutation.UpdatedAt(); !ok && !ouo.mutation.UpdatedAtCleared() {
-		if organization.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized organization.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := organization.UpdateDefaultUpdatedAt()
-		ouo.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -1707,6 +2087,180 @@ func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organizat
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &OrganizationUserCreate{config: ouo.config, mutation: newOrganizationUserMutation(ouo.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.RolesAndGroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.RolesAndGroupsTable,
+			Columns: []string{organization.RolesAndGroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organizationrole.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.RemovedRolesAndGroupsIDs(); len(nodes) > 0 && !ouo.mutation.RolesAndGroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.RolesAndGroupsTable,
+			Columns: []string{organization.RolesAndGroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organizationrole.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.RolesAndGroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.RolesAndGroupsTable,
+			Columns: []string{organization.RolesAndGroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organizationrole.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.PermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.PermissionsTable,
+			Columns: []string{organization.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.RemovedPermissionsIDs(); len(nodes) > 0 && !ouo.mutation.PermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.PermissionsTable,
+			Columns: []string{organization.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.PermissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.PermissionsTable,
+			Columns: []string{organization.PermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.AppsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   organization.AppsTable,
+			Columns: organization.AppsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: app.FieldID,
+				},
+			},
+		}
+		createE := &OrganizationAppCreate{config: ouo.config, mutation: newOrganizationAppMutation(ouo.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.RemovedAppsIDs(); len(nodes) > 0 && !ouo.mutation.AppsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   organization.AppsTable,
+			Columns: organization.AppsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: app.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: ouo.config, mutation: newOrganizationAppMutation(ouo.config, OpCreate)}
+		_ = createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.AppsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   organization.AppsTable,
+			Columns: organization.AppsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: app.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &OrganizationAppCreate{config: ouo.config, mutation: newOrganizationAppMutation(ouo.config, OpCreate)}
 		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields

@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/woocoos/adminx/ent/predicate"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // ID filters vertices based on their ID field.
@@ -471,23 +472,33 @@ func CodeExtendContainsFold(v string) predicate.UserIdentity {
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.UserIdentity {
-	return predicate.UserIdentity(sql.FieldEQ(FieldStatus, v))
+func StatusEQ(v types.SimpleStatus) predicate.UserIdentity {
+	vc := v
+	return predicate.UserIdentity(sql.FieldEQ(FieldStatus, vc))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.UserIdentity {
-	return predicate.UserIdentity(sql.FieldNEQ(FieldStatus, v))
+func StatusNEQ(v types.SimpleStatus) predicate.UserIdentity {
+	vc := v
+	return predicate.UserIdentity(sql.FieldNEQ(FieldStatus, vc))
 }
 
 // StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.UserIdentity {
-	return predicate.UserIdentity(sql.FieldIn(FieldStatus, vs...))
+func StatusIn(vs ...types.SimpleStatus) predicate.UserIdentity {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserIdentity(sql.FieldIn(FieldStatus, v...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.UserIdentity {
-	return predicate.UserIdentity(sql.FieldNotIn(FieldStatus, vs...))
+func StatusNotIn(vs ...types.SimpleStatus) predicate.UserIdentity {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserIdentity(sql.FieldNotIn(FieldStatus, v...))
 }
 
 // StatusIsNil applies the IsNil predicate on the "status" field.

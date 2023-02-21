@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/ent/app"
+	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
-	"github.com/woocoos/adminx/ent/apppermission"
 )
 
 // AppMenuCreate is the builder for creating a AppMenu entity.
@@ -102,16 +102,16 @@ func (amc *AppMenuCreate) SetNillableName(s *string) *AppMenuCreate {
 	return amc
 }
 
-// SetPermissionID sets the "permission_id" field.
-func (amc *AppMenuCreate) SetPermissionID(i int) *AppMenuCreate {
-	amc.mutation.SetPermissionID(i)
+// SetActionID sets the "action_id" field.
+func (amc *AppMenuCreate) SetActionID(i int) *AppMenuCreate {
+	amc.mutation.SetActionID(i)
 	return amc
 }
 
-// SetNillablePermissionID sets the "permission_id" field if the given value is not nil.
-func (amc *AppMenuCreate) SetNillablePermissionID(i *int) *AppMenuCreate {
+// SetNillableActionID sets the "action_id" field if the given value is not nil.
+func (amc *AppMenuCreate) SetNillableActionID(i *int) *AppMenuCreate {
 	if i != nil {
-		amc.SetPermissionID(*i)
+		amc.SetActionID(*i)
 	}
 	return amc
 }
@@ -163,9 +163,9 @@ func (amc *AppMenuCreate) SetApp(a *App) *AppMenuCreate {
 	return amc.SetAppID(a.ID)
 }
 
-// SetPermission sets the "permission" edge to the AppPermission entity.
-func (amc *AppMenuCreate) SetPermission(a *AppPermission) *AppMenuCreate {
-	return amc.SetPermissionID(a.ID)
+// SetAction sets the "action" edge to the AppAction entity.
+func (amc *AppMenuCreate) SetAction(a *AppAction) *AppMenuCreate {
+	return amc.SetActionID(a.ID)
 }
 
 // Mutation returns the AppMenuMutation object of the builder.
@@ -211,13 +211,6 @@ func (amc *AppMenuCreate) defaults() error {
 		}
 		v := appmenu.DefaultCreatedAt()
 		amc.mutation.SetCreatedAt(v)
-	}
-	if _, ok := amc.mutation.UpdatedAt(); !ok {
-		if appmenu.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized appmenu.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := appmenu.DefaultUpdatedAt()
-		amc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := amc.mutation.ID(); !ok {
 		if appmenu.DefaultID == nil {
@@ -347,24 +340,24 @@ func (amc *AppMenuCreate) createSpec() (*AppMenu, *sqlgraph.CreateSpec) {
 		_node.AppID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := amc.mutation.PermissionIDs(); len(nodes) > 0 {
+	if nodes := amc.mutation.ActionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   appmenu.PermissionTable,
-			Columns: []string{appmenu.PermissionColumn},
+			Table:   appmenu.ActionTable,
+			Columns: []string{appmenu.ActionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: apppermission.FieldID,
+					Column: appaction.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.PermissionID = &nodes[0]
+		_node.ActionID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

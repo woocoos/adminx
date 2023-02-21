@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // UserDevice is the model entity for the UserDevice schema.
@@ -40,7 +41,7 @@ type UserDevice struct {
 	// DeviceModel holds the value of the "device_model" field.
 	DeviceModel string `json:"device_model,omitempty"`
 	// 状态,可用或不可用及其他待确认状态
-	Status userdevice.Status `json:"status,omitempty"`
+	Status types.SimpleStatus `json:"status,omitempty"`
 	// 备注
 	Comments string `json:"comments,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -174,7 +175,7 @@ func (ud *UserDevice) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				ud.Status = userdevice.Status(value.String)
+				ud.Status = types.SimpleStatus(value.String)
 			}
 		case userdevice.FieldComments:
 			if value, ok := values[i].(*sql.NullString); !ok {
