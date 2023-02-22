@@ -125,7 +125,7 @@ func (r *mutationResolver) UpdateAppRole(ctx context.Context, input ent.UpdateAp
 
 // AssignOrganizationApp is the resolver for the assignOrganizationApp field.
 func (r *mutationResolver) AssignOrganizationApp(ctx context.Context, orgID int, appID int) (bool, error) {
-	panic(fmt.Errorf("not implemented: AssignOrganizationApp - assignOrganizationApp"))
+	return r.resource.AssignOrganizationApp(ctx, orgID, appID)
 }
 
 // RevokeOrganizationApp is the resolver for the revokeOrganizationApp field.

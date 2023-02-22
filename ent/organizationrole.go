@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/adminx/ent/organization"
@@ -16,6 +17,14 @@ type OrganizationRole struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// CreatedBy holds the value of the "created_by" field.
+	CreatedBy int `json:"created_by,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedBy holds the value of the "updated_by" field.
+	UpdatedBy int `json:"updated_by,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 组织ID
 	OrgID int `json:"org_id,omitempty"`
 	// 类型,group:组,role:角色
@@ -58,10 +67,12 @@ func (*OrganizationRole) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case organizationrole.FieldID, organizationrole.FieldOrgID, organizationrole.FieldAppRoleID:
+		case organizationrole.FieldID, organizationrole.FieldCreatedBy, organizationrole.FieldUpdatedBy, organizationrole.FieldOrgID, organizationrole.FieldAppRoleID:
 			values[i] = new(sql.NullInt64)
 		case organizationrole.FieldKind, organizationrole.FieldName, organizationrole.FieldComments:
 			values[i] = new(sql.NullString)
+		case organizationrole.FieldCreatedAt, organizationrole.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type OrganizationRole", columns[i])
 		}
@@ -83,6 +94,30 @@ func (or *OrganizationRole) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			or.ID = int(value.Int64)
+		case organizationrole.FieldCreatedBy:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field created_by", values[i])
+			} else if value.Valid {
+				or.CreatedBy = int(value.Int64)
+			}
+		case organizationrole.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				or.CreatedAt = value.Time
+			}
+		case organizationrole.FieldUpdatedBy:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
+			} else if value.Valid {
+				or.UpdatedBy = int(value.Int64)
+			}
+		case organizationrole.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				or.UpdatedAt = value.Time
+			}
 		case organizationrole.FieldOrgID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field org_id", values[i])
@@ -146,6 +181,18 @@ func (or *OrganizationRole) String() string {
 	var builder strings.Builder
 	builder.WriteString("OrganizationRole(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", or.ID))
+	builder.WriteString("created_by=")
+	builder.WriteString(fmt.Sprintf("%v", or.CreatedBy))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(or.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_by=")
+	builder.WriteString(fmt.Sprintf("%v", or.UpdatedBy))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(or.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("org_id=")
 	builder.WriteString(fmt.Sprintf("%v", or.OrgID))
 	builder.WriteString(", ")

@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
@@ -16,6 +17,15 @@ type Permission struct {
 func (Permission) Permission() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{Table: "permission"},
+		entgql.RelayConnection(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
+	}
+}
+
+func (Permission) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		SnowFlakeID{},
+		AuditMixin{},
 	}
 }
 

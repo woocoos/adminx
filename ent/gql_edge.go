@@ -244,6 +244,26 @@ func (o *Organization) Permissions(ctx context.Context) (result []*Permission, e
 	return result, err
 }
 
+func (o *Organization) Policies(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PermissionPolicyOrder,
+) (*PermissionPolicyConnection, error) {
+	opts := []PermissionPolicyPaginateOption{
+		WithPermissionPolicyOrder(orderBy),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := o.Edges.totalCount[3][alias]
+	if nodes, err := o.NamedPolicies(alias); err == nil || hasTotalCount {
+		pager, err := newPermissionPolicyPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &PermissionPolicyConnection{Edges: []*PermissionPolicyEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return o.QueryPolicies().Paginate(ctx, after, first, before, last, opts...)
+}
+
 func (o *Organization) Apps(
 	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AppOrder, where *AppWhereInput,
 ) (*AppConnection, error) {
@@ -252,7 +272,7 @@ func (o *Organization) Apps(
 		WithAppFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := o.Edges.totalCount[3][alias]
+	totalCount, hasTotalCount := o.Edges.totalCount[4][alias]
 	if nodes, err := o.NamedApps(alias); err == nil || hasTotalCount {
 		pager, err := newAppPager(opts)
 		if err != nil {
@@ -279,6 +299,14 @@ func (pe *Permission) User(ctx context.Context) (*User, error) {
 		result, err = pe.QueryUser().Only(ctx)
 	}
 	return result, MaskNotFound(err)
+}
+
+func (pp *PermissionPolicy) Organization(ctx context.Context) (*Organization, error) {
+	result, err := pp.Edges.OrganizationOrErr()
+	if IsNotLoaded(err) {
+		result, err = pp.QueryOrganization().Only(ctx)
+	}
+	return result, err
 }
 
 func (u *User) Identities(ctx context.Context) (result []*UserIdentity, err error) {

@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
+
+	"entgo.io/ent"
 )
 
 const (
@@ -13,6 +16,14 @@ const (
 	Label = "permission"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreatedBy holds the string denoting the created_by field in the database.
+	FieldCreatedBy = "created_by"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedBy holds the string denoting the updated_by field in the database.
+	FieldUpdatedBy = "updated_by"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// FieldOrgID holds the string denoting the org_id field in the database.
 	FieldOrgID = "org_id"
 	// FieldPrincipalKind holds the string denoting the principal_kind field in the database.
@@ -52,6 +63,10 @@ const (
 // Columns holds all SQL columns for permission fields.
 var Columns = []string{
 	FieldID,
+	FieldCreatedBy,
+	FieldCreatedAt,
+	FieldUpdatedBy,
+	FieldUpdatedAt,
 	FieldOrgID,
 	FieldPrincipalKind,
 	FieldUserID,
@@ -70,6 +85,19 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "github.com/woocoos/adminx/ent/runtime"
+var (
+	Hooks [1]ent.Hook
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() time.Time
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() int
+)
 
 // PrincipalKind defines the type for the "principal_kind" enum field.
 type PrincipalKind string

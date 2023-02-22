@@ -22,6 +22,54 @@ type PermissionCreate struct {
 	hooks    []Hook
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (pc *PermissionCreate) SetCreatedBy(i int) *PermissionCreate {
+	pc.mutation.SetCreatedBy(i)
+	return pc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pc *PermissionCreate) SetCreatedAt(t time.Time) *PermissionCreate {
+	pc.mutation.SetCreatedAt(t)
+	return pc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pc *PermissionCreate) SetNillableCreatedAt(t *time.Time) *PermissionCreate {
+	if t != nil {
+		pc.SetCreatedAt(*t)
+	}
+	return pc
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (pc *PermissionCreate) SetUpdatedBy(i int) *PermissionCreate {
+	pc.mutation.SetUpdatedBy(i)
+	return pc
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (pc *PermissionCreate) SetNillableUpdatedBy(i *int) *PermissionCreate {
+	if i != nil {
+		pc.SetUpdatedBy(*i)
+	}
+	return pc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pc *PermissionCreate) SetUpdatedAt(t time.Time) *PermissionCreate {
+	pc.mutation.SetUpdatedAt(t)
+	return pc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pc *PermissionCreate) SetNillableUpdatedAt(t *time.Time) *PermissionCreate {
+	if t != nil {
+		pc.SetUpdatedAt(*t)
+	}
+	return pc
+}
+
 // SetOrgID sets the "org_id" field.
 func (pc *PermissionCreate) SetOrgID(i int) *PermissionCreate {
 	pc.mutation.SetOrgID(i)
@@ -96,6 +144,20 @@ func (pc *PermissionCreate) SetNillableEndAt(t *time.Time) *PermissionCreate {
 	return pc
 }
 
+// SetID sets the "id" field.
+func (pc *PermissionCreate) SetID(i int) *PermissionCreate {
+	pc.mutation.SetID(i)
+	return pc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (pc *PermissionCreate) SetNillableID(i *int) *PermissionCreate {
+	if i != nil {
+		pc.SetID(*i)
+	}
+	return pc
+}
+
 // SetOrganizationID sets the "organization" edge to the Organization entity by ID.
 func (pc *PermissionCreate) SetOrganizationID(id int) *PermissionCreate {
 	pc.mutation.SetOrganizationID(id)
@@ -119,6 +181,9 @@ func (pc *PermissionCreate) Mutation() *PermissionMutation {
 
 // Save creates the Permission in the database.
 func (pc *PermissionCreate) Save(ctx context.Context) (*Permission, error) {
+	if err := pc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks[*Permission, PermissionMutation](ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
@@ -144,8 +209,33 @@ func (pc *PermissionCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pc *PermissionCreate) defaults() error {
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		if permission.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized permission.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
+		v := permission.DefaultCreatedAt()
+		pc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pc.mutation.ID(); !ok {
+		if permission.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized permission.DefaultID (forgotten import ent/runtime?)")
+		}
+		v := permission.DefaultID()
+		pc.mutation.SetID(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pc *PermissionCreate) check() error {
+	if _, ok := pc.mutation.CreatedBy(); !ok {
+		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "Permission.created_by"`)}
+	}
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Permission.created_at"`)}
+	}
 	if _, ok := pc.mutation.OrgID(); !ok {
 		return &ValidationError{Name: "org_id", err: errors.New(`ent: missing required field "Permission.org_id"`)}
 	}
@@ -177,8 +267,10 @@ func (pc *PermissionCreate) sqlSave(ctx context.Context) (*Permission, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	pc.mutation.id = &_node.ID
 	pc.mutation.done = true
 	return _node, nil
@@ -189,6 +281,26 @@ func (pc *PermissionCreate) createSpec() (*Permission, *sqlgraph.CreateSpec) {
 		_node = &Permission{config: pc.config}
 		_spec = sqlgraph.NewCreateSpec(permission.Table, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt))
 	)
+	if id, ok := pc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := pc.mutation.CreatedBy(); ok {
+		_spec.SetField(permission.FieldCreatedBy, field.TypeInt, value)
+		_node.CreatedBy = value
+	}
+	if value, ok := pc.mutation.CreatedAt(); ok {
+		_spec.SetField(permission.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := pc.mutation.UpdatedBy(); ok {
+		_spec.SetField(permission.FieldUpdatedBy, field.TypeInt, value)
+		_node.UpdatedBy = value
+	}
+	if value, ok := pc.mutation.UpdatedAt(); ok {
+		_spec.SetField(permission.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := pc.mutation.PrincipalKind(); ok {
 		_spec.SetField(permission.FieldPrincipalKind, field.TypeEnum, value)
 		_node.PrincipalKind = value
@@ -266,6 +378,7 @@ func (pcb *PermissionCreateBulk) Save(ctx context.Context) ([]*Permission, error
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PermissionMutation)
 				if !ok {
@@ -292,7 +405,7 @@ func (pcb *PermissionCreateBulk) Save(ctx context.Context) ([]*Permission, error
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}

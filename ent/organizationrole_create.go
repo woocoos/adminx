@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,6 +19,54 @@ type OrganizationRoleCreate struct {
 	config
 	mutation *OrganizationRoleMutation
 	hooks    []Hook
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (orc *OrganizationRoleCreate) SetCreatedBy(i int) *OrganizationRoleCreate {
+	orc.mutation.SetCreatedBy(i)
+	return orc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (orc *OrganizationRoleCreate) SetCreatedAt(t time.Time) *OrganizationRoleCreate {
+	orc.mutation.SetCreatedAt(t)
+	return orc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (orc *OrganizationRoleCreate) SetNillableCreatedAt(t *time.Time) *OrganizationRoleCreate {
+	if t != nil {
+		orc.SetCreatedAt(*t)
+	}
+	return orc
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (orc *OrganizationRoleCreate) SetUpdatedBy(i int) *OrganizationRoleCreate {
+	orc.mutation.SetUpdatedBy(i)
+	return orc
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (orc *OrganizationRoleCreate) SetNillableUpdatedBy(i *int) *OrganizationRoleCreate {
+	if i != nil {
+		orc.SetUpdatedBy(*i)
+	}
+	return orc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (orc *OrganizationRoleCreate) SetUpdatedAt(t time.Time) *OrganizationRoleCreate {
+	orc.mutation.SetUpdatedAt(t)
+	return orc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (orc *OrganizationRoleCreate) SetNillableUpdatedAt(t *time.Time) *OrganizationRoleCreate {
+	if t != nil {
+		orc.SetUpdatedAt(*t)
+	}
+	return orc
 }
 
 // SetOrgID sets the "org_id" field.
@@ -84,6 +133,9 @@ func (orc *OrganizationRoleCreate) Mutation() *OrganizationRoleMutation {
 
 // Save creates the OrganizationRole in the database.
 func (orc *OrganizationRoleCreate) Save(ctx context.Context) (*OrganizationRole, error) {
+	if err := orc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks[*OrganizationRole, OrganizationRoleMutation](ctx, orc.sqlSave, orc.mutation, orc.hooks)
 }
 
@@ -109,8 +161,26 @@ func (orc *OrganizationRoleCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (orc *OrganizationRoleCreate) defaults() error {
+	if _, ok := orc.mutation.CreatedAt(); !ok {
+		if organizationrole.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized organizationrole.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
+		v := organizationrole.DefaultCreatedAt()
+		orc.mutation.SetCreatedAt(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (orc *OrganizationRoleCreate) check() error {
+	if _, ok := orc.mutation.CreatedBy(); !ok {
+		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "OrganizationRole.created_by"`)}
+	}
+	if _, ok := orc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "OrganizationRole.created_at"`)}
+	}
 	if _, ok := orc.mutation.OrgID(); !ok {
 		return &ValidationError{Name: "org_id", err: errors.New(`ent: missing required field "OrganizationRole.org_id"`)}
 	}
@@ -154,6 +224,22 @@ func (orc *OrganizationRoleCreate) createSpec() (*OrganizationRole, *sqlgraph.Cr
 		_node = &OrganizationRole{config: orc.config}
 		_spec = sqlgraph.NewCreateSpec(organizationrole.Table, sqlgraph.NewFieldSpec(organizationrole.FieldID, field.TypeInt))
 	)
+	if value, ok := orc.mutation.CreatedBy(); ok {
+		_spec.SetField(organizationrole.FieldCreatedBy, field.TypeInt, value)
+		_node.CreatedBy = value
+	}
+	if value, ok := orc.mutation.CreatedAt(); ok {
+		_spec.SetField(organizationrole.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := orc.mutation.UpdatedBy(); ok {
+		_spec.SetField(organizationrole.FieldUpdatedBy, field.TypeInt, value)
+		_node.UpdatedBy = value
+	}
+	if value, ok := orc.mutation.UpdatedAt(); ok {
+		_spec.SetField(organizationrole.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := orc.mutation.Kind(); ok {
 		_spec.SetField(organizationrole.FieldKind, field.TypeEnum, value)
 		_node.Kind = value
@@ -207,6 +293,7 @@ func (orcb *OrganizationRoleCreateBulk) Save(ctx context.Context) ([]*Organizati
 	for i := range orcb.builders {
 		func(i int, root context.Context) {
 			builder := orcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*OrganizationRoleMutation)
 				if !ok {

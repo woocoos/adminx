@@ -21,6 +21,12 @@ func (OrganizationRole) Annotations() []schema.Annotation {
 	}
 }
 
+func (OrganizationRole) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		AuditMixin{},
+	}
+}
+
 // Fields of the OrganizationRole.
 func (OrganizationRole) Fields() []ent.Field {
 	return []ent.Field{

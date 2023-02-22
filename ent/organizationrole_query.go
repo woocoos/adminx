@@ -299,12 +299,12 @@ func (orq *OrganizationRoleQuery) WithOrganization(opts ...func(*OrganizationQue
 // Example:
 //
 //	var v []struct {
-//		OrgID int `json:"org_id,omitempty"`
+//		CreatedBy int `json:"created_by,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.OrganizationRole.Query().
-//		GroupBy(organizationrole.FieldOrgID).
+//		GroupBy(organizationrole.FieldCreatedBy).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (orq *OrganizationRoleQuery) GroupBy(field string, fields ...string) *OrganizationRoleGroupBy {
@@ -322,11 +322,11 @@ func (orq *OrganizationRoleQuery) GroupBy(field string, fields ...string) *Organ
 // Example:
 //
 //	var v []struct {
-//		OrgID int `json:"org_id,omitempty"`
+//		CreatedBy int `json:"created_by,omitempty"`
 //	}
 //
 //	client.OrganizationRole.Query().
-//		Select(organizationrole.FieldOrgID).
+//		Select(organizationrole.FieldCreatedBy).
 //		Scan(ctx, &v)
 func (orq *OrganizationRoleQuery) Select(fields ...string) *OrganizationRoleSelect {
 	orq.ctx.Fields = append(orq.ctx.Fields, fields...)

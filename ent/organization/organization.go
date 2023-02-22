@@ -64,6 +64,8 @@ const (
 	EdgeRolesAndGroups = "rolesAndGroups"
 	// EdgePermissions holds the string denoting the permissions edge name in mutations.
 	EdgePermissions = "permissions"
+	// EdgePolicies holds the string denoting the policies edge name in mutations.
+	EdgePolicies = "policies"
 	// EdgeApps holds the string denoting the apps edge name in mutations.
 	EdgeApps = "apps"
 	// EdgeOrganizationUser holds the string denoting the organization_user edge name in mutations.
@@ -106,6 +108,13 @@ const (
 	PermissionsInverseTable = "permissions"
 	// PermissionsColumn is the table column denoting the permissions relation/edge.
 	PermissionsColumn = "org_id"
+	// PoliciesTable is the table that holds the policies relation/edge.
+	PoliciesTable = "organization_policy"
+	// PoliciesInverseTable is the table name for the PermissionPolicy entity.
+	// It exists in this package in order to avoid circular dependency with the "permissionpolicy" package.
+	PoliciesInverseTable = "organization_policy"
+	// PoliciesColumn is the table column denoting the policies relation/edge.
+	PoliciesColumn = "org_id"
 	// AppsTable is the table that holds the apps relation/edge. The primary key declared below.
 	AppsTable = "organization_app"
 	// AppsInverseTable is the table name for the App entity.

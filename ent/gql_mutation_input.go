@@ -740,16 +740,18 @@ func (c *AppRoleUpdateOne) SetInput(i UpdateAppRoleInput) *AppRoleUpdateOne {
 
 // CreateOrganizationInput represents a mutation input for creating organizations.
 type CreateOrganizationInput struct {
-	ID          *int
-	Domain      *string
-	Name        string
-	Profile     *string
-	Status      *types.SimpleStatus
-	CountryCode *string
-	Timezone    *string
-	ParentID    int
-	OwnerID     *int
-	AppIDs      []int
+	ID            *int
+	Domain        *string
+	Name          string
+	Profile       *string
+	Status        *types.SimpleStatus
+	CountryCode   *string
+	Timezone      *string
+	ParentID      int
+	OwnerID       *int
+	PermissionIDs []int
+	PolicyIDs     []int
+	AppIDs        []int
 }
 
 // Mutate applies the CreateOrganizationInput on the OrganizationMutation builder.
@@ -774,6 +776,12 @@ func (i *CreateOrganizationInput) Mutate(m *OrganizationMutation) {
 	if v := i.OwnerID; v != nil {
 		m.SetOwnerID(*v)
 	}
+	if v := i.PermissionIDs; len(v) > 0 {
+		m.AddPermissionIDs(v...)
+	}
+	if v := i.PolicyIDs; len(v) > 0 {
+		m.AddPolicyIDs(v...)
+	}
 	if v := i.AppIDs; len(v) > 0 {
 		m.AddAppIDs(v...)
 	}
@@ -787,24 +795,30 @@ func (c *OrganizationCreate) SetInput(i CreateOrganizationInput) *OrganizationCr
 
 // UpdateOrganizationInput represents a mutation input for updating organizations.
 type UpdateOrganizationInput struct {
-	ClearDomain      bool
-	Domain           *string
-	Name             *string
-	ClearProfile     bool
-	Profile          *string
-	ClearStatus      bool
-	Status           *types.SimpleStatus
-	ClearCountryCode bool
-	CountryCode      *string
-	ClearTimezone    bool
-	Timezone         *string
-	ClearParent      bool
-	ParentID         *int
-	ClearOwner       bool
-	OwnerID          *int
-	ClearApps        bool
-	AddAppIDs        []int
-	RemoveAppIDs     []int
+	ClearDomain         bool
+	Domain              *string
+	Name                *string
+	ClearProfile        bool
+	Profile             *string
+	ClearStatus         bool
+	Status              *types.SimpleStatus
+	ClearCountryCode    bool
+	CountryCode         *string
+	ClearTimezone       bool
+	Timezone            *string
+	ClearParent         bool
+	ParentID            *int
+	ClearOwner          bool
+	OwnerID             *int
+	ClearPermissions    bool
+	AddPermissionIDs    []int
+	RemovePermissionIDs []int
+	ClearPolicies       bool
+	AddPolicyIDs        []int
+	RemovePolicyIDs     []int
+	ClearApps           bool
+	AddAppIDs           []int
+	RemoveAppIDs        []int
 }
 
 // Mutate applies the UpdateOrganizationInput on the OrganizationMutation builder.
@@ -854,6 +868,24 @@ func (i *UpdateOrganizationInput) Mutate(m *OrganizationMutation) {
 	if v := i.OwnerID; v != nil {
 		m.SetOwnerID(*v)
 	}
+	if i.ClearPermissions {
+		m.ClearPermissions()
+	}
+	if v := i.AddPermissionIDs; len(v) > 0 {
+		m.AddPermissionIDs(v...)
+	}
+	if v := i.RemovePermissionIDs; len(v) > 0 {
+		m.RemovePermissionIDs(v...)
+	}
+	if i.ClearPolicies {
+		m.ClearPolicies()
+	}
+	if v := i.AddPolicyIDs; len(v) > 0 {
+		m.AddPolicyIDs(v...)
+	}
+	if v := i.RemovePolicyIDs; len(v) > 0 {
+		m.RemovePolicyIDs(v...)
+	}
 	if i.ClearApps {
 		m.ClearApps()
 	}
@@ -877,19 +909,18 @@ func (c *OrganizationUpdateOne) SetInput(i UpdateOrganizationInput) *Organizatio
 	return c
 }
 
-// CreateOrganizationPolicyInput represents a mutation input for creating organizationpolicies.
-type CreateOrganizationPolicyInput struct {
-	ID          *int
-	OrgID       int
-	AppPolicyID *int
-	Name        string
-	Comments    string
-	Rules       []types.PolicyRule
+// CreatePermissionPolicyInput represents a mutation input for creating permissionpolicies.
+type CreatePermissionPolicyInput struct {
+	ID             *int
+	AppPolicyID    *int
+	Name           string
+	Comments       string
+	Rules          []types.PolicyRule
+	OrganizationID int
 }
 
-// Mutate applies the CreateOrganizationPolicyInput on the OrganizationPolicyMutation builder.
-func (i *CreateOrganizationPolicyInput) Mutate(m *OrganizationPolicyMutation) {
-	m.SetOrgID(i.OrgID)
+// Mutate applies the CreatePermissionPolicyInput on the PermissionPolicyMutation builder.
+func (i *CreatePermissionPolicyInput) Mutate(m *PermissionPolicyMutation) {
 	if v := i.AppPolicyID; v != nil {
 		m.SetAppPolicyID(*v)
 	}
@@ -898,30 +929,29 @@ func (i *CreateOrganizationPolicyInput) Mutate(m *OrganizationPolicyMutation) {
 	if v := i.Rules; v != nil {
 		m.SetRules(v)
 	}
+	m.SetOrganizationID(i.OrganizationID)
 }
 
-// SetInput applies the change-set in the CreateOrganizationPolicyInput on the OrganizationPolicyCreate builder.
-func (c *OrganizationPolicyCreate) SetInput(i CreateOrganizationPolicyInput) *OrganizationPolicyCreate {
+// SetInput applies the change-set in the CreatePermissionPolicyInput on the PermissionPolicyCreate builder.
+func (c *PermissionPolicyCreate) SetInput(i CreatePermissionPolicyInput) *PermissionPolicyCreate {
 	i.Mutate(c.Mutation())
 	return c
 }
 
-// UpdateOrganizationPolicyInput represents a mutation input for updating organizationpolicies.
-type UpdateOrganizationPolicyInput struct {
-	OrgID            *int
-	ClearAppPolicyID bool
-	AppPolicyID      *int
-	Name             *string
-	Comments         *string
-	Rules            []types.PolicyRule
-	AppendRules      []types.PolicyRule
+// UpdatePermissionPolicyInput represents a mutation input for updating permissionpolicies.
+type UpdatePermissionPolicyInput struct {
+	ClearAppPolicyID  bool
+	AppPolicyID       *int
+	Name              *string
+	Comments          *string
+	Rules             []types.PolicyRule
+	AppendRules       []types.PolicyRule
+	ClearOrganization bool
+	OrganizationID    *int
 }
 
-// Mutate applies the UpdateOrganizationPolicyInput on the OrganizationPolicyMutation builder.
-func (i *UpdateOrganizationPolicyInput) Mutate(m *OrganizationPolicyMutation) {
-	if v := i.OrgID; v != nil {
-		m.SetOrgID(*v)
-	}
+// Mutate applies the UpdatePermissionPolicyInput on the PermissionPolicyMutation builder.
+func (i *UpdatePermissionPolicyInput) Mutate(m *PermissionPolicyMutation) {
 	if i.ClearAppPolicyID {
 		m.ClearAppPolicyID()
 	}
@@ -940,16 +970,22 @@ func (i *UpdateOrganizationPolicyInput) Mutate(m *OrganizationPolicyMutation) {
 	if i.AppendRules != nil {
 		m.AppendRules(i.Rules)
 	}
+	if i.ClearOrganization {
+		m.ClearOrganization()
+	}
+	if v := i.OrganizationID; v != nil {
+		m.SetOrganizationID(*v)
+	}
 }
 
-// SetInput applies the change-set in the UpdateOrganizationPolicyInput on the OrganizationPolicyUpdate builder.
-func (c *OrganizationPolicyUpdate) SetInput(i UpdateOrganizationPolicyInput) *OrganizationPolicyUpdate {
+// SetInput applies the change-set in the UpdatePermissionPolicyInput on the PermissionPolicyUpdate builder.
+func (c *PermissionPolicyUpdate) SetInput(i UpdatePermissionPolicyInput) *PermissionPolicyUpdate {
 	i.Mutate(c.Mutation())
 	return c
 }
 
-// SetInput applies the change-set in the UpdateOrganizationPolicyInput on the OrganizationPolicyUpdateOne builder.
-func (c *OrganizationPolicyUpdateOne) SetInput(i UpdateOrganizationPolicyInput) *OrganizationPolicyUpdateOne {
+// SetInput applies the change-set in the UpdatePermissionPolicyInput on the PermissionPolicyUpdateOne builder.
+func (c *PermissionPolicyUpdateOne) SetInput(i UpdatePermissionPolicyInput) *PermissionPolicyUpdateOne {
 	i.Mutate(c.Mutation())
 	return c
 }

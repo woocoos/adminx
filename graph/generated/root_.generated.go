@@ -239,6 +239,7 @@ type ComplexityRoot struct {
 		ParentID    func(childComplexity int) int
 		Path        func(childComplexity int) int
 		Permissions func(childComplexity int) int
+		Policies    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PermissionPolicyOrder) int
 		Profile     func(childComplexity int) int
 		Status      func(childComplexity int) int
 		Timezone    func(childComplexity int) int
@@ -265,6 +266,8 @@ type ComplexityRoot struct {
 	}
 
 	Permission struct {
+		CreatedAt     func(childComplexity int) int
+		CreatedBy     func(childComplexity int) int
 		EndAt         func(childComplexity int) int
 		ID            func(childComplexity int) int
 		OrgID         func(childComplexity int) int
@@ -273,8 +276,35 @@ type ComplexityRoot struct {
 		PrincipalKind func(childComplexity int) int
 		RoleID        func(childComplexity int) int
 		StartAt       func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
+		UpdatedBy     func(childComplexity int) int
 		User          func(childComplexity int) int
 		UserID        func(childComplexity int) int
+	}
+
+	PermissionPolicy struct {
+		AppPolicyID  func(childComplexity int) int
+		Comments     func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		CreatedBy    func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Name         func(childComplexity int) int
+		OrgID        func(childComplexity int) int
+		Organization func(childComplexity int) int
+		Rules        func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+		UpdatedBy    func(childComplexity int) int
+	}
+
+	PermissionPolicyConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	PermissionPolicyEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
 	}
 
 	PolicyRule struct {
@@ -1557,6 +1587,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Organization.Permissions(childComplexity), true
 
+	case "Organization.policies":
+		if e.complexity.Organization.Policies == nil {
+			break
+		}
+
+		args, err := ec.field_Organization_policies_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Organization.Policies(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.PermissionPolicyOrder)), true
+
 	case "Organization.profile":
 		if e.complexity.Organization.Profile == nil {
 			break
@@ -1655,6 +1697,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PageInfo.StartCursor(childComplexity), true
 
+	case "Permission.createdAt":
+		if e.complexity.Permission.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Permission.CreatedAt(childComplexity), true
+
+	case "Permission.createdBy":
+		if e.complexity.Permission.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Permission.CreatedBy(childComplexity), true
+
 	case "Permission.endAt":
 		if e.complexity.Permission.EndAt == nil {
 			break
@@ -1711,6 +1767,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Permission.StartAt(childComplexity), true
 
+	case "Permission.updatedAt":
+		if e.complexity.Permission.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Permission.UpdatedAt(childComplexity), true
+
+	case "Permission.updatedBy":
+		if e.complexity.Permission.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Permission.UpdatedBy(childComplexity), true
+
 	case "Permission.user":
 		if e.complexity.Permission.User == nil {
 			break
@@ -1724,6 +1794,118 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Permission.UserID(childComplexity), true
+
+	case "PermissionPolicy.appPolicyID":
+		if e.complexity.PermissionPolicy.AppPolicyID == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.AppPolicyID(childComplexity), true
+
+	case "PermissionPolicy.comments":
+		if e.complexity.PermissionPolicy.Comments == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.Comments(childComplexity), true
+
+	case "PermissionPolicy.createdAt":
+		if e.complexity.PermissionPolicy.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.CreatedAt(childComplexity), true
+
+	case "PermissionPolicy.createdBy":
+		if e.complexity.PermissionPolicy.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.CreatedBy(childComplexity), true
+
+	case "PermissionPolicy.id":
+		if e.complexity.PermissionPolicy.ID == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.ID(childComplexity), true
+
+	case "PermissionPolicy.name":
+		if e.complexity.PermissionPolicy.Name == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.Name(childComplexity), true
+
+	case "PermissionPolicy.orgID":
+		if e.complexity.PermissionPolicy.OrgID == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.OrgID(childComplexity), true
+
+	case "PermissionPolicy.organization":
+		if e.complexity.PermissionPolicy.Organization == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.Organization(childComplexity), true
+
+	case "PermissionPolicy.rules":
+		if e.complexity.PermissionPolicy.Rules == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.Rules(childComplexity), true
+
+	case "PermissionPolicy.updatedAt":
+		if e.complexity.PermissionPolicy.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.UpdatedAt(childComplexity), true
+
+	case "PermissionPolicy.updatedBy":
+		if e.complexity.PermissionPolicy.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicy.UpdatedBy(childComplexity), true
+
+	case "PermissionPolicyConnection.edges":
+		if e.complexity.PermissionPolicyConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicyConnection.Edges(childComplexity), true
+
+	case "PermissionPolicyConnection.pageInfo":
+		if e.complexity.PermissionPolicyConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicyConnection.PageInfo(childComplexity), true
+
+	case "PermissionPolicyConnection.totalCount":
+		if e.complexity.PermissionPolicyConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicyConnection.TotalCount(childComplexity), true
+
+	case "PermissionPolicyEdge.cursor":
+		if e.complexity.PermissionPolicyEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicyEdge.Cursor(childComplexity), true
+
+	case "PermissionPolicyEdge.node":
+		if e.complexity.PermissionPolicyEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.PermissionPolicyEdge.Node(childComplexity), true
 
 	case "PolicyRule.actions":
 		if e.complexity.PolicyRule.Actions == nil {
@@ -2364,18 +2546,21 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateAppRoleInput,
 		ec.unmarshalInputCreateOrganizationAccountInput,
 		ec.unmarshalInputCreateOrganizationInput,
-		ec.unmarshalInputCreateOrganizationPolicyInput,
+		ec.unmarshalInputCreatePermissionPolicyInput,
 		ec.unmarshalInputCreateUserIdentityInput,
 		ec.unmarshalInputCreateUserInput,
 		ec.unmarshalInputCreateUserLoginProfileInput,
 		ec.unmarshalInputCreateUserPasswordInput,
 		ec.unmarshalInputEnableDirectoryInput,
 		ec.unmarshalInputOrganizationOrder,
-		ec.unmarshalInputOrganizationPolicyWhereInput,
+		ec.unmarshalInputOrganizationRoleOrder,
 		ec.unmarshalInputOrganizationRoleWhereInput,
 		ec.unmarshalInputOrganizationUserOrder,
 		ec.unmarshalInputOrganizationUserWhereInput,
 		ec.unmarshalInputOrganizationWhereInput,
+		ec.unmarshalInputPermissionOrder,
+		ec.unmarshalInputPermissionPolicyOrder,
+		ec.unmarshalInputPermissionPolicyWhereInput,
 		ec.unmarshalInputPermissionWhereInput,
 		ec.unmarshalInputPolicyRuleInput,
 		ec.unmarshalInputUpdateAppActionInput,
@@ -2385,7 +2570,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateAppResInput,
 		ec.unmarshalInputUpdateAppRoleInput,
 		ec.unmarshalInputUpdateOrganizationInput,
-		ec.unmarshalInputUpdateOrganizationPolicyInput,
+		ec.unmarshalInputUpdatePermissionPolicyInput,
 		ec.unmarshalInputUpdateUserIdentityInput,
 		ec.unmarshalInputUpdateUserInput,
 		ec.unmarshalInputUpdateUserLoginProfileInput,
@@ -3743,15 +3928,15 @@ input CreateOrganizationInput {
   timezone: String
   parentID: ID!
   ownerID: ID
+  permissionIDs: [ID!]
+  policyIDs: [ID!]
   appIDs: [ID!]
 }
 """
-CreateOrganizationPolicyInput is used for create OrganizationPolicy object.
+CreatePermissionPolicyInput is used for create PermissionPolicy object.
 Input was generated by ent.
 """
-input CreateOrganizationPolicyInput {
-  """组织ID"""
-  orgID: Int!
+input CreatePermissionPolicyInput {
   """所属应用策略,如果是自定义应用策略,则为空"""
   appPolicyID: Int
   """策略名称"""
@@ -3760,6 +3945,7 @@ input CreateOrganizationPolicyInput {
   comments: String!
   """策略规则,如果是应用策略,则为空"""
   rules: [PolicyRuleInput!]!
+  organizationID: ID!
 }
 """
 CreateUserIdentityInput is used for create UserIdentity object.
@@ -3879,6 +4065,22 @@ type Organization implements Node {
   parent: Organization!
   children: [Organization!]
   permissions: [Permission!]
+  policies(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for PermissionPolicies returned from the connection."""
+    orderBy: PermissionPolicyOrder
+  ): PermissionPolicyConnection!
   apps(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor
@@ -3926,76 +4128,21 @@ input OrganizationOrder {
 enum OrganizationOrderField {
   createdAt
 }
-"""
-OrganizationPolicyWhereInput is used for filtering OrganizationPolicy objects.
-Input was generated by ent.
-"""
-input OrganizationPolicyWhereInput {
-  not: OrganizationPolicyWhereInput
-  and: [OrganizationPolicyWhereInput!]
-  or: [OrganizationPolicyWhereInput!]
-  """id field predicates"""
-  id: ID
-  idNEQ: ID
-  idIn: [ID!]
-  idNotIn: [ID!]
-  idGT: ID
-  idGTE: ID
-  idLT: ID
-  idLTE: ID
-  """org_id field predicates"""
-  orgID: Int
-  orgIDNEQ: Int
-  orgIDIn: [Int!]
-  orgIDNotIn: [Int!]
-  orgIDGT: Int
-  orgIDGTE: Int
-  orgIDLT: Int
-  orgIDLTE: Int
-  """app_policy_id field predicates"""
-  appPolicyID: Int
-  appPolicyIDNEQ: Int
-  appPolicyIDIn: [Int!]
-  appPolicyIDNotIn: [Int!]
-  appPolicyIDGT: Int
-  appPolicyIDGTE: Int
-  appPolicyIDLT: Int
-  appPolicyIDLTE: Int
-  appPolicyIDIsNil: Boolean
-  appPolicyIDNotNil: Boolean
-  """name field predicates"""
-  name: String
-  nameNEQ: String
-  nameIn: [String!]
-  nameNotIn: [String!]
-  nameGT: String
-  nameGTE: String
-  nameLT: String
-  nameLTE: String
-  nameContains: String
-  nameHasPrefix: String
-  nameHasSuffix: String
-  nameEqualFold: String
-  nameContainsFold: String
-  """comments field predicates"""
-  comments: String
-  commentsNEQ: String
-  commentsIn: [String!]
-  commentsNotIn: [String!]
-  commentsGT: String
-  commentsGTE: String
-  commentsLT: String
-  commentsLTE: String
-  commentsContains: String
-  commentsHasPrefix: String
-  commentsHasSuffix: String
-  commentsEqualFold: String
-  commentsContainsFold: String
-}
 """OrganizationRoleKind is enum for the field kind"""
 enum OrganizationRoleKind @goModel(model: "github.com/woocoos/adminx/ent/organizationrole.Kind") {
   group
   role
+}
+"""Ordering options for OrganizationRole connections"""
+input OrganizationRoleOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order OrganizationRoles."""
+  field: OrganizationRoleOrderField!
+}
+"""Properties by which OrganizationRole connections can be ordered."""
+enum OrganizationRoleOrderField {
+  createdAt
 }
 """
 OrganizationRoleWhereInput is used for filtering OrganizationRole objects.
@@ -4014,6 +4161,46 @@ input OrganizationRoleWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
+  """created_by field predicates"""
+  createdBy: Int
+  createdByNEQ: Int
+  createdByIn: [Int!]
+  createdByNotIn: [Int!]
+  createdByGT: Int
+  createdByGTE: Int
+  createdByLT: Int
+  createdByLTE: Int
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """updated_by field predicates"""
+  updatedBy: Int
+  updatedByNEQ: Int
+  updatedByIn: [Int!]
+  updatedByNotIn: [Int!]
+  updatedByGT: Int
+  updatedByGTE: Int
+  updatedByLT: Int
+  updatedByLTE: Int
+  updatedByIsNil: Boolean
+  updatedByNotNil: Boolean
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  updatedAtIsNil: Boolean
+  updatedAtNotNil: Boolean
   """org_id field predicates"""
   orgID: ID
   orgIDNEQ: ID
@@ -4338,6 +4525,10 @@ type PageInfo {
 }
 type Permission implements Node {
   id: ID!
+  createdBy: Int!
+  createdAt: Time!
+  updatedBy: Int
+  updatedAt: Time
   """授权组织"""
   orgID: ID!
   """授权类型:角色,用户"""
@@ -4354,6 +4545,167 @@ type Permission implements Node {
   endAt: Time
   organization: Organization!
   user: User
+}
+"""Ordering options for Permission connections"""
+input PermissionOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order Permissions."""
+  field: PermissionOrderField!
+}
+"""Properties by which Permission connections can be ordered."""
+enum PermissionOrderField {
+  createdAt
+}
+type PermissionPolicy implements Node {
+  id: ID!
+  createdBy: Int!
+  createdAt: Time!
+  updatedBy: Int
+  updatedAt: Time
+  """组织ID"""
+  orgID: ID!
+  """所属应用策略,如果是自定义应用策略,则为空"""
+  appPolicyID: Int
+  """策略名称"""
+  name: String!
+  """描述"""
+  comments: String!
+  """策略规则,如果是应用策略,则为空"""
+  rules: [PolicyRule!]!
+  organization: Organization!
+}
+"""A connection to a list of items."""
+type PermissionPolicyConnection {
+  """A list of edges."""
+  edges: [PermissionPolicyEdge]
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+"""An edge in a connection."""
+type PermissionPolicyEdge {
+  """The item at the end of the edge."""
+  node: PermissionPolicy
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+}
+"""Ordering options for PermissionPolicy connections"""
+input PermissionPolicyOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order PermissionPolicies."""
+  field: PermissionPolicyOrderField!
+}
+"""Properties by which PermissionPolicy connections can be ordered."""
+enum PermissionPolicyOrderField {
+  createdAt
+}
+"""
+PermissionPolicyWhereInput is used for filtering PermissionPolicy objects.
+Input was generated by ent.
+"""
+input PermissionPolicyWhereInput {
+  not: PermissionPolicyWhereInput
+  and: [PermissionPolicyWhereInput!]
+  or: [PermissionPolicyWhereInput!]
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  """created_by field predicates"""
+  createdBy: Int
+  createdByNEQ: Int
+  createdByIn: [Int!]
+  createdByNotIn: [Int!]
+  createdByGT: Int
+  createdByGTE: Int
+  createdByLT: Int
+  createdByLTE: Int
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """updated_by field predicates"""
+  updatedBy: Int
+  updatedByNEQ: Int
+  updatedByIn: [Int!]
+  updatedByNotIn: [Int!]
+  updatedByGT: Int
+  updatedByGTE: Int
+  updatedByLT: Int
+  updatedByLTE: Int
+  updatedByIsNil: Boolean
+  updatedByNotNil: Boolean
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  updatedAtIsNil: Boolean
+  updatedAtNotNil: Boolean
+  """org_id field predicates"""
+  orgID: ID
+  orgIDNEQ: ID
+  orgIDIn: [ID!]
+  orgIDNotIn: [ID!]
+  """app_policy_id field predicates"""
+  appPolicyID: Int
+  appPolicyIDNEQ: Int
+  appPolicyIDIn: [Int!]
+  appPolicyIDNotIn: [Int!]
+  appPolicyIDGT: Int
+  appPolicyIDGTE: Int
+  appPolicyIDLT: Int
+  appPolicyIDLTE: Int
+  appPolicyIDIsNil: Boolean
+  appPolicyIDNotNil: Boolean
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  """comments field predicates"""
+  comments: String
+  commentsNEQ: String
+  commentsIn: [String!]
+  commentsNotIn: [String!]
+  commentsGT: String
+  commentsGTE: String
+  commentsLT: String
+  commentsLTE: String
+  commentsContains: String
+  commentsHasPrefix: String
+  commentsHasSuffix: String
+  commentsEqualFold: String
+  commentsContainsFold: String
+  """organization edge predicates"""
+  hasOrganization: Boolean
+  hasOrganizationWith: [OrganizationWhereInput!]
 }
 """PermissionPrincipalKind is enum for the field principal_kind"""
 enum PermissionPrincipalKind @goModel(model: "github.com/woocoos/adminx/ent/permission.PrincipalKind") {
@@ -4377,6 +4729,46 @@ input PermissionWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
+  """created_by field predicates"""
+  createdBy: Int
+  createdByNEQ: Int
+  createdByIn: [Int!]
+  createdByNotIn: [Int!]
+  createdByGT: Int
+  createdByGTE: Int
+  createdByLT: Int
+  createdByLTE: Int
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """updated_by field predicates"""
+  updatedBy: Int
+  updatedByNEQ: Int
+  updatedByIn: [Int!]
+  updatedByNotIn: [Int!]
+  updatedByGT: Int
+  updatedByGTE: Int
+  updatedByLT: Int
+  updatedByLTE: Int
+  updatedByIsNil: Boolean
+  updatedByNotNil: Boolean
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  updatedAtIsNil: Boolean
+  updatedAtNotNil: Boolean
   """org_id field predicates"""
   orgID: ID
   orgIDNEQ: ID
@@ -4699,17 +5091,21 @@ input UpdateOrganizationInput {
   clearParent: Boolean
   ownerID: ID
   clearOwner: Boolean
+  addPermissionIDs: [ID!]
+  removePermissionIDs: [ID!]
+  clearPermissions: Boolean
+  addPolicyIDs: [ID!]
+  removePolicyIDs: [ID!]
+  clearPolicies: Boolean
   addAppIDs: [ID!]
   removeAppIDs: [ID!]
   clearApps: Boolean
 }
 """
-UpdateOrganizationPolicyInput is used for update OrganizationPolicy object.
+UpdatePermissionPolicyInput is used for update PermissionPolicy object.
 Input was generated by ent.
 """
-input UpdateOrganizationPolicyInput {
-  """组织ID"""
-  orgID: Int
+input UpdatePermissionPolicyInput {
   """所属应用策略,如果是自定义应用策略,则为空"""
   appPolicyID: Int
   clearAppPolicyID: Boolean
@@ -4720,6 +5116,8 @@ input UpdateOrganizationPolicyInput {
   """策略规则,如果是应用策略,则为空"""
   rules: [PolicyRuleInput!]
   appendRules: [PolicyRuleInput!]
+  organizationID: ID
+  clearOrganization: Boolean
 }
 """
 UpdateUserIdentityInput is used for update UserIdentity object.

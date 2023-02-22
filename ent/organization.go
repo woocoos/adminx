@@ -71,6 +71,8 @@ type OrganizationEdges struct {
 	RolesAndGroups []*OrganizationRole `json:"rolesAndGroups,omitempty"`
 	// 组织授权信息
 	Permissions []*Permission `json:"permissions,omitempty"`
+	// 组织下权限策略
+	Policies []*PermissionPolicy `json:"policies,omitempty"`
 	// 组织下应用
 	Apps []*App `json:"apps,omitempty"`
 	// OrganizationUser holds the value of the organization_user edge.
@@ -79,14 +81,15 @@ type OrganizationEdges struct {
 	OrganizationApp []*OrganizationApp `json:"organization_app,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 	// totalCount holds the count of the edges above.
-	totalCount [4]map[string]int
+	totalCount [5]map[string]int
 
 	namedChildren         map[string][]*Organization
 	namedUsers            map[string][]*User
 	namedRolesAndGroups   map[string][]*OrganizationRole
 	namedPermissions      map[string][]*Permission
+	namedPolicies         map[string][]*PermissionPolicy
 	namedApps             map[string][]*App
 	namedOrganizationUser map[string][]*OrganizationUser
 	namedOrganizationApp  map[string][]*OrganizationApp
@@ -154,10 +157,19 @@ func (e OrganizationEdges) PermissionsOrErr() ([]*Permission, error) {
 	return nil, &NotLoadedError{edge: "permissions"}
 }
 
+// PoliciesOrErr returns the Policies value or an error if the edge
+// was not loaded in eager-loading.
+func (e OrganizationEdges) PoliciesOrErr() ([]*PermissionPolicy, error) {
+	if e.loadedTypes[6] {
+		return e.Policies, nil
+	}
+	return nil, &NotLoadedError{edge: "policies"}
+}
+
 // AppsOrErr returns the Apps value or an error if the edge
 // was not loaded in eager-loading.
 func (e OrganizationEdges) AppsOrErr() ([]*App, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Apps, nil
 	}
 	return nil, &NotLoadedError{edge: "apps"}
@@ -166,7 +178,7 @@ func (e OrganizationEdges) AppsOrErr() ([]*App, error) {
 // OrganizationUserOrErr returns the OrganizationUser value or an error if the edge
 // was not loaded in eager-loading.
 func (e OrganizationEdges) OrganizationUserOrErr() ([]*OrganizationUser, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.OrganizationUser, nil
 	}
 	return nil, &NotLoadedError{edge: "organization_user"}
@@ -175,7 +187,7 @@ func (e OrganizationEdges) OrganizationUserOrErr() ([]*OrganizationUser, error) 
 // OrganizationAppOrErr returns the OrganizationApp value or an error if the edge
 // was not loaded in eager-loading.
 func (e OrganizationEdges) OrganizationAppOrErr() ([]*OrganizationApp, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[9] {
 		return e.OrganizationApp, nil
 	}
 	return nil, &NotLoadedError{edge: "organization_app"}
@@ -348,6 +360,11 @@ func (o *Organization) QueryRolesAndGroups() *OrganizationRoleQuery {
 // QueryPermissions queries the "permissions" edge of the Organization entity.
 func (o *Organization) QueryPermissions() *PermissionQuery {
 	return NewOrganizationClient(o.config).QueryPermissions(o)
+}
+
+// QueryPolicies queries the "policies" edge of the Organization entity.
+func (o *Organization) QueryPolicies() *PermissionPolicyQuery {
+	return NewOrganizationClient(o.config).QueryPolicies(o)
 }
 
 // QueryApps queries the "apps" edge of the Organization entity.
@@ -535,6 +552,30 @@ func (o *Organization) appendNamedPermissions(name string, edges ...*Permission)
 		o.Edges.namedPermissions[name] = []*Permission{}
 	} else {
 		o.Edges.namedPermissions[name] = append(o.Edges.namedPermissions[name], edges...)
+	}
+}
+
+// NamedPolicies returns the Policies named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (o *Organization) NamedPolicies(name string) ([]*PermissionPolicy, error) {
+	if o.Edges.namedPolicies == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := o.Edges.namedPolicies[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (o *Organization) appendNamedPolicies(name string, edges ...*PermissionPolicy) {
+	if o.Edges.namedPolicies == nil {
+		o.Edges.namedPolicies = make(map[string][]*PermissionPolicy)
+	}
+	if len(edges) == 0 {
+		o.Edges.namedPolicies[name] = []*PermissionPolicy{}
+	} else {
+		o.Edges.namedPolicies[name] = append(o.Edges.namedPolicies[name], edges...)
 	}
 }
 

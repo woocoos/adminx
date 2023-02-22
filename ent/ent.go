@@ -20,10 +20,10 @@ import (
 	"github.com/woocoos/adminx/ent/approlepolicy"
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/organizationapp"
-	"github.com/woocoos/adminx/ent/organizationpolicy"
 	"github.com/woocoos/adminx/ent/organizationrole"
 	"github.com/woocoos/adminx/ent/organizationuser"
 	"github.com/woocoos/adminx/ent/permission"
+	"github.com/woocoos/adminx/ent/permissionpolicy"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
 	"github.com/woocoos/adminx/ent/useridentity"
@@ -56,24 +56,24 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		app.Table:                app.ValidColumn,
-		appaction.Table:          appaction.ValidColumn,
-		appmenu.Table:            appmenu.ValidColumn,
-		apppolicy.Table:          apppolicy.ValidColumn,
-		appres.Table:             appres.ValidColumn,
-		approle.Table:            approle.ValidColumn,
-		approlepolicy.Table:      approlepolicy.ValidColumn,
-		organization.Table:       organization.ValidColumn,
-		organizationapp.Table:    organizationapp.ValidColumn,
-		organizationpolicy.Table: organizationpolicy.ValidColumn,
-		organizationrole.Table:   organizationrole.ValidColumn,
-		organizationuser.Table:   organizationuser.ValidColumn,
-		permission.Table:         permission.ValidColumn,
-		user.Table:               user.ValidColumn,
-		userdevice.Table:         userdevice.ValidColumn,
-		useridentity.Table:       useridentity.ValidColumn,
-		userloginprofile.Table:   userloginprofile.ValidColumn,
-		userpassword.Table:       userpassword.ValidColumn,
+		app.Table:              app.ValidColumn,
+		appaction.Table:        appaction.ValidColumn,
+		appmenu.Table:          appmenu.ValidColumn,
+		apppolicy.Table:        apppolicy.ValidColumn,
+		appres.Table:           appres.ValidColumn,
+		approle.Table:          approle.ValidColumn,
+		approlepolicy.Table:    approlepolicy.ValidColumn,
+		organization.Table:     organization.ValidColumn,
+		organizationapp.Table:  organizationapp.ValidColumn,
+		organizationrole.Table: organizationrole.ValidColumn,
+		organizationuser.Table: organizationuser.ValidColumn,
+		permission.Table:       permission.ValidColumn,
+		permissionpolicy.Table: permissionpolicy.ValidColumn,
+		user.Table:             user.ValidColumn,
+		userdevice.Table:       userdevice.ValidColumn,
+		useridentity.Table:     useridentity.ValidColumn,
+		userloginprofile.Table: userloginprofile.ValidColumn,
+		userpassword.Table:     userpassword.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

@@ -285,25 +285,13 @@ var (
 			},
 		},
 	}
-	// OrganizationPolicyColumns holds the columns for the "organization_policy" table.
-	OrganizationPolicyColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "org_id", Type: field.TypeInt},
-		{Name: "app_id", Type: field.TypeInt, Nullable: true},
-		{Name: "app_policy_id", Type: field.TypeInt, Nullable: true},
-		{Name: "name", Type: field.TypeString},
-		{Name: "comments", Type: field.TypeString},
-		{Name: "rules", Type: field.TypeJSON},
-	}
-	// OrganizationPolicyTable holds the schema information for the "organization_policy" table.
-	OrganizationPolicyTable = &schema.Table{
-		Name:       "organization_policy",
-		Columns:    OrganizationPolicyColumns,
-		PrimaryKey: []*schema.Column{OrganizationPolicyColumns[0]},
-	}
 	// OrganizationRoleColumns holds the columns for the "organization_role" table.
 	OrganizationRoleColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_by", Type: field.TypeInt, Nullable: true},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "kind", Type: field.TypeEnum, Enums: []string{"group", "role"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "app_role_id", Type: field.TypeInt, Nullable: true},
@@ -318,7 +306,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "organization_role_organization_rolesAndGroups",
-				Columns:    []*schema.Column{OrganizationRoleColumns[5]},
+				Columns:    []*schema.Column{OrganizationRoleColumns[9]},
 				RefColumns: []*schema.Column{OrganizationColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -364,7 +352,11 @@ var (
 	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeInt, SchemaType: map[string]string{"mysql": "bigint"}},
+		{Name: "created_by", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_by", Type: field.TypeInt, Nullable: true},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "principal_kind", Type: field.TypeEnum, Enums: []string{"user", "role"}},
 		{Name: "role_id", Type: field.TypeInt, Nullable: true},
 		{Name: "org_policy_id", Type: field.TypeInt},
@@ -381,15 +373,43 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "permissions_organization_permissions",
-				Columns:    []*schema.Column{PermissionsColumns[6]},
+				Columns:    []*schema.Column{PermissionsColumns[10]},
 				RefColumns: []*schema.Column{OrganizationColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "permissions_user_user",
-				Columns:    []*schema.Column{PermissionsColumns[7]},
+				Columns:    []*schema.Column{PermissionsColumns[11]},
 				RefColumns: []*schema.Column{UserColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// OrganizationPolicyColumns holds the columns for the "organization_policy" table.
+	OrganizationPolicyColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, SchemaType: map[string]string{"mysql": "bigint"}},
+		{Name: "created_by", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_by", Type: field.TypeInt, Nullable: true},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
+		{Name: "app_id", Type: field.TypeInt, Nullable: true},
+		{Name: "app_policy_id", Type: field.TypeInt, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "comments", Type: field.TypeString},
+		{Name: "rules", Type: field.TypeJSON},
+		{Name: "org_id", Type: field.TypeInt, SchemaType: map[string]string{"mysql": "bigint"}},
+	}
+	// OrganizationPolicyTable holds the schema information for the "organization_policy" table.
+	OrganizationPolicyTable = &schema.Table{
+		Name:       "organization_policy",
+		Columns:    OrganizationPolicyColumns,
+		PrimaryKey: []*schema.Column{OrganizationPolicyColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "organization_policy_organization_policies",
+				Columns:    []*schema.Column{OrganizationPolicyColumns[10]},
+				RefColumns: []*schema.Column{OrganizationColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -544,10 +564,10 @@ var (
 		AppRolePolicyTable,
 		OrganizationTable,
 		OrganizationAppTable,
-		OrganizationPolicyTable,
 		OrganizationRoleTable,
 		OrganizationUserTable,
 		PermissionsTable,
+		OrganizationPolicyTable,
 		UserTable,
 		UserDeviceTable,
 		UserIdentityTable,
@@ -597,9 +617,6 @@ func init() {
 	OrganizationAppTable.Annotation = &entsql.Annotation{
 		Table: "organization_app",
 	}
-	OrganizationPolicyTable.Annotation = &entsql.Annotation{
-		Table: "organization_policy",
-	}
 	OrganizationRoleTable.ForeignKeys[0].RefTable = OrganizationTable
 	OrganizationRoleTable.Annotation = &entsql.Annotation{
 		Table: "organization_role",
@@ -611,6 +628,10 @@ func init() {
 	}
 	PermissionsTable.ForeignKeys[0].RefTable = OrganizationTable
 	PermissionsTable.ForeignKeys[1].RefTable = UserTable
+	OrganizationPolicyTable.ForeignKeys[0].RefTable = OrganizationTable
+	OrganizationPolicyTable.Annotation = &entsql.Annotation{
+		Table: "organization_policy",
+	}
 	UserTable.Annotation = &entsql.Annotation{
 		Table: "user",
 	}

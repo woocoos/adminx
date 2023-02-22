@@ -30,6 +30,53 @@ func (pu *PermissionUpdate) Where(ps ...predicate.Permission) *PermissionUpdate 
 	return pu
 }
 
+// SetUpdatedBy sets the "updated_by" field.
+func (pu *PermissionUpdate) SetUpdatedBy(i int) *PermissionUpdate {
+	pu.mutation.ResetUpdatedBy()
+	pu.mutation.SetUpdatedBy(i)
+	return pu
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (pu *PermissionUpdate) SetNillableUpdatedBy(i *int) *PermissionUpdate {
+	if i != nil {
+		pu.SetUpdatedBy(*i)
+	}
+	return pu
+}
+
+// AddUpdatedBy adds i to the "updated_by" field.
+func (pu *PermissionUpdate) AddUpdatedBy(i int) *PermissionUpdate {
+	pu.mutation.AddUpdatedBy(i)
+	return pu
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (pu *PermissionUpdate) ClearUpdatedBy() *PermissionUpdate {
+	pu.mutation.ClearUpdatedBy()
+	return pu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pu *PermissionUpdate) SetUpdatedAt(t time.Time) *PermissionUpdate {
+	pu.mutation.SetUpdatedAt(t)
+	return pu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pu *PermissionUpdate) SetNillableUpdatedAt(t *time.Time) *PermissionUpdate {
+	if t != nil {
+		pu.SetUpdatedAt(*t)
+	}
+	return pu
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (pu *PermissionUpdate) ClearUpdatedAt() *PermissionUpdate {
+	pu.mutation.ClearUpdatedAt()
+	return pu
+}
+
 // SetOrgID sets the "org_id" field.
 func (pu *PermissionUpdate) SetOrgID(i int) *PermissionUpdate {
 	pu.mutation.SetOrgID(i)
@@ -227,6 +274,21 @@ func (pu *PermissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := pu.mutation.UpdatedBy(); ok {
+		_spec.SetField(permission.FieldUpdatedBy, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedUpdatedBy(); ok {
+		_spec.AddField(permission.FieldUpdatedBy, field.TypeInt, value)
+	}
+	if pu.mutation.UpdatedByCleared() {
+		_spec.ClearField(permission.FieldUpdatedBy, field.TypeInt)
+	}
+	if value, ok := pu.mutation.UpdatedAt(); ok {
+		_spec.SetField(permission.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if pu.mutation.UpdatedAtCleared() {
+		_spec.ClearField(permission.FieldUpdatedAt, field.TypeTime)
+	}
 	if value, ok := pu.mutation.PrincipalKind(); ok {
 		_spec.SetField(permission.FieldPrincipalKind, field.TypeEnum, value)
 	}
@@ -345,6 +407,53 @@ type PermissionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *PermissionMutation
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (puo *PermissionUpdateOne) SetUpdatedBy(i int) *PermissionUpdateOne {
+	puo.mutation.ResetUpdatedBy()
+	puo.mutation.SetUpdatedBy(i)
+	return puo
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (puo *PermissionUpdateOne) SetNillableUpdatedBy(i *int) *PermissionUpdateOne {
+	if i != nil {
+		puo.SetUpdatedBy(*i)
+	}
+	return puo
+}
+
+// AddUpdatedBy adds i to the "updated_by" field.
+func (puo *PermissionUpdateOne) AddUpdatedBy(i int) *PermissionUpdateOne {
+	puo.mutation.AddUpdatedBy(i)
+	return puo
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (puo *PermissionUpdateOne) ClearUpdatedBy() *PermissionUpdateOne {
+	puo.mutation.ClearUpdatedBy()
+	return puo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (puo *PermissionUpdateOne) SetUpdatedAt(t time.Time) *PermissionUpdateOne {
+	puo.mutation.SetUpdatedAt(t)
+	return puo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (puo *PermissionUpdateOne) SetNillableUpdatedAt(t *time.Time) *PermissionUpdateOne {
+	if t != nil {
+		puo.SetUpdatedAt(*t)
+	}
+	return puo
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (puo *PermissionUpdateOne) ClearUpdatedAt() *PermissionUpdateOne {
+	puo.mutation.ClearUpdatedAt()
+	return puo
 }
 
 // SetOrgID sets the "org_id" field.
@@ -573,6 +682,21 @@ func (puo *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission,
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := puo.mutation.UpdatedBy(); ok {
+		_spec.SetField(permission.FieldUpdatedBy, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedUpdatedBy(); ok {
+		_spec.AddField(permission.FieldUpdatedBy, field.TypeInt, value)
+	}
+	if puo.mutation.UpdatedByCleared() {
+		_spec.ClearField(permission.FieldUpdatedBy, field.TypeInt)
+	}
+	if value, ok := puo.mutation.UpdatedAt(); ok {
+		_spec.SetField(permission.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if puo.mutation.UpdatedAtCleared() {
+		_spec.ClearField(permission.FieldUpdatedAt, field.TypeTime)
 	}
 	if value, ok := puo.mutation.PrincipalKind(); ok {
 		_spec.SetField(permission.FieldPrincipalKind, field.TypeEnum, value)

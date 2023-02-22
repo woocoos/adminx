@@ -18,6 +18,14 @@ type Permission struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// CreatedBy holds the value of the "created_by" field.
+	CreatedBy int `json:"created_by,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedBy holds the value of the "updated_by" field.
+	UpdatedBy int `json:"updated_by,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 授权组织
 	OrgID int `json:"org_id,omitempty"`
 	// 授权类型:角色,用户
@@ -81,11 +89,11 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permission.FieldID, permission.FieldOrgID, permission.FieldUserID, permission.FieldRoleID, permission.FieldOrgPolicyID:
+		case permission.FieldID, permission.FieldCreatedBy, permission.FieldUpdatedBy, permission.FieldOrgID, permission.FieldUserID, permission.FieldRoleID, permission.FieldOrgPolicyID:
 			values[i] = new(sql.NullInt64)
 		case permission.FieldPrincipalKind:
 			values[i] = new(sql.NullString)
-		case permission.FieldStartAt, permission.FieldEndAt:
+		case permission.FieldCreatedAt, permission.FieldUpdatedAt, permission.FieldStartAt, permission.FieldEndAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Permission", columns[i])
@@ -108,6 +116,30 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			pe.ID = int(value.Int64)
+		case permission.FieldCreatedBy:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field created_by", values[i])
+			} else if value.Valid {
+				pe.CreatedBy = int(value.Int64)
+			}
+		case permission.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				pe.CreatedAt = value.Time
+			}
+		case permission.FieldUpdatedBy:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
+			} else if value.Valid {
+				pe.UpdatedBy = int(value.Int64)
+			}
+		case permission.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				pe.UpdatedAt = value.Time
+			}
 		case permission.FieldOrgID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field org_id", values[i])
@@ -188,6 +220,18 @@ func (pe *Permission) String() string {
 	var builder strings.Builder
 	builder.WriteString("Permission(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", pe.ID))
+	builder.WriteString("created_by=")
+	builder.WriteString(fmt.Sprintf("%v", pe.CreatedBy))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(pe.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_by=")
+	builder.WriteString(fmt.Sprintf("%v", pe.UpdatedBy))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(pe.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("org_id=")
 	builder.WriteString(fmt.Sprintf("%v", pe.OrgID))
 	builder.WriteString(", ")

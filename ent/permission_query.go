@@ -335,12 +335,12 @@ func (pq *PermissionQuery) WithUser(opts ...func(*UserQuery)) *PermissionQuery {
 // Example:
 //
 //	var v []struct {
-//		OrgID int `json:"org_id,omitempty"`
+//		CreatedBy int `json:"created_by,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Permission.Query().
-//		GroupBy(permission.FieldOrgID).
+//		GroupBy(permission.FieldCreatedBy).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (pq *PermissionQuery) GroupBy(field string, fields ...string) *PermissionGroupBy {
@@ -358,11 +358,11 @@ func (pq *PermissionQuery) GroupBy(field string, fields ...string) *PermissionGr
 // Example:
 //
 //	var v []struct {
-//		OrgID int `json:"org_id,omitempty"`
+//		CreatedBy int `json:"created_by,omitempty"`
 //	}
 //
 //	client.Permission.Query().
-//		Select(permission.FieldOrgID).
+//		Select(permission.FieldCreatedBy).
 //		Scan(ctx, &v)
 func (pq *PermissionQuery) Select(fields ...string) *PermissionSelect {
 	pq.ctx.Fields = append(pq.ctx.Fields, fields...)

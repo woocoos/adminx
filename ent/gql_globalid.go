@@ -20,6 +20,7 @@ import (
 	"github.com/woocoos/adminx/ent/approle"
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/permission"
+	"github.com/woocoos/adminx/ent/permissionpolicy"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/ent/userdevice"
 	"github.com/woocoos/adminx/ent/useridentity"
@@ -72,6 +73,12 @@ func (o *Organization) GlobalID(context.Context) (string, error) {
 // GlobalID returns the global identifier for the given Permission node.
 func (pe *Permission) GlobalID(context.Context) (string, error) {
 	id := fmt.Sprintf("%s:%d", permission.Table, pe.ID)
+	return base64.StdEncoding.EncodeToString([]byte(id)), nil
+}
+
+// GlobalID returns the global identifier for the given PermissionPolicy node.
+func (pp *PermissionPolicy) GlobalID(context.Context) (string, error) {
+	id := fmt.Sprintf("%s:%d", permissionpolicy.Table, pp.ID)
 	return base64.StdEncoding.EncodeToString([]byte(id)), nil
 }
 
@@ -137,6 +144,8 @@ func GlobalID(tp, id string) (string, error) {
 	case organization.Table:
 		break
 	case permission.Table:
+		break
+	case permissionpolicy.Table:
 		break
 	case user.Table:
 		break

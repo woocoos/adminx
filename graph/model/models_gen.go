@@ -27,12 +27,60 @@ type EnableDirectoryInput struct {
 	Name   string `json:"name"`
 }
 
+// Ordering options for OrganizationRole connections
+type OrganizationRoleOrder struct {
+	// The ordering direction.
+	Direction ent.OrderDirection `json:"direction"`
+	// The field by which to order OrganizationRoles.
+	Field OrganizationRoleOrderField `json:"field"`
+}
+
 // Ordering options for OrganizationUser connections
 type OrganizationUserOrder struct {
 	// The ordering direction.
 	Direction ent.OrderDirection `json:"direction"`
 	// The field by which to order OrganizationUsers.
 	Field OrganizationUserOrderField `json:"field"`
+}
+
+// Properties by which OrganizationRole connections can be ordered.
+type OrganizationRoleOrderField string
+
+const (
+	OrganizationRoleOrderFieldCreatedAt OrganizationRoleOrderField = "createdAt"
+)
+
+var AllOrganizationRoleOrderField = []OrganizationRoleOrderField{
+	OrganizationRoleOrderFieldCreatedAt,
+}
+
+func (e OrganizationRoleOrderField) IsValid() bool {
+	switch e {
+	case OrganizationRoleOrderFieldCreatedAt:
+		return true
+	}
+	return false
+}
+
+func (e OrganizationRoleOrderField) String() string {
+	return string(e)
+}
+
+func (e *OrganizationRoleOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OrganizationRoleOrderField(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OrganizationRoleOrderField", str)
+	}
+	return nil
+}
+
+func (e OrganizationRoleOrderField) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 // Properties by which OrganizationUser connections can be ordered.

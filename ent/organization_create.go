@@ -15,6 +15,7 @@ import (
 	"github.com/woocoos/adminx/ent/organizationrole"
 	"github.com/woocoos/adminx/ent/organizationuser"
 	"github.com/woocoos/adminx/ent/permission"
+	"github.com/woocoos/adminx/ent/permissionpolicy"
 	"github.com/woocoos/adminx/ent/user"
 	"github.com/woocoos/adminx/graph/entgen/types"
 )
@@ -330,6 +331,21 @@ func (oc *OrganizationCreate) AddPermissions(p ...*Permission) *OrganizationCrea
 		ids[i] = p[i].ID
 	}
 	return oc.AddPermissionIDs(ids...)
+}
+
+// AddPolicyIDs adds the "policies" edge to the PermissionPolicy entity by IDs.
+func (oc *OrganizationCreate) AddPolicyIDs(ids ...int) *OrganizationCreate {
+	oc.mutation.AddPolicyIDs(ids...)
+	return oc
+}
+
+// AddPolicies adds the "policies" edges to the PermissionPolicy entity.
+func (oc *OrganizationCreate) AddPolicies(p ...*PermissionPolicy) *OrganizationCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return oc.AddPolicyIDs(ids...)
 }
 
 // AddAppIDs adds the "apps" edge to the App entity by IDs.
@@ -676,6 +692,25 @@ func (oc *OrganizationCreate) createSpec() (*Organization, *sqlgraph.CreateSpec)
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: permission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.PoliciesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   organization.PoliciesTable,
+			Columns: []string{organization.PoliciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: permissionpolicy.FieldID,
 				},
 			},
 		}

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +26,53 @@ type OrganizationRoleUpdate struct {
 // Where appends a list predicates to the OrganizationRoleUpdate builder.
 func (oru *OrganizationRoleUpdate) Where(ps ...predicate.OrganizationRole) *OrganizationRoleUpdate {
 	oru.mutation.Where(ps...)
+	return oru
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (oru *OrganizationRoleUpdate) SetUpdatedBy(i int) *OrganizationRoleUpdate {
+	oru.mutation.ResetUpdatedBy()
+	oru.mutation.SetUpdatedBy(i)
+	return oru
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (oru *OrganizationRoleUpdate) SetNillableUpdatedBy(i *int) *OrganizationRoleUpdate {
+	if i != nil {
+		oru.SetUpdatedBy(*i)
+	}
+	return oru
+}
+
+// AddUpdatedBy adds i to the "updated_by" field.
+func (oru *OrganizationRoleUpdate) AddUpdatedBy(i int) *OrganizationRoleUpdate {
+	oru.mutation.AddUpdatedBy(i)
+	return oru
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (oru *OrganizationRoleUpdate) ClearUpdatedBy() *OrganizationRoleUpdate {
+	oru.mutation.ClearUpdatedBy()
+	return oru
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (oru *OrganizationRoleUpdate) SetUpdatedAt(t time.Time) *OrganizationRoleUpdate {
+	oru.mutation.SetUpdatedAt(t)
+	return oru
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (oru *OrganizationRoleUpdate) SetNillableUpdatedAt(t *time.Time) *OrganizationRoleUpdate {
+	if t != nil {
+		oru.SetUpdatedAt(*t)
+	}
+	return oru
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (oru *OrganizationRoleUpdate) ClearUpdatedAt() *OrganizationRoleUpdate {
+	oru.mutation.ClearUpdatedAt()
 	return oru
 }
 
@@ -167,6 +215,21 @@ func (oru *OrganizationRoleUpdate) sqlSave(ctx context.Context) (n int, err erro
 			}
 		}
 	}
+	if value, ok := oru.mutation.UpdatedBy(); ok {
+		_spec.SetField(organizationrole.FieldUpdatedBy, field.TypeInt, value)
+	}
+	if value, ok := oru.mutation.AddedUpdatedBy(); ok {
+		_spec.AddField(organizationrole.FieldUpdatedBy, field.TypeInt, value)
+	}
+	if oru.mutation.UpdatedByCleared() {
+		_spec.ClearField(organizationrole.FieldUpdatedBy, field.TypeInt)
+	}
+	if value, ok := oru.mutation.UpdatedAt(); ok {
+		_spec.SetField(organizationrole.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if oru.mutation.UpdatedAtCleared() {
+		_spec.ClearField(organizationrole.FieldUpdatedAt, field.TypeTime)
+	}
 	if value, ok := oru.mutation.Kind(); ok {
 		_spec.SetField(organizationrole.FieldKind, field.TypeEnum, value)
 	}
@@ -241,6 +304,53 @@ type OrganizationRoleUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *OrganizationRoleMutation
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (oruo *OrganizationRoleUpdateOne) SetUpdatedBy(i int) *OrganizationRoleUpdateOne {
+	oruo.mutation.ResetUpdatedBy()
+	oruo.mutation.SetUpdatedBy(i)
+	return oruo
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (oruo *OrganizationRoleUpdateOne) SetNillableUpdatedBy(i *int) *OrganizationRoleUpdateOne {
+	if i != nil {
+		oruo.SetUpdatedBy(*i)
+	}
+	return oruo
+}
+
+// AddUpdatedBy adds i to the "updated_by" field.
+func (oruo *OrganizationRoleUpdateOne) AddUpdatedBy(i int) *OrganizationRoleUpdateOne {
+	oruo.mutation.AddUpdatedBy(i)
+	return oruo
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (oruo *OrganizationRoleUpdateOne) ClearUpdatedBy() *OrganizationRoleUpdateOne {
+	oruo.mutation.ClearUpdatedBy()
+	return oruo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (oruo *OrganizationRoleUpdateOne) SetUpdatedAt(t time.Time) *OrganizationRoleUpdateOne {
+	oruo.mutation.SetUpdatedAt(t)
+	return oruo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (oruo *OrganizationRoleUpdateOne) SetNillableUpdatedAt(t *time.Time) *OrganizationRoleUpdateOne {
+	if t != nil {
+		oruo.SetUpdatedAt(*t)
+	}
+	return oruo
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (oruo *OrganizationRoleUpdateOne) ClearUpdatedAt() *OrganizationRoleUpdateOne {
+	oruo.mutation.ClearUpdatedAt()
+	return oruo
 }
 
 // SetOrgID sets the "org_id" field.
@@ -411,6 +521,21 @@ func (oruo *OrganizationRoleUpdateOne) sqlSave(ctx context.Context) (_node *Orga
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := oruo.mutation.UpdatedBy(); ok {
+		_spec.SetField(organizationrole.FieldUpdatedBy, field.TypeInt, value)
+	}
+	if value, ok := oruo.mutation.AddedUpdatedBy(); ok {
+		_spec.AddField(organizationrole.FieldUpdatedBy, field.TypeInt, value)
+	}
+	if oruo.mutation.UpdatedByCleared() {
+		_spec.ClearField(organizationrole.FieldUpdatedBy, field.TypeInt)
+	}
+	if value, ok := oruo.mutation.UpdatedAt(); ok {
+		_spec.SetField(organizationrole.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if oruo.mutation.UpdatedAtCleared() {
+		_spec.ClearField(organizationrole.FieldUpdatedAt, field.TypeTime)
 	}
 	if value, ok := oruo.mutation.Kind(); ok {
 		_spec.SetField(organizationrole.FieldKind, field.TypeEnum, value)

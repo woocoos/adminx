@@ -963,6 +963,89 @@ func (o *OrganizationQuery) collectField(ctx context.Context, op *graphql.Operat
 			o.WithNamedPermissions(alias, func(wq *PermissionQuery) {
 				*wq = *query
 			})
+		case "policies":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&PermissionPolicyClient{config: o.config}).Query()
+			)
+			args := newPermissionPolicyPaginateArgs(fieldArgs(ctx, nil, path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newPermissionPolicyPager(args.opts)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					o.loadTotal = append(o.loadTotal, func(ctx context.Context, nodes []*Organization) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"org_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							s.Where(sql.InValues(organization.PoliciesColumn, ids...))
+						})
+						if err := query.GroupBy(organization.PoliciesColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[3] == nil {
+								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[3][alias] = n
+						}
+						return nil
+					})
+				} else {
+					o.loadTotal = append(o.loadTotal, func(_ context.Context, nodes []*Organization) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.Policies)
+							if nodes[i].Edges.totalCount[3] == nil {
+								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[3][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+
+			query = pager.applyCursors(query, args.after, args.before)
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				modify := limitRows(organization.PoliciesColumn, limit, pager.orderExpr(args.last != nil))
+				query.modifiers = append(query.modifiers, modify)
+			} else {
+				query = pager.applyOrder(query, args.last != nil)
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
+					return err
+				}
+			}
+			o.WithNamedPolicies(alias, func(wq *PermissionPolicyQuery) {
+				*wq = *query
+			})
 		case "apps":
 			var (
 				alias = field.Alias
@@ -1010,10 +1093,10 @@ func (o *OrganizationQuery) collectField(ctx context.Context, op *graphql.Operat
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[3] == nil {
-								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							if nodes[i].Edges.totalCount[4] == nil {
+								nodes[i].Edges.totalCount[4] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[3][alias] = n
+							nodes[i].Edges.totalCount[4][alias] = n
 						}
 						return nil
 					})
@@ -1021,10 +1104,10 @@ func (o *OrganizationQuery) collectField(ctx context.Context, op *graphql.Operat
 					o.loadTotal = append(o.loadTotal, func(_ context.Context, nodes []*Organization) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Apps)
-							if nodes[i].Edges.totalCount[3] == nil {
-								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							if nodes[i].Edges.totalCount[4] == nil {
+								nodes[i].Edges.totalCount[4] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[3][alias] = n
+							nodes[i].Edges.totalCount[4][alias] = n
 						}
 						return nil
 					})
@@ -1170,8 +1253,112 @@ func newPermissionPaginateArgs(rv map[string]interface{}) *permissionPaginateArg
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &PermissionOrder{Field: &PermissionOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithPermissionOrder(order))
+			}
+		case *PermissionOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithPermissionOrder(v))
+			}
+		}
+	}
 	if v, ok := rv[whereField].(*PermissionWhereInput); ok {
 		args.opts = append(args.opts, WithPermissionFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (pp *PermissionPolicyQuery) CollectFields(ctx context.Context, satisfies ...string) (*PermissionPolicyQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return pp, nil
+	}
+	if err := pp.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return pp, nil
+}
+
+func (pp *PermissionPolicyQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "organization":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&OrganizationClient{config: pp.config}).Query()
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			pp.withOrganization = query
+		}
+	}
+	return nil
+}
+
+type permissionpolicyPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []PermissionPolicyPaginateOption
+}
+
+func newPermissionPolicyPaginateArgs(rv map[string]interface{}) *permissionpolicyPaginateArgs {
+	args := &permissionpolicyPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &PermissionPolicyOrder{Field: &PermissionPolicyOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithPermissionPolicyOrder(order))
+			}
+		case *PermissionPolicyOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithPermissionPolicyOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*PermissionPolicyWhereInput); ok {
+		args.opts = append(args.opts, WithPermissionPolicyFilter(v.Filter))
 	}
 	return args
 }

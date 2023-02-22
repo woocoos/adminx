@@ -1208,6 +1208,33 @@ func HasPermissionsWith(preds ...predicate.Permission) predicate.Organization {
 	})
 }
 
+// HasPolicies applies the HasEdge predicate on the "policies" edge.
+func HasPolicies() predicate.Organization {
+	return predicate.Organization(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PoliciesTable, PoliciesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPoliciesWith applies the HasEdge predicate on the "policies" edge with a given conditions (other predicates).
+func HasPoliciesWith(preds ...predicate.PermissionPolicy) predicate.Organization {
+	return predicate.Organization(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PoliciesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PoliciesTable, PoliciesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasApps applies the HasEdge predicate on the "apps" edge.
 func HasApps() predicate.Organization {
 	return predicate.Organization(func(s *sql.Selector) {

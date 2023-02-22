@@ -5,27 +5,35 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
-// OrganizationPolicy 组织中的策略.基本包括来源于应用初始化的策略和组织自定义的策略.
+// PermissionPolicy 组织中的策略.基本包括来源于应用初始化的策略和组织自定义的策略.
 //
 // 在策略制定UI时,原则上策略应该对应一个应用,但是也可以是自定义策略.
-type OrganizationPolicy struct {
+type PermissionPolicy struct {
 	ent.Schema
 }
 
-func (OrganizationPolicy) Annotations() []schema.Annotation {
+func (PermissionPolicy) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{Table: "organization_policy"},
-		entgql.Skip(entgql.SkipType),
+		entgql.RelayConnection(),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }
 
+func (PermissionPolicy) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		SnowFlakeID{},
+		AuditMixin{},
+	}
+}
+
 // Fields of the OrganizationPolicy.
-func (OrganizationPolicy) Fields() []ent.Field {
+func (PermissionPolicy) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("org_id").Comment("组织ID"),
 		field.Int("app_id").Optional().Comment("所属应用").Annotations(entgql.Skip(entgql.SkipAll)),
@@ -37,6 +45,8 @@ func (OrganizationPolicy) Fields() []ent.Field {
 }
 
 // Edges of the OrganizationPolicy.
-func (OrganizationPolicy) Edges() []ent.Edge {
-	return nil
+func (PermissionPolicy) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("organization", Organization.Type).Ref("policies").Unique().Required().Field("org_id"),
+	}
 }

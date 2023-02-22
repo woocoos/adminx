@@ -498,6 +498,8 @@ func (ec *executionContext) fieldContext_Mutation_enableDirectory(ctx context.Co
 				return ec.fieldContext_Organization_children(ctx, field)
 			case "permissions":
 				return ec.fieldContext_Organization_permissions(ctx, field)
+			case "policies":
+				return ec.fieldContext_Organization_policies(ctx, field)
 			case "apps":
 				return ec.fieldContext_Organization_apps(ctx, field)
 			}
@@ -593,6 +595,8 @@ func (ec *executionContext) fieldContext_Mutation_createOrganization(ctx context
 				return ec.fieldContext_Organization_children(ctx, field)
 			case "permissions":
 				return ec.fieldContext_Organization_permissions(ctx, field)
+			case "policies":
+				return ec.fieldContext_Organization_policies(ctx, field)
 			case "apps":
 				return ec.fieldContext_Organization_apps(ctx, field)
 			}
@@ -688,6 +692,8 @@ func (ec *executionContext) fieldContext_Mutation_updateOrganization(ctx context
 				return ec.fieldContext_Organization_children(ctx, field)
 			case "permissions":
 				return ec.fieldContext_Organization_permissions(ctx, field)
+			case "policies":
+				return ec.fieldContext_Organization_policies(ctx, field)
 			case "apps":
 				return ec.fieldContext_Organization_apps(ctx, field)
 			}
