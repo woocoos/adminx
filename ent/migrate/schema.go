@@ -350,8 +350,8 @@ var (
 			},
 		},
 	}
-	// PermissionsColumns holds the columns for the "permissions" table.
-	PermissionsColumns = []*schema.Column{
+	// PermissionColumns holds the columns for the "permission" table.
+	PermissionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, SchemaType: map[string]string{"mysql": "bigint"}},
 		{Name: "created_by", Type: field.TypeInt},
 		{Name: "created_at", Type: field.TypeTime},
@@ -362,24 +362,25 @@ var (
 		{Name: "org_policy_id", Type: field.TypeInt},
 		{Name: "start_at", Type: field.TypeTime, Nullable: true},
 		{Name: "end_at", Type: field.TypeTime, Nullable: true},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Enums: []string{"active", "inactive", "processing"}},
 		{Name: "org_id", Type: field.TypeInt, SchemaType: map[string]string{"mysql": "bigint"}},
 		{Name: "user_id", Type: field.TypeInt, Nullable: true, SchemaType: map[string]string{"mysql": "bigint"}},
 	}
-	// PermissionsTable holds the schema information for the "permissions" table.
-	PermissionsTable = &schema.Table{
-		Name:       "permissions",
-		Columns:    PermissionsColumns,
-		PrimaryKey: []*schema.Column{PermissionsColumns[0]},
+	// PermissionTable holds the schema information for the "permission" table.
+	PermissionTable = &schema.Table{
+		Name:       "permission",
+		Columns:    PermissionColumns,
+		PrimaryKey: []*schema.Column{PermissionColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "permissions_organization_permissions",
-				Columns:    []*schema.Column{PermissionsColumns[10]},
+				Symbol:     "permission_organization_permissions",
+				Columns:    []*schema.Column{PermissionColumns[11]},
 				RefColumns: []*schema.Column{OrganizationColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "permissions_user_user",
-				Columns:    []*schema.Column{PermissionsColumns[11]},
+				Symbol:     "permission_user_user",
+				Columns:    []*schema.Column{PermissionColumns[12]},
 				RefColumns: []*schema.Column{UserColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -566,7 +567,7 @@ var (
 		OrganizationAppTable,
 		OrganizationRoleTable,
 		OrganizationUserTable,
-		PermissionsTable,
+		PermissionTable,
 		OrganizationPolicyTable,
 		UserTable,
 		UserDeviceTable,
@@ -626,8 +627,11 @@ func init() {
 	OrganizationUserTable.Annotation = &entsql.Annotation{
 		Table: "organization_user",
 	}
-	PermissionsTable.ForeignKeys[0].RefTable = OrganizationTable
-	PermissionsTable.ForeignKeys[1].RefTable = UserTable
+	PermissionTable.ForeignKeys[0].RefTable = OrganizationTable
+	PermissionTable.ForeignKeys[1].RefTable = UserTable
+	PermissionTable.Annotation = &entsql.Annotation{
+		Table: "permission",
+	}
 	OrganizationPolicyTable.ForeignKeys[0].RefTable = OrganizationTable
 	OrganizationPolicyTable.Annotation = &entsql.Annotation{
 		Table: "organization_policy",

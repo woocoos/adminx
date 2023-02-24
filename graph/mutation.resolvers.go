@@ -143,6 +143,11 @@ func (r *mutationResolver) RevokeOrganizationAppPolicy(ctx context.Context, orgI
 	panic(fmt.Errorf("not implemented: RevokeOrganizationAppPolicy - revokeOrganizationAppPolicy"))
 }
 
+// Grant is the resolver for the grant field.
+func (r *mutationResolver) Grant(ctx context.Context, input ent.CreatePermissionInput) (*ent.Permission, error) {
+	return r.resource.Grant(ctx, input)
+}
+
 // LoginProfile is the resolver for the loginProfile field.
 func (r *createUserInputResolver) LoginProfile(ctx context.Context, obj *ent.CreateUserInput, data *ent.CreateUserLoginProfileInput) error {
 	if data != nil {

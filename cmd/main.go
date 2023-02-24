@@ -10,22 +10,21 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/XSAM/otelsql"
 	"github.com/tsingsun/woocoo"
+	"github.com/tsingsun/woocoo/contrib/gql"
 	"github.com/tsingsun/woocoo/contrib/telemetry"
 	"github.com/tsingsun/woocoo/contrib/telemetry/otelweb"
-	"github.com/tsingsun/woocoo/pkg/authz"
 	"github.com/tsingsun/woocoo/pkg/conf"
 	"github.com/tsingsun/woocoo/pkg/log"
 	"github.com/tsingsun/woocoo/pkg/store/sqlx"
 	"github.com/tsingsun/woocoo/web"
-	"github.com/tsingsun/woocoo/web/handler/gql"
+	"github.com/tsingsun/woocoo/web/handler/authz"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/woocoos/adminx/ent"
 	"github.com/woocoos/adminx/graph"
+	"github.com/woocoos/adminx/security"
 	"github.com/woocoos/adminx/service/resource"
 	"github.com/woocoos/adminx/service/snowflake"
 	"github.com/woocoos/adminx/service/ucenter"
-	entadapter "github.com/woocoos/casbin-ent-adapter"
-	entadapterent "github.com/woocoos/casbin-ent-adapter/ent"
 	"go.opentelemetry.io/contrib/propagators/b3"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"time"
@@ -36,7 +35,6 @@ import (
 
 var (
 	portalClient  *ent.Client
-	casbinClient  *entadapterent.Client
 	entCacheLevel = 0
 	entCacheTTL   = time.Minute
 )
@@ -59,7 +57,6 @@ func main() {
 
 	defer func() {
 		portalClient.Close()
-		casbinClient.Close()
 	}()
 	if err := app.Run(); err != nil {
 		log.Fatal(err)
@@ -75,6 +72,7 @@ func newWebServer(cnf *conf.AppConfiguration) *web.Server {
 		web.WithGracefulStop(),
 		web.RegisterMiddleware(gql.New()),
 		web.RegisterMiddleware(otelweb.NewMiddleware()),
+		web.RegisterMiddleware(authz.New()),
 	)
 	client, err := open(conf.Global(), "store.portal")
 	if err != nil {
@@ -151,16 +149,10 @@ func open(cnf *conf.AppConfiguration, storekey string) (*ent.Client, error) {
 
 func buildCashbin(cnf *conf.AppConfiguration) {
 	drv := buildEntDriver(cnf, "store.portal")
-	casbinClient = entadapterent.NewClient(entadapterent.Driver(drv))
-	adp, err := entadapter.NewAdapterWithClient(casbinClient)
+	err := security.SetAuthorization(cnf.Sub("authz"), drv)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = casbinClient.Schema.Create(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	authz.SetAdapter(adp)
 }
 
 func useContextCache(server *handler.Server) {

@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"github.com/99designs/gqlgen/graphql"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 const (
@@ -38,21 +40,23 @@ const (
 	FieldStartAt = "start_at"
 	// FieldEndAt holds the string denoting the end_at field in the database.
 	FieldEndAt = "end_at"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// EdgeOrganization holds the string denoting the organization edge name in mutations.
 	EdgeOrganization = "organization"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the permission in the database.
-	Table = "permissions"
+	Table = "permission"
 	// OrganizationTable is the table that holds the organization relation/edge.
-	OrganizationTable = "permissions"
+	OrganizationTable = "permission"
 	// OrganizationInverseTable is the table name for the Organization entity.
 	// It exists in this package in order to avoid circular dependency with the "organization" package.
 	OrganizationInverseTable = "organization"
 	// OrganizationColumn is the table column denoting the organization relation/edge.
 	OrganizationColumn = "org_id"
 	// UserTable is the table that holds the user relation/edge.
-	UserTable = "permissions"
+	UserTable = "permission"
 	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "user"
@@ -74,6 +78,7 @@ var Columns = []string{
 	FieldOrgPolicyID,
 	FieldStartAt,
 	FieldEndAt,
+	FieldStatus,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -122,6 +127,16 @@ func PrincipalKindValidator(pk PrincipalKind) error {
 	}
 }
 
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s types.SimpleStatus) error {
+	switch s.String() {
+	case "active", "inactive", "processing":
+		return nil
+	default:
+		return fmt.Errorf("permission: invalid enum value for status field: %q", s)
+	}
+}
+
 // MarshalGQL implements graphql.Marshaler interface.
 func (e PrincipalKind) MarshalGQL(w io.Writer) {
 	io.WriteString(w, strconv.Quote(e.String()))
@@ -139,3 +154,10 @@ func (e *PrincipalKind) UnmarshalGQL(val interface{}) error {
 	}
 	return nil
 }
+
+var (
+	// types.SimpleStatus must implement graphql.Marshaler.
+	_ graphql.Marshaler = (*types.SimpleStatus)(nil)
+	// types.SimpleStatus must implement graphql.Unmarshaler.
+	_ graphql.Unmarshaler = (*types.SimpleStatus)(nil)
+)

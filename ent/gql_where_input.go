@@ -3604,9 +3604,29 @@ type OrganizationWhereInput struct {
 	HasOwner     *bool             `json:"hasOwner,omitempty"`
 	HasOwnerWith []*UserWhereInput `json:"hasOwnerWith,omitempty"`
 
+	// "users" edge predicates.
+	HasUsers     *bool             `json:"hasUsers,omitempty"`
+	HasUsersWith []*UserWhereInput `json:"hasUsersWith,omitempty"`
+
+	// "rolesAndGroups" edge predicates.
+	HasRolesAndGroups     *bool                         `json:"hasRolesAndGroups,omitempty"`
+	HasRolesAndGroupsWith []*OrganizationRoleWhereInput `json:"hasRolesAndGroupsWith,omitempty"`
+
+	// "permissions" edge predicates.
+	HasPermissions     *bool                   `json:"hasPermissions,omitempty"`
+	HasPermissionsWith []*PermissionWhereInput `json:"hasPermissionsWith,omitempty"`
+
+	// "policies" edge predicates.
+	HasPolicies     *bool                         `json:"hasPolicies,omitempty"`
+	HasPoliciesWith []*PermissionPolicyWhereInput `json:"hasPoliciesWith,omitempty"`
+
 	// "apps" edge predicates.
 	HasApps     *bool            `json:"hasApps,omitempty"`
 	HasAppsWith []*AppWhereInput `json:"hasAppsWith,omitempty"`
+
+	// "organization_user" edge predicates.
+	HasOrganizationUser     *bool                         `json:"hasOrganizationUser,omitempty"`
+	HasOrganizationUserWith []*OrganizationUserWhereInput `json:"hasOrganizationUserWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -4209,6 +4229,78 @@ func (i *OrganizationWhereInput) P() (predicate.Organization, error) {
 		}
 		predicates = append(predicates, organization.HasOwnerWith(with...))
 	}
+	if i.HasUsers != nil {
+		p := organization.HasUsers()
+		if !*i.HasUsers {
+			p = organization.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasUsersWith) > 0 {
+		with := make([]predicate.User, 0, len(i.HasUsersWith))
+		for _, w := range i.HasUsersWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasUsersWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, organization.HasUsersWith(with...))
+	}
+	if i.HasRolesAndGroups != nil {
+		p := organization.HasRolesAndGroups()
+		if !*i.HasRolesAndGroups {
+			p = organization.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasRolesAndGroupsWith) > 0 {
+		with := make([]predicate.OrganizationRole, 0, len(i.HasRolesAndGroupsWith))
+		for _, w := range i.HasRolesAndGroupsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasRolesAndGroupsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, organization.HasRolesAndGroupsWith(with...))
+	}
+	if i.HasPermissions != nil {
+		p := organization.HasPermissions()
+		if !*i.HasPermissions {
+			p = organization.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasPermissionsWith) > 0 {
+		with := make([]predicate.Permission, 0, len(i.HasPermissionsWith))
+		for _, w := range i.HasPermissionsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasPermissionsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, organization.HasPermissionsWith(with...))
+	}
+	if i.HasPolicies != nil {
+		p := organization.HasPolicies()
+		if !*i.HasPolicies {
+			p = organization.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasPoliciesWith) > 0 {
+		with := make([]predicate.PermissionPolicy, 0, len(i.HasPoliciesWith))
+		for _, w := range i.HasPoliciesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasPoliciesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, organization.HasPoliciesWith(with...))
+	}
 	if i.HasApps != nil {
 		p := organization.HasApps()
 		if !*i.HasApps {
@@ -4226,6 +4318,24 @@ func (i *OrganizationWhereInput) P() (predicate.Organization, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, organization.HasAppsWith(with...))
+	}
+	if i.HasOrganizationUser != nil {
+		p := organization.HasOrganizationUser()
+		if !*i.HasOrganizationUser {
+			p = organization.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasOrganizationUserWith) > 0 {
+		with := make([]predicate.OrganizationUser, 0, len(i.HasOrganizationUserWith))
+		for _, w := range i.HasOrganizationUserWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasOrganizationUserWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, organization.HasOrganizationUserWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -5096,6 +5206,14 @@ type PermissionWhereInput struct {
 	EndAtIsNil  bool        `json:"endAtIsNil,omitempty"`
 	EndAtNotNil bool        `json:"endAtNotNil,omitempty"`
 
+	// "status" field predicates.
+	Status       *types.SimpleStatus  `json:"status,omitempty"`
+	StatusNEQ    *types.SimpleStatus  `json:"statusNEQ,omitempty"`
+	StatusIn     []types.SimpleStatus `json:"statusIn,omitempty"`
+	StatusNotIn  []types.SimpleStatus `json:"statusNotIn,omitempty"`
+	StatusIsNil  bool                 `json:"statusIsNil,omitempty"`
+	StatusNotNil bool                 `json:"statusNotNil,omitempty"`
+
 	// "organization" edge predicates.
 	HasOrganization     *bool                     `json:"hasOrganization,omitempty"`
 	HasOrganizationWith []*OrganizationWhereInput `json:"hasOrganizationWith,omitempty"`
@@ -5463,6 +5581,24 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 	}
 	if i.EndAtNotNil {
 		predicates = append(predicates, permission.EndAtNotNil())
+	}
+	if i.Status != nil {
+		predicates = append(predicates, permission.StatusEQ(*i.Status))
+	}
+	if i.StatusNEQ != nil {
+		predicates = append(predicates, permission.StatusNEQ(*i.StatusNEQ))
+	}
+	if len(i.StatusIn) > 0 {
+		predicates = append(predicates, permission.StatusIn(i.StatusIn...))
+	}
+	if len(i.StatusNotIn) > 0 {
+		predicates = append(predicates, permission.StatusNotIn(i.StatusNotIn...))
+	}
+	if i.StatusIsNil {
+		predicates = append(predicates, permission.StatusIsNil())
+	}
+	if i.StatusNotNil {
+		predicates = append(predicates, permission.StatusNotNil())
 	}
 
 	if i.HasOrganization != nil {
@@ -6124,6 +6260,10 @@ type UserWhereInput struct {
 	// "devices" edge predicates.
 	HasDevices     *bool                   `json:"hasDevices,omitempty"`
 	HasDevicesWith []*UserDeviceWhereInput `json:"hasDevicesWith,omitempty"`
+
+	// "permissions" edge predicates.
+	HasPermissions     *bool                   `json:"hasPermissions,omitempty"`
+	HasPermissionsWith []*PermissionWhereInput `json:"hasPermissionsWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -6578,6 +6718,24 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, user.HasDevicesWith(with...))
+	}
+	if i.HasPermissions != nil {
+		p := user.HasPermissions()
+		if !*i.HasPermissions {
+			p = user.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasPermissionsWith) > 0 {
+		with := make([]predicate.Permission, 0, len(i.HasPermissionsWith))
+		for _, w := range i.HasPermissionsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasPermissionsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, user.HasPermissionsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

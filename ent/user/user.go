@@ -92,10 +92,10 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "organization" package.
 	OrganizationsInverseTable = "organization"
 	// PermissionsTable is the table that holds the permissions relation/edge.
-	PermissionsTable = "permissions"
+	PermissionsTable = "permission"
 	// PermissionsInverseTable is the table name for the Permission entity.
 	// It exists in this package in order to avoid circular dependency with the "permission" package.
-	PermissionsInverseTable = "permissions"
+	PermissionsInverseTable = "permission"
 	// PermissionsColumn is the table column denoting the permissions relation/edge.
 	PermissionsColumn = "user_id"
 	// OrganizationUserTable is the table that holds the organization_user relation/edge.

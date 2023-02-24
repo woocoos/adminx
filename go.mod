@@ -12,8 +12,8 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/stretchr/testify v1.8.1
-	github.com/tsingsun/woocoo v0.2.2
-	github.com/tsingsun/woocoo/contrib/telemetry v0.1.1
+	github.com/tsingsun/woocoo v0.2.3-0.20230224054419-f116aada9120
+	github.com/tsingsun/woocoo/contrib/telemetry v0.1.2-0.20230224062232-9d381b0cf020
 	github.com/vektah/gqlparser/v2 v2.5.1
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	github.com/woocoos/casbin-ent-adapter v0.0.0-20230208061537-0374390b7bca
@@ -30,7 +30,7 @@ require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/bytedance/sonic v1.8.0 // indirect
-	github.com/casbin/casbin/v2 v2.61.1 // indirect
+	github.com/casbin/casbin/v2 v2.63.0 // indirect
 	github.com/casbin/redis-watcher/v2 v2.3.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -74,6 +74,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230224063419-6d0ba02ebe28 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.9 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
@@ -103,6 +104,6 @@ require (
 	google.golang.org/genproto v0.0.0-20230131230820-1c016267d619 // indirect
 	google.golang.org/grpc v1.53.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -39,6 +39,8 @@ type Mutation {
     assignOrganizationAppPolicy(orgID:ID!,policyID:ID!): Boolean!
     """取消分配到组织应用策略"""
     revokeOrganizationAppPolicy(orgID:ID!,policyID:ID!): Boolean!
+    """授权"""
+    grant(input: CreatePermissionInput!): Permission
 }
 
 input EnableDirectoryInput {

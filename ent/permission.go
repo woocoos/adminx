@@ -11,6 +11,7 @@ import (
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/user"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // Permission is the model entity for the Permission schema.
@@ -26,7 +27,7 @@ type Permission struct {
 	UpdatedBy int `json:"updated_by,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// 授权组织
+	// 授权的域级组织
 	OrgID int `json:"org_id,omitempty"`
 	// 授权类型:角色,用户
 	PrincipalKind permission.PrincipalKind `json:"principal_kind,omitempty"`
@@ -40,6 +41,8 @@ type Permission struct {
 	StartAt time.Time `json:"start_at,omitempty"`
 	// 生效结束时间
 	EndAt time.Time `json:"end_at,omitempty"`
+	// 状态
+	Status types.SimpleStatus `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PermissionQuery when eager-loading is set.
 	Edges PermissionEdges `json:"edges"`
@@ -91,7 +94,7 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case permission.FieldID, permission.FieldCreatedBy, permission.FieldUpdatedBy, permission.FieldOrgID, permission.FieldUserID, permission.FieldRoleID, permission.FieldOrgPolicyID:
 			values[i] = new(sql.NullInt64)
-		case permission.FieldPrincipalKind:
+		case permission.FieldPrincipalKind, permission.FieldStatus:
 			values[i] = new(sql.NullString)
 		case permission.FieldCreatedAt, permission.FieldUpdatedAt, permission.FieldStartAt, permission.FieldEndAt:
 			values[i] = new(sql.NullTime)
@@ -182,6 +185,12 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pe.EndAt = value.Time
 			}
+		case permission.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				pe.Status = types.SimpleStatus(value.String)
+			}
 		}
 	}
 	return nil
@@ -252,6 +261,9 @@ func (pe *Permission) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("end_at=")
 	builder.WriteString(pe.EndAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Status))
 	builder.WriteByte(')')
 	return builder.String()
 }

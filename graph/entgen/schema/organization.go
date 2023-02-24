@@ -71,18 +71,17 @@ func (Organization) Fields() []ent.Field {
 func (Organization) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("children", Organization.Type).
-			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)).
 			From("parent").Unique().Required().Field("parent_id"),
 		edge.To("owner", User.Type).Field("owner_id").Unique().Comment("管理账户").
 			Annotations(entgql.Skip(entgql.SkipType)),
 		edge.To("users", User.Type).Through("organization_user", OrganizationUser.Type).
-			Annotations(entgql.Skip(entgql.SkipAll)).Comment("组织下用户"),
+			Annotations(entgql.RelayConnection()).Comment("组织下用户"),
 		edge.To("rolesAndGroups", OrganizationRole.Type).
-			Annotations(entgql.Skip(entgql.SkipAll)).Comment("组织下角色及用户组"),
+			Annotations(entgql.Skip(entgql.SkipType)).Comment("组织下角色及用户组."),
 		edge.To("permissions", Permission.Type).Comment("组织授权信息").
-			Annotations(entgql.Skip(entgql.SkipWhereInput)),
+			Annotations(entgql.RelayConnection()),
 		edge.To("policies", PermissionPolicy.Type).Comment("组织下权限策略").
-			Annotations(entgql.Skip(entgql.SkipWhereInput), entgql.RelayConnection()),
+			Annotations(entgql.RelayConnection()),
 		edge.To("apps", App.Type).Comment("组织下应用").Through("organization_app", OrganizationApp.Type).
 			Annotations(entgql.RelayConnection()),
 	}

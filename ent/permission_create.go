@@ -13,6 +13,7 @@ import (
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/user"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // PermissionCreate is the builder for creating a Permission entity.
@@ -144,6 +145,20 @@ func (pc *PermissionCreate) SetNillableEndAt(t *time.Time) *PermissionCreate {
 	return pc
 }
 
+// SetStatus sets the "status" field.
+func (pc *PermissionCreate) SetStatus(ts types.SimpleStatus) *PermissionCreate {
+	pc.mutation.SetStatus(ts)
+	return pc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (pc *PermissionCreate) SetNillableStatus(ts *types.SimpleStatus) *PermissionCreate {
+	if ts != nil {
+		pc.SetStatus(*ts)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PermissionCreate) SetID(i int) *PermissionCreate {
 	pc.mutation.SetID(i)
@@ -250,6 +265,11 @@ func (pc *PermissionCreate) check() error {
 	if _, ok := pc.mutation.OrgPolicyID(); !ok {
 		return &ValidationError{Name: "org_policy_id", err: errors.New(`ent: missing required field "Permission.org_policy_id"`)}
 	}
+	if v, ok := pc.mutation.Status(); ok {
+		if err := permission.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Permission.status": %w`, err)}
+		}
+	}
 	if _, ok := pc.mutation.OrganizationID(); !ok {
 		return &ValidationError{Name: "organization", err: errors.New(`ent: missing required edge "Permission.organization"`)}
 	}
@@ -320,6 +340,10 @@ func (pc *PermissionCreate) createSpec() (*Permission, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.EndAt(); ok {
 		_spec.SetField(permission.FieldEndAt, field.TypeTime, value)
 		_node.EndAt = value
+	}
+	if value, ok := pc.mutation.Status(); ok {
+		_spec.SetField(permission.FieldStatus, field.TypeEnum, value)
+		_node.Status = value
 	}
 	if nodes := pc.mutation.OrganizationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

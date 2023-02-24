@@ -232,26 +232,57 @@ func (o *Organization) Children(ctx context.Context) (result []*Organization, er
 	return result, err
 }
 
-func (o *Organization) Permissions(ctx context.Context) (result []*Permission, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = o.NamedPermissions(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = o.Edges.PermissionsOrErr()
+func (o *Organization) Users(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *UserOrder, where *UserWhereInput,
+) (*UserConnection, error) {
+	opts := []UserPaginateOption{
+		WithUserOrder(orderBy),
+		WithUserFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = o.QueryPermissions().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := o.Edges.totalCount[2][alias]
+	if nodes, err := o.NamedUsers(alias); err == nil || hasTotalCount {
+		pager, err := newUserPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &UserConnection{Edges: []*UserEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return o.QueryUsers().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (o *Organization) Policies(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PermissionPolicyOrder,
-) (*PermissionPolicyConnection, error) {
-	opts := []PermissionPolicyPaginateOption{
-		WithPermissionPolicyOrder(orderBy),
+func (o *Organization) Permissions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PermissionOrder, where *PermissionWhereInput,
+) (*PermissionConnection, error) {
+	opts := []PermissionPaginateOption{
+		WithPermissionOrder(orderBy),
+		WithPermissionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := o.Edges.totalCount[3][alias]
+	if nodes, err := o.NamedPermissions(alias); err == nil || hasTotalCount {
+		pager, err := newPermissionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &PermissionConnection{Edges: []*PermissionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return o.QueryPermissions().Paginate(ctx, after, first, before, last, opts...)
+}
+
+func (o *Organization) Policies(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PermissionPolicyOrder, where *PermissionPolicyWhereInput,
+) (*PermissionPolicyConnection, error) {
+	opts := []PermissionPolicyPaginateOption{
+		WithPermissionPolicyOrder(orderBy),
+		WithPermissionPolicyFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := o.Edges.totalCount[4][alias]
 	if nodes, err := o.NamedPolicies(alias); err == nil || hasTotalCount {
 		pager, err := newPermissionPolicyPager(opts)
 		if err != nil {
@@ -272,7 +303,7 @@ func (o *Organization) Apps(
 		WithAppFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := o.Edges.totalCount[4][alias]
+	totalCount, hasTotalCount := o.Edges.totalCount[5][alias]
 	if nodes, err := o.NamedApps(alias); err == nil || hasTotalCount {
 		pager, err := newAppPager(opts)
 		if err != nil {
@@ -351,6 +382,27 @@ func (u *User) Devices(ctx context.Context) (result []*UserDevice, err error) {
 		result, err = u.QueryDevices().All(ctx)
 	}
 	return result, err
+}
+
+func (u *User) Permissions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PermissionOrder, where *PermissionWhereInput,
+) (*PermissionConnection, error) {
+	opts := []PermissionPaginateOption{
+		WithPermissionOrder(orderBy),
+		WithPermissionFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := u.Edges.totalCount[4][alias]
+	if nodes, err := u.NamedPermissions(alias); err == nil || hasTotalCount {
+		pager, err := newPermissionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &PermissionConnection{Edges: []*PermissionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return u.QueryPermissions().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (ud *UserDevice) User(ctx context.Context) (*User, error) {

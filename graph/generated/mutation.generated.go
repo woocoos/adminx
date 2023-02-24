@@ -37,6 +37,7 @@ type MutationResolver interface {
 	RevokeOrganizationApp(ctx context.Context, orgID int, appID int) (bool, error)
 	AssignOrganizationAppPolicy(ctx context.Context, orgID int, policyID int) (bool, error)
 	RevokeOrganizationAppPolicy(ctx context.Context, orgID int, policyID int) (bool, error)
+	Grant(ctx context.Context, input ent.CreatePermissionInput) (*ent.Permission, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -257,6 +258,21 @@ func (ec *executionContext) field_Mutation_enableDirectory_args(ctx context.Cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNEnableDirectoryInput2githubᚗcomᚋwoocoosᚋadminxᚋgraphᚋmodelᚐEnableDirectoryInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_grant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreatePermissionInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreatePermissionInput2githubᚗcomᚋwoocoosᚋadminxᚋentᚐCreatePermissionInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -496,6 +512,8 @@ func (ec *executionContext) fieldContext_Mutation_enableDirectory(ctx context.Co
 				return ec.fieldContext_Organization_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Organization_children(ctx, field)
+			case "users":
+				return ec.fieldContext_Organization_users(ctx, field)
 			case "permissions":
 				return ec.fieldContext_Organization_permissions(ctx, field)
 			case "policies":
@@ -593,6 +611,8 @@ func (ec *executionContext) fieldContext_Mutation_createOrganization(ctx context
 				return ec.fieldContext_Organization_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Organization_children(ctx, field)
+			case "users":
+				return ec.fieldContext_Organization_users(ctx, field)
 			case "permissions":
 				return ec.fieldContext_Organization_permissions(ctx, field)
 			case "policies":
@@ -690,6 +710,8 @@ func (ec *executionContext) fieldContext_Mutation_updateOrganization(ctx context
 				return ec.fieldContext_Organization_parent(ctx, field)
 			case "children":
 				return ec.fieldContext_Organization_children(ctx, field)
+			case "users":
+				return ec.fieldContext_Organization_users(ctx, field)
 			case "permissions":
 				return ec.fieldContext_Organization_permissions(ctx, field)
 			case "policies":
@@ -837,6 +859,8 @@ func (ec *executionContext) fieldContext_Mutation_createOrganizationAccount(ctx 
 				return ec.fieldContext_User_passwords(ctx, field)
 			case "devices":
 				return ec.fieldContext_User_devices(ctx, field)
+			case "permissions":
+				return ec.fieldContext_User_permissions(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -924,6 +948,8 @@ func (ec *executionContext) fieldContext_Mutation_createOrganizationUser(ctx con
 				return ec.fieldContext_User_passwords(ctx, field)
 			case "devices":
 				return ec.fieldContext_User_devices(ctx, field)
+			case "permissions":
+				return ec.fieldContext_User_permissions(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -1011,6 +1037,8 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_User_passwords(ctx, field)
 			case "devices":
 				return ec.fieldContext_User_devices(ctx, field)
+			case "permissions":
+				return ec.fieldContext_User_permissions(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -1894,6 +1922,89 @@ func (ec *executionContext) fieldContext_Mutation_revokeOrganizationAppPolicy(ct
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_grant(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_grant(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Grant(rctx, fc.Args["input"].(ent.CreatePermissionInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Permission)
+	fc.Result = res
+	return ec.marshalOPermission2ᚖgithubᚗcomᚋwoocoosᚋadminxᚋentᚐPermission(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_grant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Permission_id(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Permission_createdBy(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Permission_createdAt(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Permission_updatedBy(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Permission_updatedAt(ctx, field)
+			case "orgID":
+				return ec.fieldContext_Permission_orgID(ctx, field)
+			case "principalKind":
+				return ec.fieldContext_Permission_principalKind(ctx, field)
+			case "userID":
+				return ec.fieldContext_Permission_userID(ctx, field)
+			case "roleID":
+				return ec.fieldContext_Permission_roleID(ctx, field)
+			case "orgPolicyID":
+				return ec.fieldContext_Permission_orgPolicyID(ctx, field)
+			case "startAt":
+				return ec.fieldContext_Permission_startAt(ctx, field)
+			case "endAt":
+				return ec.fieldContext_Permission_endAt(ctx, field)
+			case "status":
+				return ec.fieldContext_Permission_status(ctx, field)
+			case "organization":
+				return ec.fieldContext_Permission_organization(ctx, field)
+			case "user":
+				return ec.fieldContext_Permission_user(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Permission", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_grant_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -2130,6 +2241,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_revokeOrganizationAppPolicy(ctx, field)
+			})
+
+		case "grant":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_grant(ctx, field)
 			})
 
 		default:

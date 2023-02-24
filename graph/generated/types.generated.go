@@ -11,6 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/woocoos/adminx/graph/entgen/types"
+	"github.com/woocoos/adminx/graph/model"
 )
 
 // region    ************************** generated!.gotpl **************************
@@ -197,6 +198,50 @@ func (ec *executionContext) fieldContext_PolicyRule_conditions(ctx context.Conte
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
+
+func (ec *executionContext) unmarshalInputGrantInput(ctx context.Context, obj interface{}) (model.GrantInput, error) {
+	var it model.GrantInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"principal", "orgScope", "policyID"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "principal":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("principal"))
+			it.Principal, err = ec.unmarshalNGID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orgScope":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orgScope"))
+			it.OrgScope, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "policyID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policyID"))
+			it.PolicyID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
 
 func (ec *executionContext) unmarshalInputPolicyRuleInput(ctx context.Context, obj interface{}) (types.PolicyRule, error) {
 	var it types.PolicyRule

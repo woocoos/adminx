@@ -4,12 +4,18 @@ import (
 	"context"
 	"entgo.io/ent/dialect/sql"
 	"fmt"
+	"github.com/tsingsun/woocoo/pkg/log"
 	"github.com/woocoos/adminx/ent"
 	"github.com/woocoos/adminx/ent/app"
 	"github.com/woocoos/adminx/ent/apppolicy"
 	"github.com/woocoos/adminx/ent/approle"
 	"github.com/woocoos/adminx/ent/organization"
 	"github.com/woocoos/adminx/ent/organizationrole"
+	"github.com/woocoos/adminx/ent/permission"
+	"github.com/woocoos/adminx/ent/permissionpolicy"
+	"github.com/woocoos/adminx/graph/entgen/types"
+	"github.com/woocoos/adminx/security"
+	"strconv"
 	"strings"
 )
 
@@ -42,11 +48,12 @@ func (s *Service) CreateAppPolicies(ctx context.Context, input []*ent.CreateAppP
 
 // AssignOrganizationApp 分配应用到根组织下. 如: 新账户创建时, 根账户分配已有应用给子账户(需要验证根用户是否该应用权限,可在外层验证).
 func (s *Service) AssignOrganizationApp(ctx context.Context, orgID int, appID int) (bool, error) {
-	org := s.Client.Organization.Query().Where(organization.ID(orgID), organization.KindEQ(organization.KindRoot),
+	c := ent.FromContext(ctx)
+	org := c.Organization.Query().Where(organization.ID(orgID), organization.KindEQ(organization.KindRoot),
 		organization.Not(organization.HasAppsWith(func(selector *sql.Selector) {
 			selector.Where(sql.EQ(app.FieldID, appID))
 		}))).OnlyX(ctx)
-	ap := s.Client.App.Query().Where(app.ID(appID)).
+	ap := c.App.Query().Where(app.ID(appID)).
 		WithPolicies(func(query *ent.AppPolicyQuery) {
 			query.Where(apppolicy.AutoGrant(true)).Unique(true).
 				WithRoles(func(query *ent.AppRoleQuery) {
@@ -63,7 +70,7 @@ func (s *Service) AssignOrganizationApp(ctx context.Context, orgID int, appID in
 	if err != nil {
 		return false, err
 	}
-	c := ent.FromContext(ctx)
+
 	pbk := make([]*ent.PermissionPolicyCreate, len(ps))
 	for i, p := range ps {
 		pbk[i] = c.PermissionPolicy.Create().SetOrgID(org.ID).SetAppID(ap.ID).SetAppPolicyID(p.ID).
@@ -94,4 +101,59 @@ func (s *Service) assignAppPolicyToOrganization(ctx context.Context, orgID int, 
 	return c.PermissionPolicy.Create().SetOrgID(orgID).SetAppID(pm.AppID).SetAppPolicyID(pm.ID).
 		SetComments(pm.Comments).
 		Save(ctx)
+}
+
+// Grant 给用户或角色授权.
+//
+// 此时先保证permission数据保存,如果cashbin操作失败,返回状态失败,再需要通过权限管理界面再次激活..
+func (s *Service) Grant(ctx context.Context, input ent.CreatePermissionInput) (*ent.Permission, error) {
+	c := ent.FromContext(ctx)
+	domain, err := s.GetOrgDomain(ctx, input.OrganizationID)
+	if err != nil {
+		return nil, err
+	}
+	pid := 0
+	builder := c.Permission.Create().SetOrgID(input.OrganizationID).SetOrgPolicyID(input.OrgPolicyID).
+		SetStatus(types.SimpleStatusInactive)
+	switch input.PrincipalKind {
+	case "user":
+		if input.UserID == nil {
+			return nil, fmt.Errorf("user id is required")
+		}
+		pid = *input.UserID
+		builder.SetUserID(pid)
+		builder.SetPrincipalKind(permission.PrincipalKindUser)
+	case "role":
+		if input.RoleID == nil {
+			return nil, fmt.Errorf("role id is required")
+		}
+		pid = *input.RoleID
+		builder.SetRoleID(pid)
+		builder.SetPrincipalKind(permission.PrincipalKindRole)
+	default:
+		return nil, fmt.Errorf("grant type %s not support", input.PrincipalKind)
+	}
+	// save first
+	row, err := builder.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	policy := c.PermissionPolicy.Query().Where(permissionpolicy.ID(input.OrgPolicyID)).Select(permissionpolicy.FieldRules).OnlyX(ctx)
+	err = security.GrantPolicy(policy.Rules, strconv.Itoa(pid), input.PrincipalKind.String(), domain)
+	if err != nil {
+		log.Errorf("grant policy failed,policy is inactive: %w", err)
+		return row, nil
+	}
+	row.Status = types.SimpleStatusActive
+	return c.Permission.UpdateOneID(row.ID).SetStatus(types.SimpleStatusActive).Save(ctx)
+}
+
+// GetOrgDomain 获取组织域名.orgID为根组织.
+func (s *Service) GetOrgDomain(ctx context.Context, orgID int) (string, error) {
+	c := ent.FromContext(ctx)
+	org := c.Organization.Query().Where(organization.ID(orgID)).Select(organization.FieldDomain).OnlyX(ctx)
+	if org.Domain == "" {
+		return "", fmt.Errorf("organization %d domain is empty", orgID)
+	}
+	return org.Domain, nil
 }

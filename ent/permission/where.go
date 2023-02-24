@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/woocoos/adminx/ent/predicate"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // ID filters vertices based on their ID field.
@@ -543,6 +544,46 @@ func EndAtIsNil() predicate.Permission {
 // EndAtNotNil applies the NotNil predicate on the "end_at" field.
 func EndAtNotNil() predicate.Permission {
 	return predicate.Permission(sql.FieldNotNull(FieldEndAt))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v types.SimpleStatus) predicate.Permission {
+	vc := v
+	return predicate.Permission(sql.FieldEQ(FieldStatus, vc))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v types.SimpleStatus) predicate.Permission {
+	vc := v
+	return predicate.Permission(sql.FieldNEQ(FieldStatus, vc))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...types.SimpleStatus) predicate.Permission {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Permission(sql.FieldIn(FieldStatus, v...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...types.SimpleStatus) predicate.Permission {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Permission(sql.FieldNotIn(FieldStatus, v...))
+}
+
+// StatusIsNil applies the IsNil predicate on the "status" field.
+func StatusIsNil() predicate.Permission {
+	return predicate.Permission(sql.FieldIsNull(FieldStatus))
+}
+
+// StatusNotNil applies the NotNil predicate on the "status" field.
+func StatusNotNil() predicate.Permission {
+	return predicate.Permission(sql.FieldNotNull(FieldStatus))
 }
 
 // HasOrganization applies the HasEdge predicate on the "organization" edge.

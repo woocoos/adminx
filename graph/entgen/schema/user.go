@@ -70,6 +70,6 @@ func (User) Edges() []ent.Edge {
 			Through("organization_user", OrganizationUser.Type).Annotations(entgql.Skip(entgql.SkipAll)),
 		//edge.From("directory", Organization.Type).Ref("owner").Unique().Comment("目录"),
 		edge.From("permissions", Permission.Type).Ref("user").Comment("用户权限").
-			Annotations(entgql.Skip(entgql.SkipAll)),
+			Annotations(entgql.RelayConnection()),
 	}
 }

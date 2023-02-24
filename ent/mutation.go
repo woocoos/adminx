@@ -12868,6 +12868,7 @@ type PermissionMutation struct {
 	addorg_policy_id    *int
 	start_at            *time.Time
 	end_at              *time.Time
+	status              *types.SimpleStatus
 	clearedFields       map[string]struct{}
 	organization        *int
 	clearedorganization bool
@@ -13538,6 +13539,55 @@ func (m *PermissionMutation) ResetEndAt() {
 	delete(m.clearedFields, permission.FieldEndAt)
 }
 
+// SetStatus sets the "status" field.
+func (m *PermissionMutation) SetStatus(ts types.SimpleStatus) {
+	m.status = &ts
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *PermissionMutation) Status() (r types.SimpleStatus, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Permission entity.
+// If the Permission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionMutation) OldStatus(ctx context.Context) (v types.SimpleStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ClearStatus clears the value of the "status" field.
+func (m *PermissionMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[permission.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *PermissionMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[permission.FieldStatus]
+	return ok
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *PermissionMutation) ResetStatus() {
+	m.status = nil
+	delete(m.clearedFields, permission.FieldStatus)
+}
+
 // SetOrganizationID sets the "organization" edge to the Organization entity by id.
 func (m *PermissionMutation) SetOrganizationID(id int) {
 	m.organization = &id
@@ -13637,7 +13687,7 @@ func (m *PermissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermissionMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_by != nil {
 		fields = append(fields, permission.FieldCreatedBy)
 	}
@@ -13671,6 +13721,9 @@ func (m *PermissionMutation) Fields() []string {
 	if m.end_at != nil {
 		fields = append(fields, permission.FieldEndAt)
 	}
+	if m.status != nil {
+		fields = append(fields, permission.FieldStatus)
+	}
 	return fields
 }
 
@@ -13701,6 +13754,8 @@ func (m *PermissionMutation) Field(name string) (ent.Value, bool) {
 		return m.StartAt()
 	case permission.FieldEndAt:
 		return m.EndAt()
+	case permission.FieldStatus:
+		return m.Status()
 	}
 	return nil, false
 }
@@ -13732,6 +13787,8 @@ func (m *PermissionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldStartAt(ctx)
 	case permission.FieldEndAt:
 		return m.OldEndAt(ctx)
+	case permission.FieldStatus:
+		return m.OldStatus(ctx)
 	}
 	return nil, fmt.Errorf("unknown Permission field %s", name)
 }
@@ -13817,6 +13874,13 @@ func (m *PermissionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEndAt(v)
+		return nil
+	case permission.FieldStatus:
+		v, ok := value.(types.SimpleStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Permission field %s", name)
@@ -13917,6 +13981,9 @@ func (m *PermissionMutation) ClearedFields() []string {
 	if m.FieldCleared(permission.FieldEndAt) {
 		fields = append(fields, permission.FieldEndAt)
 	}
+	if m.FieldCleared(permission.FieldStatus) {
+		fields = append(fields, permission.FieldStatus)
+	}
 	return fields
 }
 
@@ -13948,6 +14015,9 @@ func (m *PermissionMutation) ClearField(name string) error {
 		return nil
 	case permission.FieldEndAt:
 		m.ClearEndAt()
+		return nil
+	case permission.FieldStatus:
+		m.ClearStatus()
 		return nil
 	}
 	return fmt.Errorf("unknown Permission nullable field %s", name)
@@ -13989,6 +14059,9 @@ func (m *PermissionMutation) ResetField(name string) error {
 		return nil
 	case permission.FieldEndAt:
 		m.ResetEndAt()
+		return nil
+	case permission.FieldStatus:
+		m.ResetStatus()
 		return nil
 	}
 	return fmt.Errorf("unknown Permission field %s", name)

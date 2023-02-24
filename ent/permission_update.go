@@ -15,6 +15,7 @@ import (
 	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/predicate"
 	"github.com/woocoos/adminx/ent/user"
+	"github.com/woocoos/adminx/graph/entgen/types"
 )
 
 // PermissionUpdate is the builder for updating Permission entities.
@@ -189,6 +190,26 @@ func (pu *PermissionUpdate) ClearEndAt() *PermissionUpdate {
 	return pu
 }
 
+// SetStatus sets the "status" field.
+func (pu *PermissionUpdate) SetStatus(ts types.SimpleStatus) *PermissionUpdate {
+	pu.mutation.SetStatus(ts)
+	return pu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (pu *PermissionUpdate) SetNillableStatus(ts *types.SimpleStatus) *PermissionUpdate {
+	if ts != nil {
+		pu.SetStatus(*ts)
+	}
+	return pu
+}
+
+// ClearStatus clears the value of the "status" field.
+func (pu *PermissionUpdate) ClearStatus() *PermissionUpdate {
+	pu.mutation.ClearStatus()
+	return pu
+}
+
 // SetOrganizationID sets the "organization" edge to the Organization entity by ID.
 func (pu *PermissionUpdate) SetOrganizationID(id int) *PermissionUpdate {
 	pu.mutation.SetOrganizationID(id)
@@ -256,6 +277,11 @@ func (pu *PermissionUpdate) check() error {
 			return &ValidationError{Name: "principal_kind", err: fmt.Errorf(`ent: validator failed for field "Permission.principal_kind": %w`, err)}
 		}
 	}
+	if v, ok := pu.mutation.Status(); ok {
+		if err := permission.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Permission.status": %w`, err)}
+		}
+	}
 	if _, ok := pu.mutation.OrganizationID(); pu.mutation.OrganizationCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Permission.organization"`)
 	}
@@ -318,6 +344,12 @@ func (pu *PermissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.EndAtCleared() {
 		_spec.ClearField(permission.FieldEndAt, field.TypeTime)
+	}
+	if value, ok := pu.mutation.Status(); ok {
+		_spec.SetField(permission.FieldStatus, field.TypeEnum, value)
+	}
+	if pu.mutation.StatusCleared() {
+		_spec.ClearField(permission.FieldStatus, field.TypeEnum)
 	}
 	if pu.mutation.OrganizationCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -568,6 +600,26 @@ func (puo *PermissionUpdateOne) ClearEndAt() *PermissionUpdateOne {
 	return puo
 }
 
+// SetStatus sets the "status" field.
+func (puo *PermissionUpdateOne) SetStatus(ts types.SimpleStatus) *PermissionUpdateOne {
+	puo.mutation.SetStatus(ts)
+	return puo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (puo *PermissionUpdateOne) SetNillableStatus(ts *types.SimpleStatus) *PermissionUpdateOne {
+	if ts != nil {
+		puo.SetStatus(*ts)
+	}
+	return puo
+}
+
+// ClearStatus clears the value of the "status" field.
+func (puo *PermissionUpdateOne) ClearStatus() *PermissionUpdateOne {
+	puo.mutation.ClearStatus()
+	return puo
+}
+
 // SetOrganizationID sets the "organization" edge to the Organization entity by ID.
 func (puo *PermissionUpdateOne) SetOrganizationID(id int) *PermissionUpdateOne {
 	puo.mutation.SetOrganizationID(id)
@@ -646,6 +698,11 @@ func (puo *PermissionUpdateOne) check() error {
 	if v, ok := puo.mutation.PrincipalKind(); ok {
 		if err := permission.PrincipalKindValidator(v); err != nil {
 			return &ValidationError{Name: "principal_kind", err: fmt.Errorf(`ent: validator failed for field "Permission.principal_kind": %w`, err)}
+		}
+	}
+	if v, ok := puo.mutation.Status(); ok {
+		if err := permission.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Permission.status": %w`, err)}
 		}
 	}
 	if _, ok := puo.mutation.OrganizationID(); puo.mutation.OrganizationCleared() && !ok {
@@ -727,6 +784,12 @@ func (puo *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission,
 	}
 	if puo.mutation.EndAtCleared() {
 		_spec.ClearField(permission.FieldEndAt, field.TypeTime)
+	}
+	if value, ok := puo.mutation.Status(); ok {
+		_spec.SetField(permission.FieldStatus, field.TypeEnum, value)
+	}
+	if puo.mutation.StatusCleared() {
+		_spec.ClearField(permission.FieldStatus, field.TypeEnum)
 	}
 	if puo.mutation.OrganizationCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -102,10 +102,10 @@ const (
 	// RolesAndGroupsColumn is the table column denoting the rolesAndGroups relation/edge.
 	RolesAndGroupsColumn = "org_id"
 	// PermissionsTable is the table that holds the permissions relation/edge.
-	PermissionsTable = "permissions"
+	PermissionsTable = "permission"
 	// PermissionsInverseTable is the table name for the Permission entity.
 	// It exists in this package in order to avoid circular dependency with the "permission" package.
-	PermissionsInverseTable = "permissions"
+	PermissionsInverseTable = "permission"
 	// PermissionsColumn is the table column denoting the permissions relation/edge.
 	PermissionsColumn = "org_id"
 	// PoliciesTable is the table that holds the policies relation/edge.

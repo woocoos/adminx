@@ -11,24 +11,24 @@ development: true
 #      dialOption:
 #        - timeout: 5s
 authz:
-  watchOptions:
+  watcherOptions:
     options:
       addr: "127.0.0.1:6379"
       channel: "/casbin"
-  model: "etc/rabc_model.conf"
+  model: "etc/rbac_model.conf"
 
 web:
   server:
     addr: 127.0.0.1:8080
   engine:
+    contextWithFallback: true
     routerGroups:
       - default:
           middlewares:
-            - rest-authz:
+            - authz:
       - graphql:
           basePath: "/graphql"
           # 用于权限判断
-          appCode: "adm"
           middlewares:
 #            - otel:
             - accessLog:
@@ -37,7 +37,8 @@ web:
             - recovery:
             - graphql:
                 group: "/graphql"
-                withAction: true
+                withAuthorization: true
+                appCode: "ad"
             - jwt:
                 signingMethod: "HS256"
                 signingKey: "secret"

@@ -3,9 +3,12 @@
 package ent
 
 import (
+	"time"
+
 	"github.com/woocoos/adminx/ent/app"
 	"github.com/woocoos/adminx/ent/appaction"
 	"github.com/woocoos/adminx/ent/appmenu"
+	"github.com/woocoos/adminx/ent/permission"
 	"github.com/woocoos/adminx/ent/useridentity"
 	"github.com/woocoos/adminx/ent/userloginprofile"
 	"github.com/woocoos/adminx/ent/userpassword"
@@ -740,18 +743,21 @@ func (c *AppRoleUpdateOne) SetInput(i UpdateAppRoleInput) *AppRoleUpdateOne {
 
 // CreateOrganizationInput represents a mutation input for creating organizations.
 type CreateOrganizationInput struct {
-	ID            *int
-	Domain        *string
-	Name          string
-	Profile       *string
-	Status        *types.SimpleStatus
-	CountryCode   *string
-	Timezone      *string
-	ParentID      int
-	OwnerID       *int
-	PermissionIDs []int
-	PolicyIDs     []int
-	AppIDs        []int
+	ID               *int
+	Domain           *string
+	Name             string
+	Profile          *string
+	Status           *types.SimpleStatus
+	CountryCode      *string
+	Timezone         *string
+	ParentID         int
+	ChildIDs         []int
+	OwnerID          *int
+	UserIDs          []int
+	RolesAndGroupIDs []int
+	PermissionIDs    []int
+	PolicyIDs        []int
+	AppIDs           []int
 }
 
 // Mutate applies the CreateOrganizationInput on the OrganizationMutation builder.
@@ -773,8 +779,17 @@ func (i *CreateOrganizationInput) Mutate(m *OrganizationMutation) {
 		m.SetTimezone(*v)
 	}
 	m.SetParentID(i.ParentID)
+	if v := i.ChildIDs; len(v) > 0 {
+		m.AddChildIDs(v...)
+	}
 	if v := i.OwnerID; v != nil {
 		m.SetOwnerID(*v)
+	}
+	if v := i.UserIDs; len(v) > 0 {
+		m.AddUserIDs(v...)
+	}
+	if v := i.RolesAndGroupIDs; len(v) > 0 {
+		m.AddRolesAndGroupIDs(v...)
 	}
 	if v := i.PermissionIDs; len(v) > 0 {
 		m.AddPermissionIDs(v...)
@@ -795,30 +810,39 @@ func (c *OrganizationCreate) SetInput(i CreateOrganizationInput) *OrganizationCr
 
 // UpdateOrganizationInput represents a mutation input for updating organizations.
 type UpdateOrganizationInput struct {
-	ClearDomain         bool
-	Domain              *string
-	Name                *string
-	ClearProfile        bool
-	Profile             *string
-	ClearStatus         bool
-	Status              *types.SimpleStatus
-	ClearCountryCode    bool
-	CountryCode         *string
-	ClearTimezone       bool
-	Timezone            *string
-	ClearParent         bool
-	ParentID            *int
-	ClearOwner          bool
-	OwnerID             *int
-	ClearPermissions    bool
-	AddPermissionIDs    []int
-	RemovePermissionIDs []int
-	ClearPolicies       bool
-	AddPolicyIDs        []int
-	RemovePolicyIDs     []int
-	ClearApps           bool
-	AddAppIDs           []int
-	RemoveAppIDs        []int
+	ClearDomain            bool
+	Domain                 *string
+	Name                   *string
+	ClearProfile           bool
+	Profile                *string
+	ClearStatus            bool
+	Status                 *types.SimpleStatus
+	ClearCountryCode       bool
+	CountryCode            *string
+	ClearTimezone          bool
+	Timezone               *string
+	ClearParent            bool
+	ParentID               *int
+	ClearChildren          bool
+	AddChildIDs            []int
+	RemoveChildIDs         []int
+	ClearOwner             bool
+	OwnerID                *int
+	ClearUsers             bool
+	AddUserIDs             []int
+	RemoveUserIDs          []int
+	ClearRolesAndGroups    bool
+	AddRolesAndGroupIDs    []int
+	RemoveRolesAndGroupIDs []int
+	ClearPermissions       bool
+	AddPermissionIDs       []int
+	RemovePermissionIDs    []int
+	ClearPolicies          bool
+	AddPolicyIDs           []int
+	RemovePolicyIDs        []int
+	ClearApps              bool
+	AddAppIDs              []int
+	RemoveAppIDs           []int
 }
 
 // Mutate applies the UpdateOrganizationInput on the OrganizationMutation builder.
@@ -862,11 +886,38 @@ func (i *UpdateOrganizationInput) Mutate(m *OrganizationMutation) {
 	if v := i.ParentID; v != nil {
 		m.SetParentID(*v)
 	}
+	if i.ClearChildren {
+		m.ClearChildren()
+	}
+	if v := i.AddChildIDs; len(v) > 0 {
+		m.AddChildIDs(v...)
+	}
+	if v := i.RemoveChildIDs; len(v) > 0 {
+		m.RemoveChildIDs(v...)
+	}
 	if i.ClearOwner {
 		m.ClearOwner()
 	}
 	if v := i.OwnerID; v != nil {
 		m.SetOwnerID(*v)
+	}
+	if i.ClearUsers {
+		m.ClearUsers()
+	}
+	if v := i.AddUserIDs; len(v) > 0 {
+		m.AddUserIDs(v...)
+	}
+	if v := i.RemoveUserIDs; len(v) > 0 {
+		m.RemoveUserIDs(v...)
+	}
+	if i.ClearRolesAndGroups {
+		m.ClearRolesAndGroups()
+	}
+	if v := i.AddRolesAndGroupIDs; len(v) > 0 {
+		m.AddRolesAndGroupIDs(v...)
+	}
+	if v := i.RemoveRolesAndGroupIDs; len(v) > 0 {
+		m.RemoveRolesAndGroupIDs(v...)
 	}
 	if i.ClearPermissions {
 		m.ClearPermissions()
@@ -905,6 +956,119 @@ func (c *OrganizationUpdate) SetInput(i UpdateOrganizationInput) *OrganizationUp
 
 // SetInput applies the change-set in the UpdateOrganizationInput on the OrganizationUpdateOne builder.
 func (c *OrganizationUpdateOne) SetInput(i UpdateOrganizationInput) *OrganizationUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// CreatePermissionInput represents a mutation input for creating permissions.
+type CreatePermissionInput struct {
+	ID             *int
+	PrincipalKind  permission.PrincipalKind
+	RoleID         *int
+	OrgPolicyID    int
+	StartAt        *time.Time
+	EndAt          *time.Time
+	OrganizationID int
+	UserID         *int
+}
+
+// Mutate applies the CreatePermissionInput on the PermissionMutation builder.
+func (i *CreatePermissionInput) Mutate(m *PermissionMutation) {
+	m.SetPrincipalKind(i.PrincipalKind)
+	if v := i.RoleID; v != nil {
+		m.SetRoleID(*v)
+	}
+	m.SetOrgPolicyID(i.OrgPolicyID)
+	if v := i.StartAt; v != nil {
+		m.SetStartAt(*v)
+	}
+	if v := i.EndAt; v != nil {
+		m.SetEndAt(*v)
+	}
+	m.SetOrganizationID(i.OrganizationID)
+	if v := i.UserID; v != nil {
+		m.SetUserID(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreatePermissionInput on the PermissionCreate builder.
+func (c *PermissionCreate) SetInput(i CreatePermissionInput) *PermissionCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdatePermissionInput represents a mutation input for updating permissions.
+type UpdatePermissionInput struct {
+	PrincipalKind     *permission.PrincipalKind
+	ClearRoleID       bool
+	RoleID            *int
+	OrgPolicyID       *int
+	ClearStartAt      bool
+	StartAt           *time.Time
+	ClearEndAt        bool
+	EndAt             *time.Time
+	ClearStatus       bool
+	Status            *types.SimpleStatus
+	ClearOrganization bool
+	OrganizationID    *int
+	ClearUser         bool
+	UserID            *int
+}
+
+// Mutate applies the UpdatePermissionInput on the PermissionMutation builder.
+func (i *UpdatePermissionInput) Mutate(m *PermissionMutation) {
+	if v := i.PrincipalKind; v != nil {
+		m.SetPrincipalKind(*v)
+	}
+	if i.ClearRoleID {
+		m.ClearRoleID()
+	}
+	if v := i.RoleID; v != nil {
+		m.SetRoleID(*v)
+	}
+	if v := i.OrgPolicyID; v != nil {
+		m.SetOrgPolicyID(*v)
+	}
+	if i.ClearStartAt {
+		m.ClearStartAt()
+	}
+	if v := i.StartAt; v != nil {
+		m.SetStartAt(*v)
+	}
+	if i.ClearEndAt {
+		m.ClearEndAt()
+	}
+	if v := i.EndAt; v != nil {
+		m.SetEndAt(*v)
+	}
+	if i.ClearStatus {
+		m.ClearStatus()
+	}
+	if v := i.Status; v != nil {
+		m.SetStatus(*v)
+	}
+	if i.ClearOrganization {
+		m.ClearOrganization()
+	}
+	if v := i.OrganizationID; v != nil {
+		m.SetOrganizationID(*v)
+	}
+	if i.ClearUser {
+		m.ClearUser()
+	}
+	if v := i.UserID; v != nil {
+		m.SetUserID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdatePermissionInput on the PermissionUpdate builder.
+func (c *PermissionUpdate) SetInput(i UpdatePermissionInput) *PermissionUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdatePermissionInput on the PermissionUpdateOne builder.
+func (c *PermissionUpdateOne) SetInput(i UpdatePermissionInput) *PermissionUpdateOne {
 	i.Mutate(c.Mutation())
 	return c
 }
@@ -1001,6 +1165,7 @@ type CreateUserInput struct {
 	LoginProfileID *int
 	PasswordIDs    []int
 	DeviceIDs      []int
+	PermissionIDs  []int
 }
 
 // Mutate applies the CreateUserInput on the UserMutation builder.
@@ -1025,6 +1190,9 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	if v := i.DeviceIDs; len(v) > 0 {
 		m.AddDeviceIDs(v...)
 	}
+	if v := i.PermissionIDs; len(v) > 0 {
+		m.AddPermissionIDs(v...)
+	}
 }
 
 // SetInput applies the change-set in the CreateUserInput on the UserCreate builder.
@@ -1035,21 +1203,24 @@ func (c *UserCreate) SetInput(i CreateUserInput) *UserCreate {
 
 // UpdateUserInput represents a mutation input for updating users.
 type UpdateUserInput struct {
-	PrincipalName     *string
-	DisplayName       *string
-	ClearComments     bool
-	Comments          *string
-	ClearIdentities   bool
-	AddIdentityIDs    []int
-	RemoveIdentityIDs []int
-	ClearLoginProfile bool
-	LoginProfileID    *int
-	ClearPasswords    bool
-	AddPasswordIDs    []int
-	RemovePasswordIDs []int
-	ClearDevices      bool
-	AddDeviceIDs      []int
-	RemoveDeviceIDs   []int
+	PrincipalName       *string
+	DisplayName         *string
+	ClearComments       bool
+	Comments            *string
+	ClearIdentities     bool
+	AddIdentityIDs      []int
+	RemoveIdentityIDs   []int
+	ClearLoginProfile   bool
+	LoginProfileID      *int
+	ClearPasswords      bool
+	AddPasswordIDs      []int
+	RemovePasswordIDs   []int
+	ClearDevices        bool
+	AddDeviceIDs        []int
+	RemoveDeviceIDs     []int
+	ClearPermissions    bool
+	AddPermissionIDs    []int
+	RemovePermissionIDs []int
 }
 
 // Mutate applies the UpdateUserInput on the UserMutation builder.
@@ -1098,6 +1269,15 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.RemoveDeviceIDs; len(v) > 0 {
 		m.RemoveDeviceIDs(v...)
+	}
+	if i.ClearPermissions {
+		m.ClearPermissions()
+	}
+	if v := i.AddPermissionIDs; len(v) > 0 {
+		m.AddPermissionIDs(v...)
+	}
+	if v := i.RemovePermissionIDs; len(v) > 0 {
+		m.RemovePermissionIDs(v...)
 	}
 }
 

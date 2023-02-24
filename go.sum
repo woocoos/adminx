@@ -100,6 +100,8 @@ github.com/bytedance/sonic v1.8.0 h1:ea0Xadu+sHlu7x5O3gKhRpQ1IKiMrSiHttPF0ybECuA
 github.com/bytedance/sonic v1.8.0/go.mod h1:i736AoUSYt75HyZLoJW9ERYxcy6eaN6h4BZXU064P/U=
 github.com/casbin/casbin/v2 v2.61.1 h1:oOUgpzjPxFdXZXku002AvSwzhrmVUYyLABMULTKtt18=
 github.com/casbin/casbin/v2 v2.61.1/go.mod h1:vByNa/Fchek0KZUgG5wEsl7iFsiviAYKRtgrQfcJqHg=
+github.com/casbin/casbin/v2 v2.63.0 h1:+xd5gRceCk+IGzIJgUSZQtypZuOzZDHgHvU0FlmBCVA=
+github.com/casbin/casbin/v2 v2.63.0/go.mod h1:vByNa/Fchek0KZUgG5wEsl7iFsiviAYKRtgrQfcJqHg=
 github.com/casbin/redis-watcher/v2 v2.3.0 h1:Mq7Q6Xy981u0UT2cWl8aMTocLwSm/lA5VBScx+Cz2/0=
 github.com/casbin/redis-watcher/v2 v2.3.0/go.mod h1:yQCatt1TxdoLFMHsCylGi4o0lw66texTDGtGwecOnNI=
 github.com/cenkalti/backoff/v4 v4.2.0 h1:HN5dHm3WBOgndBH6E8V0q2jIYIR3s9yglV8k/+MN3u4=
@@ -473,8 +475,14 @@ github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKs
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/tsingsun/woocoo v0.2.2 h1:3LAulxOMV9Pj5MuUSKy/ZyAHueF0VWyYdcsIm61lO5A=
 github.com/tsingsun/woocoo v0.2.2/go.mod h1:3uDQRibLHpKIxF/34aDoJcwfax9ZHALmdNKlfX7bZBU=
+github.com/tsingsun/woocoo v0.2.3-0.20230224054419-f116aada9120 h1:ftyWMO101zeIY3iEN6X1MM20BfnQvQacQL6CaMMwPeA=
+github.com/tsingsun/woocoo v0.2.3-0.20230224054419-f116aada9120/go.mod h1:onHtZbXvCqPUIOyO4YFOGqrDcBDGJx6FI3IsVHw7mdA=
+github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230224063419-6d0ba02ebe28 h1:PxfhAAxTd6pua9B8DwMpXiJVhbt8GPdq2kTPLRjOxF4=
+github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230224063419-6d0ba02ebe28/go.mod h1:crb3+yMVQZignb4/uAcjeXBDfARbhbqVWLeSY+BcC98=
 github.com/tsingsun/woocoo/contrib/telemetry v0.1.1 h1:Zwz5yhQttMV3V+kJRIZpqFGf5VKrQ/p3euHOGlw5N18=
 github.com/tsingsun/woocoo/contrib/telemetry v0.1.1/go.mod h1:p0EHAxeavvlCIB1phcjB7+gFmH0KJrZ+F4Thw4IYMcE=
+github.com/tsingsun/woocoo/contrib/telemetry v0.1.2-0.20230224062232-9d381b0cf020 h1:Z15+95B0ovc87FKP/bOAhkN2QAF1x57rNeHgD7ba2wA=
+github.com/tsingsun/woocoo/contrib/telemetry v0.1.2-0.20230224062232-9d381b0cf020/go.mod h1:p0EHAxeavvlCIB1phcjB7+gFmH0KJrZ+F4Thw4IYMcE=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.2.9 h1:rmenucSohSTiyL09Y+l2OCk+FrMxGMzho2+tjr5ticU=
@@ -894,6 +902,8 @@ gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntN
 gopkg.in/errgo.v2 v2.1.0/go.mod h1:hNsd1EY+bozCKY1Ytp96fpM3vjJbqLJn88ws8XvfDNI=
 gopkg.in/natefinch/lumberjack.v2 v2.0.0 h1:1Lc07Kr7qY4U2YPouBjpCLxpiyxIVoxqXgkXLknAOE8=
 gopkg.in/natefinch/lumberjack.v2 v2.0.0/go.mod h1:l0ndWWf7gzL7RNwBG7wST/UCcT4T24xpD6X8LsfU/+k=
+gopkg.in/natefinch/lumberjack.v2 v2.2.1 h1:bBRl1b0OH9s/DuPhuXpNl+VtCaJXFZ5/uEFST95x9zc=
+gopkg.in/natefinch/lumberjack.v2 v2.2.1/go.mod h1:YD8tP3GAjkrDg1eZH7EGmyESg/lsYskCTPBJVb9jqSc=
 gopkg.in/square/go-jose.v2 v2.3.1/go.mod h1:M9dMgbHiYLoDGQrXy7OpJDJWiKiU//h+vD76mk0e1AI=
 gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 h1:uRGJdciOHaEIrze2W8Q3AKkepLTh2hOroT7a+7czfdQ=
 gopkg.in/yaml.v2 v2.2.1/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=

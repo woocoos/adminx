@@ -27,6 +27,12 @@ type EnableDirectoryInput struct {
 	Name   string `json:"name"`
 }
 
+type GrantInput struct {
+	Principal string `json:"principal"`
+	OrgScope  int    `json:"orgScope"`
+	PolicyID  int    `json:"policyID"`
+}
+
 // Ordering options for OrganizationRole connections
 type OrganizationRoleOrder struct {
 	// The ordering direction.

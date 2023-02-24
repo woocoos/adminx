@@ -67,7 +67,7 @@ type OrganizationEdges struct {
 	Owner *User `json:"owner,omitempty"`
 	// 组织下用户
 	Users []*User `json:"users,omitempty"`
-	// 组织下角色及用户组
+	// 组织下角色及用户组.
 	RolesAndGroups []*OrganizationRole `json:"rolesAndGroups,omitempty"`
 	// 组织授权信息
 	Permissions []*Permission `json:"permissions,omitempty"`
@@ -83,7 +83,7 @@ type OrganizationEdges struct {
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [10]bool
 	// totalCount holds the count of the edges above.
-	totalCount [5]map[string]int
+	totalCount [6]map[string]int
 
 	namedChildren         map[string][]*Organization
 	namedUsers            map[string][]*User

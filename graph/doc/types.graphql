@@ -17,3 +17,9 @@ input PolicyRuleInput {
     resources: [String!]
     conditions: [String!]
 }
+
+input GrantInput {
+    principal: GID!
+    orgScope: ID!
+    policyID: ID!
+}
