@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 
 	"github.com/woocoos/adminx/ent"
 )
@@ -31,6 +32,19 @@ type GrantInput struct {
 	Principal string `json:"principal"`
 	OrgScope  int    `json:"orgScope"`
 	PolicyID  int    `json:"policyID"`
+}
+
+// 消息协议
+type Message struct {
+	ID int `json:"id"`
+	// 消息类型
+	Topic string `json:"topic"`
+	// 消息内容
+	Body string `json:"body"`
+	// 消息创建时间
+	CreatedAt time.Time `json:"createdAt"`
+	// 消息发送时间
+	SentAt time.Time `json:"sentAt"`
 }
 
 // Ordering options for OrganizationRole connections

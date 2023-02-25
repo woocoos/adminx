@@ -3,6 +3,7 @@ schema:
   - graph/doc/types.graphql
   - graph/doc/query.graphql
   - graph/doc/mutation.graphql
+  - graph/doc/subscription.graphql
 
 # Where should the generated server code go?
 exec:

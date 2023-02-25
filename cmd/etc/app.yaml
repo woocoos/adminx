@@ -25,7 +25,6 @@ web:
     routerGroups:
       - default:
           middlewares:
-            - authz:
       - graphql:
           basePath: "/graphql"
           # 用于权限判断
@@ -35,15 +34,15 @@ web:
                 exclude:
                   - IntrospectionQuery
             - recovery:
-            - graphql:
-                group: "/graphql"
-                withAuthorization: true
-                appCode: "ad"
             - jwt:
                 signingMethod: "HS256"
                 signingKey: "secret"
                 exclude:
-                  - "/graphql"
+                  - "/graphql" #doc page
+            - graphql:
+                group: "/graphql"
+                withAuthorization: false
+                appCode: "ad"
 
 store:
   portal:

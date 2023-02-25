@@ -33,6 +33,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Subscription() SubscriptionResolver
 	CreateUserInput() CreateUserInputResolver
 }
 
@@ -199,6 +200,14 @@ type ComplexityRoot struct {
 		UpdatedBy func(childComplexity int) int
 	}
 
+	Message struct {
+		Body      func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		SentAt    func(childComplexity int) int
+		Topic     func(childComplexity int) int
+	}
+
 	Mutation struct {
 		AssignOrganizationApp       func(childComplexity int, orgID int, appID int) int
 		AssignOrganizationAppPolicy func(childComplexity int, orgID int, policyID int) int
@@ -335,6 +344,10 @@ type ComplexityRoot struct {
 		Nodes         func(childComplexity int, ids []string) int
 		Organizations func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.OrganizationOrder, where *ent.OrganizationWhereInput) int
 		Users         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) int
+	}
+
+	Subscription struct {
+		Message func(childComplexity int) int
 	}
 
 	User struct {
@@ -1245,6 +1258,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AppRole.UpdatedBy(childComplexity), true
 
+	case "Message.body":
+		if e.complexity.Message.Body == nil {
+			break
+		}
+
+		return e.complexity.Message.Body(childComplexity), true
+
+	case "Message.createdAt":
+		if e.complexity.Message.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Message.CreatedAt(childComplexity), true
+
+	case "Message.id":
+		if e.complexity.Message.ID == nil {
+			break
+		}
+
+		return e.complexity.Message.ID(childComplexity), true
+
+	case "Message.sentAt":
+		if e.complexity.Message.SentAt == nil {
+			break
+		}
+
+		return e.complexity.Message.SentAt(childComplexity), true
+
+	case "Message.topic":
+		if e.complexity.Message.Topic == nil {
+			break
+		}
+
+		return e.complexity.Message.Topic(childComplexity), true
+
 	case "Mutation.assignOrganizationApp":
 		if e.complexity.Mutation.AssignOrganizationApp == nil {
 			break
@@ -2093,6 +2141,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Users(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput)), true
 
+	case "Subscription.message":
+		if e.complexity.Subscription.Message == nil {
+			break
+		}
+
+		return e.complexity.Subscription.Message(childComplexity), true
+
 	case "User.comments":
 		if e.complexity.User.Comments == nil {
 			break
@@ -2714,6 +2769,23 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
 			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
 			var buf bytes.Buffer
+			data.MarshalGQL(&buf)
+
+			return &graphql.Response{
+				Data: buf.Bytes(),
+			}
+		}
+	case ast.Subscription:
+		next := ec._Subscription(ctx, rc.Operation.SelectionSet)
+
+		var buf bytes.Buffer
+		return func(ctx context.Context) *graphql.Response {
+			buf.Reset()
+			data := next(ctx)
+
+			if data == nil {
+				return nil
+			}
 			data.MarshalGQL(&buf)
 
 			return &graphql.Response{
@@ -6395,5 +6467,21 @@ extend input CreateUserInput {
     password: CreateUserPasswordInput
 }
 `, BuiltIn: false},
+	{Name: "../doc/subscription.graphql", Input: `type Subscription {
+    message: Message
+}
+
+"""消息协议"""
+type Message {
+    id: ID!
+    """消息类型"""
+    topic: String!
+    """消息内容"""
+    body: String!
+    """消息创建时间"""
+    createdAt: Time!
+    """消息发送时间"""
+    sentAt: Time!
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

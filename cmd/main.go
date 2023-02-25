@@ -8,7 +8,9 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/XSAM/otelsql"
+	"github.com/gin-gonic/gin"
 	"github.com/tsingsun/woocoo"
 	"github.com/tsingsun/woocoo/contrib/gql"
 	"github.com/tsingsun/woocoo/contrib/telemetry"
@@ -17,6 +19,7 @@ import (
 	"github.com/tsingsun/woocoo/pkg/log"
 	"github.com/tsingsun/woocoo/pkg/store/sqlx"
 	"github.com/tsingsun/woocoo/web"
+	webhander "github.com/tsingsun/woocoo/web/handler"
 	"github.com/tsingsun/woocoo/web/handler/authz"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/woocoos/adminx/ent"
@@ -74,6 +77,7 @@ func newWebServer(cnf *conf.AppConfiguration) *web.Server {
 		web.RegisterMiddleware(otelweb.NewMiddleware()),
 		web.RegisterMiddleware(authz.New()),
 	)
+	webSrv.Router().NoRoute()
 	client, err := open(conf.Global(), "store.portal")
 	if err != nil {
 		log.Fatal(err)
@@ -95,6 +99,19 @@ func newWebServer(cnf *conf.AppConfiguration) *web.Server {
 		}
 		// mutation事务
 		srv.Use(entgql.Transactioner{TxOpener: client})
+		// 订阅支持
+		srv.AddTransport(&transport.Websocket{})
+	}
+	// 订阅支持,如果握手阶段开发模式可以允许.
+	if jwt, ok := webSrv.HandlerManager().Get("jwt"); ok {
+		if h, ok := jwt.(*webhander.JWTMiddleware); ok {
+			h.Config.ErrorHandler = func(c *gin.Context, err error) error {
+				if c.IsWebsocket() && cnf.Development {
+					return nil
+				}
+				return err
+			}
+		}
 	}
 
 	return webSrv
