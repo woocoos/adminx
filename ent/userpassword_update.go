@@ -201,6 +201,11 @@ func (upu *UserPasswordUpdate) check() error {
 			return &ValidationError{Name: "scene", err: fmt.Errorf(`ent: validator failed for field "UserPassword.scene": %w`, err)}
 		}
 	}
+	if v, ok := upu.mutation.Password(); ok {
+		if err := userpassword.PasswordValidator(v); err != nil {
+			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "UserPassword.password": %w`, err)}
+		}
+	}
 	if v, ok := upu.mutation.Salt(); ok {
 		if err := userpassword.SaltValidator(v); err != nil {
 			return &ValidationError{Name: "salt", err: fmt.Errorf(`ent: validator failed for field "UserPassword.salt": %w`, err)}
@@ -471,6 +476,11 @@ func (upuo *UserPasswordUpdateOne) check() error {
 	if v, ok := upuo.mutation.Scene(); ok {
 		if err := userpassword.SceneValidator(v); err != nil {
 			return &ValidationError{Name: "scene", err: fmt.Errorf(`ent: validator failed for field "UserPassword.scene": %w`, err)}
+		}
+	}
+	if v, ok := upuo.mutation.Password(); ok {
+		if err := userpassword.PasswordValidator(v); err != nil {
+			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "UserPassword.password": %w`, err)}
 		}
 	}
 	if v, ok := upuo.mutation.Salt(); ok {

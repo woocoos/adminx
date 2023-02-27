@@ -217,6 +217,11 @@ func (upc *UserPasswordCreate) check() error {
 			return &ValidationError{Name: "scene", err: fmt.Errorf(`ent: validator failed for field "UserPassword.scene": %w`, err)}
 		}
 	}
+	if v, ok := upc.mutation.Password(); ok {
+		if err := userpassword.PasswordValidator(v); err != nil {
+			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "UserPassword.password": %w`, err)}
+		}
+	}
 	if _, ok := upc.mutation.Salt(); !ok {
 		return &ValidationError{Name: "salt", err: errors.New(`ent: missing required field "UserPassword.salt"`)}
 	}

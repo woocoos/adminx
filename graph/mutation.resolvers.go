@@ -38,6 +38,11 @@ func (r *mutationResolver) DeleteOrganization(ctx context.Context, orgID int) (b
 	return true, nil
 }
 
+// ChangeOrganizationTree is the resolver for the changeOrganizationTree field.
+func (r *mutationResolver) ChangeOrganizationTree(ctx context.Context, sourceID int, targetID int, action *string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: ChangeOrganizationTree - changeOrganizationTree"))
+}
+
 // CreateOrganizationAccount is the resolver for the createOrganizationAccount field.
 func (r *mutationResolver) CreateOrganizationAccount(ctx context.Context, input model.CreateOrganizationAccountInput) (*ent.User, error) {
 	panic(fmt.Errorf("not implemented: CreateOrganizationAccount - createOrganizationAccount"))
@@ -50,9 +55,64 @@ func (r *mutationResolver) CreateOrganizationUser(ctx context.Context, orgID int
 	return r.resource.CreateOrganizationUser(ctx, orgID, input)
 }
 
+// AddOrganizationUser is the resolver for the addOrganizationUser field.
+func (r *mutationResolver) AddOrganizationUser(ctx context.Context, orgID int, userID int, displayName *string) (*ent.User, error) {
+	panic(fmt.Errorf("not implemented: AddOrganizationUser - addOrganizationUser"))
+}
+
+// DeleteUserFormOrganization is the resolver for the deleteUserFormOrganization field.
+func (r *mutationResolver) DeleteUserFormOrganization(ctx context.Context, id int) (*bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteUserFormOrganization - deleteUserFormOrganization"))
+}
+
+// DeleteUser is the resolver for the deleteUser field.
+func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteUser - deleteUser"))
+}
+
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, userID int, input ent.UpdateUserInput) (*ent.User, error) {
 	panic(fmt.Errorf("not implemented: UpdateUser - updateUser"))
+}
+
+// BindUserIdentity is the resolver for the bindUserIdentity field.
+func (r *mutationResolver) BindUserIdentity(ctx context.Context, input ent.CreateUserIdentityInput) (*ent.UserIdentity, error) {
+	panic(fmt.Errorf("not implemented: BindUserIdentity - bindUserIdentity"))
+}
+
+// DeleteUserIdentity is the resolver for the deleteUserIdentity field.
+func (r *mutationResolver) DeleteUserIdentity(ctx context.Context, id int) (*bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteUserIdentity - deleteUserIdentity"))
+}
+
+// ChangePassword is the resolver for the changePassword field.
+func (r *mutationResolver) ChangePassword(ctx context.Context, oldPwd string, newPwd string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: ChangePassword - changePassword"))
+}
+
+// ResetUserPasswordByEmail is the resolver for the resetUserPasswordByEmail field.
+func (r *mutationResolver) ResetUserPasswordByEmail(ctx context.Context, userID int) (*bool, error) {
+	panic(fmt.Errorf("not implemented: ResetUserPasswordByEmail - resetUserPasswordByEmail"))
+}
+
+// CreateUserMfa is the resolver for the createUserMFA field.
+func (r *mutationResolver) CreateUserMfa(ctx context.Context, userID int) (*bool, error) {
+	panic(fmt.Errorf("not implemented: CreateUserMfa - createUserMFA"))
+}
+
+// EnableUserMfa is the resolver for the enableUserMFA field.
+func (r *mutationResolver) EnableUserMfa(ctx context.Context, userID int, enable *bool) (*bool, error) {
+	panic(fmt.Errorf("not implemented: EnableUserMfa - enableUserMFA"))
+}
+
+// DeleteUserMfa is the resolver for the deleteUserMFA field.
+func (r *mutationResolver) DeleteUserMfa(ctx context.Context, userID int) (*bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteUserMfa - deleteUserMFA"))
+}
+
+// SendUserMFAByEmail is the resolver for the sendUserMFAByEmail field.
+func (r *mutationResolver) SendUserMFAByEmail(ctx context.Context, userID int) (*bool, error) {
+	panic(fmt.Errorf("not implemented: SendUserMFAByEmail - sendUserMFAByEmail"))
 }
 
 // CreateApp is the resolver for the createApp field.
@@ -111,6 +171,11 @@ func (r *mutationResolver) CreateAppPolicies(ctx context.Context, input []*ent.C
 // UpdateAppMenu is the resolver for the updateAppMenu field.
 func (r *mutationResolver) UpdateAppMenu(ctx context.Context, input ent.UpdateAppMenuInput) (*ent.AppMenu, error) {
 	panic(fmt.Errorf("not implemented: UpdateAppMenu - updateAppMenu"))
+}
+
+// ChangeAppMenuTree is the resolver for the changeAppMenuTree field.
+func (r *mutationResolver) ChangeAppMenuTree(ctx context.Context, sourceID int, targetID int, targetLocation *string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: ChangeAppMenuTree - changeAppMenuTree"))
 }
 
 // CreateAppRole is the resolver for the createAppRole field.

@@ -1345,6 +1345,10 @@ input CreateUserInput {
   principalName: String!
   """显示名"""
   displayName: String!
+  """邮箱"""
+  email: String
+  """手机"""
+  mobile: String
   """状态"""
   status: UserSimpleStatus
   """备注"""
@@ -2641,6 +2645,12 @@ input UpdateUserInput {
   principalName: String
   """显示名"""
   displayName: String
+  """邮箱"""
+  email: String
+  clearEmail: Boolean
+  """手机"""
+  mobile: String
+  clearMobile: Boolean
   """备注"""
   comments: String
   clearComments: Boolean
@@ -2711,6 +2721,10 @@ type User implements Node {
   principalName: String!
   """显示名"""
   displayName: String!
+  """邮箱"""
+  email: String
+  """手机"""
+  mobile: String
   """用户类型"""
   userType: UserUserType!
   """创建类型,邀请，注册,手工创建"""
@@ -3506,6 +3520,38 @@ input UserWhereInput {
   displayNameHasSuffix: String
   displayNameEqualFold: String
   displayNameContainsFold: String
+  """email field predicates"""
+  email: String
+  emailNEQ: String
+  emailIn: [String!]
+  emailNotIn: [String!]
+  emailGT: String
+  emailGTE: String
+  emailLT: String
+  emailLTE: String
+  emailContains: String
+  emailHasPrefix: String
+  emailHasSuffix: String
+  emailIsNil: Boolean
+  emailNotNil: Boolean
+  emailEqualFold: String
+  emailContainsFold: String
+  """mobile field predicates"""
+  mobile: String
+  mobileNEQ: String
+  mobileIn: [String!]
+  mobileNotIn: [String!]
+  mobileGT: String
+  mobileGTE: String
+  mobileLT: String
+  mobileLTE: String
+  mobileContains: String
+  mobileHasPrefix: String
+  mobileHasSuffix: String
+  mobileIsNil: Boolean
+  mobileNotNil: Boolean
+  mobileEqualFold: String
+  mobileContainsFold: String
   """creation_type field predicates"""
   creationType: UserCreationType
   creationTypeNEQ: UserCreationType

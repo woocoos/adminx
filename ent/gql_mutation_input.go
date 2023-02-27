@@ -1159,6 +1159,8 @@ type CreateUserInput struct {
 	ID             *int
 	PrincipalName  string
 	DisplayName    string
+	Email          *string
+	Mobile         *string
 	Status         *types.SimpleStatus
 	Comments       *string
 	IdentityIDs    []int
@@ -1172,6 +1174,12 @@ type CreateUserInput struct {
 func (i *CreateUserInput) Mutate(m *UserMutation) {
 	m.SetPrincipalName(i.PrincipalName)
 	m.SetDisplayName(i.DisplayName)
+	if v := i.Email; v != nil {
+		m.SetEmail(*v)
+	}
+	if v := i.Mobile; v != nil {
+		m.SetMobile(*v)
+	}
 	if v := i.Status; v != nil {
 		m.SetStatus(*v)
 	}
@@ -1205,6 +1213,10 @@ func (c *UserCreate) SetInput(i CreateUserInput) *UserCreate {
 type UpdateUserInput struct {
 	PrincipalName       *string
 	DisplayName         *string
+	ClearEmail          bool
+	Email               *string
+	ClearMobile         bool
+	Mobile              *string
 	ClearComments       bool
 	Comments            *string
 	ClearIdentities     bool
@@ -1230,6 +1242,18 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.DisplayName; v != nil {
 		m.SetDisplayName(*v)
+	}
+	if i.ClearEmail {
+		m.ClearEmail()
+	}
+	if v := i.Email; v != nil {
+		m.SetEmail(*v)
+	}
+	if i.ClearMobile {
+		m.ClearMobile()
+	}
+	if v := i.Mobile; v != nil {
+		m.SetMobile(*v)
 	}
 	if i.ClearComments {
 		m.ClearComments()

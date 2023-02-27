@@ -7,12 +7,36 @@ type Mutation {
     updateOrganization(orgID:ID!,input: UpdateOrganizationInput!): Organization
     """删除组织目录"""
     deleteOrganization(orgID:ID!): Boolean!
+    """组织树位置调整，action: child, up, down"""
+    changeOrganizationTree(sourceId:ID!,targetId:ID!,action:String): Boolean
     """创建组织成员(管理账户)"""
     createOrganizationAccount(input: CreateOrganizationAccountInput!): User
     """创建组织用户"""
     createOrganizationUser(orgID:ID!,input: CreateUserInput!): User
+    """组织添加用户"""
+    addOrganizationUser(orgID:ID!,userId:ID!,displayName:String): User
+    """从组织移除用户"""
+    deleteUserFormOrganization(id:ID!): Boolean
+    """删除用户(真删除，需无组织关联)"""
+    deleteUser(id:ID!): Boolean
     """更新用户"""
     updateUser(userID:ID!,input: UpdateUserInput!): User
+    """绑定用户凭证(管理端使用)"""
+    bindUserIdentity(input: CreateUserIdentityInput!): UserIdentity
+    """删除用户凭证"""
+    deleteUserIdentity(id:ID!): Boolean
+    """用户修改自己的登录密码"""
+    changePassword(oldPwd:String!,newPwd:String!): Boolean
+    """重置用户密码并发送邮件"""
+    resetUserPasswordByEmail(userId:ID!): Boolean
+    """创建MFA"""
+    createUserMFA(userID:ID!): Boolean
+    """是否启用MFA"""
+    enableUserMFA(userID:ID!,enable:Boolean): Boolean
+    """删除MFA"""
+    deleteUserMFA(userID:ID!): Boolean
+    """邮件发送MFA"""
+    sendUserMFAByEmail(userID:ID!): Boolean
     """创建应用"""
     createApp(input: CreateAppInput!): App
     """更新应用"""
@@ -27,6 +51,8 @@ type Mutation {
     createAppPolicies(input: [CreateAppPolicyInput!]): Boolean!
     """更新应用菜单"""
     updateAppMenu(input: UpdateAppMenuInput!): AppMenu
+    """应用菜单位置调整，targetLocation: child, up, down"""
+    changeAppMenuTree(sourceId:ID!,targetId:ID!,targetLocation:String): Boolean
     """创建应用角色"""
     createAppRole(input: CreateAppRoleInput!): AppRole
     """更新应用角色"""

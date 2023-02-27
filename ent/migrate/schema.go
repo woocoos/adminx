@@ -424,6 +424,8 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "principal_name", Type: field.TypeString, Unique: true},
 		{Name: "display_name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Nullable: true, Size: 45},
+		{Name: "mobile", Type: field.TypeString, Nullable: true, Size: 45},
 		{Name: "user_type", Type: field.TypeEnum, Enums: []string{"account", "member"}},
 		{Name: "creation_type", Type: field.TypeEnum, Enums: []string{"invitation", "register", "manual"}},
 		{Name: "register_ip", Type: field.TypeString, Size: 45},

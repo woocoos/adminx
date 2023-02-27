@@ -32,6 +32,10 @@ const (
 	FieldPrincipalName = "principal_name"
 	// FieldDisplayName holds the string denoting the display_name field in the database.
 	FieldDisplayName = "display_name"
+	// FieldEmail holds the string denoting the email field in the database.
+	FieldEmail = "email"
+	// FieldMobile holds the string denoting the mobile field in the database.
+	FieldMobile = "mobile"
 	// FieldUserType holds the string denoting the user_type field in the database.
 	FieldUserType = "user_type"
 	// FieldCreationType holds the string denoting the creation_type field in the database.
@@ -117,6 +121,8 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldPrincipalName,
 	FieldDisplayName,
+	FieldEmail,
+	FieldMobile,
 	FieldUserType,
 	FieldCreationType,
 	FieldRegisterIP,
@@ -150,6 +156,10 @@ var (
 	Interceptors [1]ent.Interceptor
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	EmailValidator func(string) error
+	// MobileValidator is a validator for the "mobile" field. It is called by the builders before save.
+	MobileValidator func(string) error
 	// RegisterIPValidator is a validator for the "register_ip" field. It is called by the builders before save.
 	RegisterIPValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.

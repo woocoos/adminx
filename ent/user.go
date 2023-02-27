@@ -32,6 +32,10 @@ type User struct {
 	PrincipalName string `json:"principal_name,omitempty"`
 	// 显示名
 	DisplayName string `json:"display_name,omitempty"`
+	// 邮箱
+	Email string `json:"email,omitempty"`
+	// 手机
+	Mobile string `json:"mobile,omitempty"`
 	// 用户类型
 	UserType user.UserType `json:"user_type,omitempty"`
 	// 创建类型,邀请，注册,手工创建
@@ -151,7 +155,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldID, user.FieldCreatedBy, user.FieldUpdatedBy:
 			values[i] = new(sql.NullInt64)
-		case user.FieldPrincipalName, user.FieldDisplayName, user.FieldUserType, user.FieldCreationType, user.FieldRegisterIP, user.FieldStatus, user.FieldComments:
+		case user.FieldPrincipalName, user.FieldDisplayName, user.FieldEmail, user.FieldMobile, user.FieldUserType, user.FieldCreationType, user.FieldRegisterIP, user.FieldStatus, user.FieldComments:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -217,6 +221,18 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field display_name", values[i])
 			} else if value.Valid {
 				u.DisplayName = value.String
+			}
+		case user.FieldEmail:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field email", values[i])
+			} else if value.Valid {
+				u.Email = value.String
+			}
+		case user.FieldMobile:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field mobile", values[i])
+			} else if value.Valid {
+				u.Mobile = value.String
 			}
 		case user.FieldUserType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -332,6 +348,12 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(u.DisplayName)
+	builder.WriteString(", ")
+	builder.WriteString("email=")
+	builder.WriteString(u.Email)
+	builder.WriteString(", ")
+	builder.WriteString("mobile=")
+	builder.WriteString(u.Mobile)
 	builder.WriteString(", ")
 	builder.WriteString("user_type=")
 	builder.WriteString(fmt.Sprintf("%v", u.UserType))

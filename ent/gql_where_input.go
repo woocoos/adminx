@@ -6216,6 +6216,40 @@ type UserWhereInput struct {
 	DisplayNameEqualFold    *string  `json:"displayNameEqualFold,omitempty"`
 	DisplayNameContainsFold *string  `json:"displayNameContainsFold,omitempty"`
 
+	// "email" field predicates.
+	Email             *string  `json:"email,omitempty"`
+	EmailNEQ          *string  `json:"emailNEQ,omitempty"`
+	EmailIn           []string `json:"emailIn,omitempty"`
+	EmailNotIn        []string `json:"emailNotIn,omitempty"`
+	EmailGT           *string  `json:"emailGT,omitempty"`
+	EmailGTE          *string  `json:"emailGTE,omitempty"`
+	EmailLT           *string  `json:"emailLT,omitempty"`
+	EmailLTE          *string  `json:"emailLTE,omitempty"`
+	EmailContains     *string  `json:"emailContains,omitempty"`
+	EmailHasPrefix    *string  `json:"emailHasPrefix,omitempty"`
+	EmailHasSuffix    *string  `json:"emailHasSuffix,omitempty"`
+	EmailIsNil        bool     `json:"emailIsNil,omitempty"`
+	EmailNotNil       bool     `json:"emailNotNil,omitempty"`
+	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
+	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
+
+	// "mobile" field predicates.
+	Mobile             *string  `json:"mobile,omitempty"`
+	MobileNEQ          *string  `json:"mobileNEQ,omitempty"`
+	MobileIn           []string `json:"mobileIn,omitempty"`
+	MobileNotIn        []string `json:"mobileNotIn,omitempty"`
+	MobileGT           *string  `json:"mobileGT,omitempty"`
+	MobileGTE          *string  `json:"mobileGTE,omitempty"`
+	MobileLT           *string  `json:"mobileLT,omitempty"`
+	MobileLTE          *string  `json:"mobileLTE,omitempty"`
+	MobileContains     *string  `json:"mobileContains,omitempty"`
+	MobileHasPrefix    *string  `json:"mobileHasPrefix,omitempty"`
+	MobileHasSuffix    *string  `json:"mobileHasSuffix,omitempty"`
+	MobileIsNil        bool     `json:"mobileIsNil,omitempty"`
+	MobileNotNil       bool     `json:"mobileNotNil,omitempty"`
+	MobileEqualFold    *string  `json:"mobileEqualFold,omitempty"`
+	MobileContainsFold *string  `json:"mobileContainsFold,omitempty"`
+
 	// "creation_type" field predicates.
 	CreationType      *user.CreationType  `json:"creationType,omitempty"`
 	CreationTypeNEQ   *user.CreationType  `json:"creationTypeNEQ,omitempty"`
@@ -6576,6 +6610,96 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.DisplayNameContainsFold != nil {
 		predicates = append(predicates, user.DisplayNameContainsFold(*i.DisplayNameContainsFold))
+	}
+	if i.Email != nil {
+		predicates = append(predicates, user.EmailEQ(*i.Email))
+	}
+	if i.EmailNEQ != nil {
+		predicates = append(predicates, user.EmailNEQ(*i.EmailNEQ))
+	}
+	if len(i.EmailIn) > 0 {
+		predicates = append(predicates, user.EmailIn(i.EmailIn...))
+	}
+	if len(i.EmailNotIn) > 0 {
+		predicates = append(predicates, user.EmailNotIn(i.EmailNotIn...))
+	}
+	if i.EmailGT != nil {
+		predicates = append(predicates, user.EmailGT(*i.EmailGT))
+	}
+	if i.EmailGTE != nil {
+		predicates = append(predicates, user.EmailGTE(*i.EmailGTE))
+	}
+	if i.EmailLT != nil {
+		predicates = append(predicates, user.EmailLT(*i.EmailLT))
+	}
+	if i.EmailLTE != nil {
+		predicates = append(predicates, user.EmailLTE(*i.EmailLTE))
+	}
+	if i.EmailContains != nil {
+		predicates = append(predicates, user.EmailContains(*i.EmailContains))
+	}
+	if i.EmailHasPrefix != nil {
+		predicates = append(predicates, user.EmailHasPrefix(*i.EmailHasPrefix))
+	}
+	if i.EmailHasSuffix != nil {
+		predicates = append(predicates, user.EmailHasSuffix(*i.EmailHasSuffix))
+	}
+	if i.EmailIsNil {
+		predicates = append(predicates, user.EmailIsNil())
+	}
+	if i.EmailNotNil {
+		predicates = append(predicates, user.EmailNotNil())
+	}
+	if i.EmailEqualFold != nil {
+		predicates = append(predicates, user.EmailEqualFold(*i.EmailEqualFold))
+	}
+	if i.EmailContainsFold != nil {
+		predicates = append(predicates, user.EmailContainsFold(*i.EmailContainsFold))
+	}
+	if i.Mobile != nil {
+		predicates = append(predicates, user.MobileEQ(*i.Mobile))
+	}
+	if i.MobileNEQ != nil {
+		predicates = append(predicates, user.MobileNEQ(*i.MobileNEQ))
+	}
+	if len(i.MobileIn) > 0 {
+		predicates = append(predicates, user.MobileIn(i.MobileIn...))
+	}
+	if len(i.MobileNotIn) > 0 {
+		predicates = append(predicates, user.MobileNotIn(i.MobileNotIn...))
+	}
+	if i.MobileGT != nil {
+		predicates = append(predicates, user.MobileGT(*i.MobileGT))
+	}
+	if i.MobileGTE != nil {
+		predicates = append(predicates, user.MobileGTE(*i.MobileGTE))
+	}
+	if i.MobileLT != nil {
+		predicates = append(predicates, user.MobileLT(*i.MobileLT))
+	}
+	if i.MobileLTE != nil {
+		predicates = append(predicates, user.MobileLTE(*i.MobileLTE))
+	}
+	if i.MobileContains != nil {
+		predicates = append(predicates, user.MobileContains(*i.MobileContains))
+	}
+	if i.MobileHasPrefix != nil {
+		predicates = append(predicates, user.MobileHasPrefix(*i.MobileHasPrefix))
+	}
+	if i.MobileHasSuffix != nil {
+		predicates = append(predicates, user.MobileHasSuffix(*i.MobileHasSuffix))
+	}
+	if i.MobileIsNil {
+		predicates = append(predicates, user.MobileIsNil())
+	}
+	if i.MobileNotNil {
+		predicates = append(predicates, user.MobileNotNil())
+	}
+	if i.MobileEqualFold != nil {
+		predicates = append(predicates, user.MobileEqualFold(*i.MobileEqualFold))
+	}
+	if i.MobileContainsFold != nil {
+		predicates = append(predicates, user.MobileContainsFold(*i.MobileContainsFold))
 	}
 	if i.CreationType != nil {
 		predicates = append(predicates, user.CreationTypeEQ(*i.CreationType))

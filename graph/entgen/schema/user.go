@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/woocoos/adminx/graph/entgen/types"
+	"github.com/woocoos/adminx/graph/entgen/validates"
 )
 
 // User holds the schema definition for the User entity.
@@ -40,6 +41,8 @@ func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("principal_name").Unique().Comment("登陆名称"),
 		field.String("display_name").Comment("显示名"),
+		field.String("email").MaxLen(45).Optional().Validate(validates.IsEmail()).Comment("邮箱"),
+		field.String("mobile").MaxLen(45).Optional().Comment("手机"),
 		field.Enum("user_type").NamedValues(
 			"account", "account",
 			"member", "member",

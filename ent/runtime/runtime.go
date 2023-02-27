@@ -320,8 +320,30 @@ func init() {
 	userDescCreatedAt := userMixinFields1[1].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
+	// userDescEmail is the schema descriptor for email field.
+	userDescEmail := userFields[2].Descriptor()
+	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	user.EmailValidator = func() func(string) error {
+		validators := userDescEmail.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(email string) error {
+			for _, fn := range fns {
+				if err := fn(email); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescMobile is the schema descriptor for mobile field.
+	userDescMobile := userFields[3].Descriptor()
+	// user.MobileValidator is a validator for the "mobile" field. It is called by the builders before save.
+	user.MobileValidator = userDescMobile.Validators[0].(func(string) error)
 	// userDescRegisterIP is the schema descriptor for register_ip field.
-	userDescRegisterIP := userFields[4].Descriptor()
+	userDescRegisterIP := userFields[6].Descriptor()
 	// user.RegisterIPValidator is a validator for the "register_ip" field. It is called by the builders before save.
 	user.RegisterIPValidator = userDescRegisterIP.Validators[0].(func(string) error)
 	// userDescID is the schema descriptor for id field.
@@ -400,6 +422,10 @@ func init() {
 	userpasswordDescCreatedAt := userpasswordMixinFields1[1].Descriptor()
 	// userpassword.DefaultCreatedAt holds the default value on creation for the created_at field.
 	userpassword.DefaultCreatedAt = userpasswordDescCreatedAt.Default.(func() time.Time)
+	// userpasswordDescPassword is the schema descriptor for password field.
+	userpasswordDescPassword := userpasswordFields[2].Descriptor()
+	// userpassword.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	userpassword.PasswordValidator = userpasswordDescPassword.Validators[0].(func(string) error)
 	// userpasswordDescSalt is the schema descriptor for salt field.
 	userpasswordDescSalt := userpasswordFields[3].Descriptor()
 	// userpassword.SaltValidator is a validator for the "salt" field. It is called by the builders before save.
